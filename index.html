@@ -26,10 +26,16 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);font-family
 .chip.on{background:var(--ink);color:var(--card);border-color:var(--ink)}
 .hint{align-self:flex-start;background:var(--card);border:1px solid var(--acc);color:var(--ink);border-radius:10px;padding:6px 10px;font-size:12.5px;font-weight:700;box-shadow:var(--sh)}
 .dot{position:relative;width:14px;height:14px;border-radius:50%;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.45);cursor:pointer}
+.dot.grp::before{content:attr(data-n);position:absolute;right:-7px;top:-8px;min-width:13px;height:13px;border-radius:7px;background:#14202b;color:#fff;font-size:9px;font-weight:900;line-height:13px;text-align:center;padding:0 2px}
 .dot.ok{background:#2f6fb5}.dot.no{background:#d23b3b}
 .dot.sel{width:20px;height:20px;box-shadow:0 0 0 4px rgba(255,197,46,.75),0 1px 4px rgba(0,0,0,.5)}
-.dot b{position:absolute;left:50%;top:-20px;transform:translateX(-50%);white-space:nowrap;font-size:11px;font-weight:800;color:#14202b;background:rgba(255,255,255,.92);padding:1px 5px;border-radius:6px;display:none;pointer-events:none}
+.dot b{position:absolute;left:15px;top:50%;transform:translateY(-50%);white-space:nowrap;font-size:12px;font-weight:900;color:#14202b;letter-spacing:-.02em;text-shadow:-1.5px 0 #fff,1.5px 0 #fff,0 -1.5px #fff,0 1.5px #fff,-1px -1px #fff,1px 1px #fff,-1px 1px #fff,1px -1px #fff;display:none;pointer-events:auto}
 body.lbl .dot b,.dot.sel b{display:block}
+body.lbls .dot b{font-size:10.5px}
+.dot.sel b{font-size:13px}
+.pk{display:flex;flex-direction:column;gap:6px;margin:4px 0 4px}
+.pk button{height:44px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-size:14.5px;font-weight:800;text-align:left;padding:0 14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.pk button span{font-size:12px;color:var(--mute);font-weight:700}
 .hub{width:26px;height:26px;border-radius:50%;background:#14202b;border:3px solid #ffc52e;color:#ffc52e;font-weight:900;font-size:13px;display:grid;place-items:center;box-shadow:0 2px 8px rgba(0,0,0,.5)}
 .sheet{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--card);border-radius:20px 20px 0 0;box-shadow:0 -8px 30px rgba(0,0,0,.28);padding:10px 16px calc(16px + env(safe-area-inset-bottom));max-height:72vh;overflow:auto;transform:translateY(105%);transition:transform .25s ease}
 .sheet.open{transform:none}
@@ -115,11 +121,14 @@ function init(){
   map=new kakao.maps.Map($('map'),{center:new kakao.maps.LatLng(36.9,127.7),level:12});
   const hubEl=document.createElement('div');hubEl.className='hub';hubEl.textContent='H';hubEl.title='곤지암 Hub';
   new kakao.maps.CustomOverlay({map,position:new kakao.maps.LatLng(HUB.lat,HUB.lon),content:hubEl,yAnchor:.5,xAnchor:.5,zIndex:5});
-  ST.forEach(p=>{
-    const el=document.createElement('div');el.className='dot '+(p[6]?'ok':'no');el.innerHTML='<b>'+esc(p[4].replace(/Sub$/,''))+'</b>';
-    el.addEventListener('click',ev=>{ev.stopPropagation();pick(p)});
-    const ov=new kakao.maps.CustomOverlay({position:new kakao.maps.LatLng(p[10],p[11]),content:el,yAnchor:.5,xAnchor:.5,zIndex:3});
-    items.push({p,el,ov,on:true});
+  const gm={};
+  ST.forEach(p=>{const k=p[10].toFixed(4)+','+p[11].toFixed(4);(gm[k]=gm[k]||[]).push(p)});
+  Object.values(gm).forEach(ps=>{
+    const el=document.createElement('div');
+    const g={ps,el,on:null,vis:ps};
+    el.addEventListener('click',ev=>{ev.stopPropagation();g.vis.length>1?pickGroup(g):pick(g.vis[0])});
+    g.ov=new kakao.maps.CustomOverlay({position:new kakao.maps.LatLng(ps[0][10],ps[0][11]),content:el,yAnchor:.5,xAnchor:.5,zIndex:3});
+    items.push(g);
   });
   const b=new kakao.maps.LatLngBounds();ST.forEach(p=>{if(p[12]<260)b.extend(new kakao.maps.LatLng(p[10],p[11]))});map.setBounds(b);
   kakao.maps.event.addListener(map,'zoom_changed',lbl);kakao.maps.event.addListener(map,'click',closeSheet);lbl();
@@ -130,7 +139,9 @@ function init(){
   $('live').addEventListener('click',toggleLive);
   apply(false);
 }
-function lbl(){document.body.classList.toggle('lbl',map.getLevel()<=9)}
+function lbl(){const l=map.getLevel();document.body.classList.toggle('lbl',l<=12);document.body.classList.toggle('lbls',l>=10)}
+const short=p=>p[4].replace(/(Sub|Hub|센터)$/,'');
+function paint(g){const v=g.vis;g.el.className='dot '+(v.some(p=>p[6])?'ok':'no')+(v.length>1?' grp':'')+(cur&&v.includes(cur)?' sel':'');g.el.dataset.n=v.length;g.el.innerHTML='<b>'+esc(v.map(short).join('·'))+'</b>'}
 function match(p,q){
   if(filt==='TR불가'&&p[6])return false;
   if(filt==='셔틀'&&p[3]!=='셔틀')return false;
@@ -141,7 +152,7 @@ function match(p,q){
 }
 function apply(fit){
   const q=$('q').value.trim().toLowerCase();const vis=[];
-  items.forEach(it=>{const ok=match(it.p,q);if(ok!==it.on||it.first!==true){it.ov.setMap(ok?map:null);it.on=ok;it.first=true}if(ok)vis.push(it.p)});
+  items.forEach(g=>{g.vis=g.ps.filter(p=>match(p,q));const ok=g.vis.length>0;if(ok!==g.on){g.ov.setMap(ok?map:null);g.on=ok}if(ok){paint(g);vis.push(...g.vis)}});
   if(vis.length&&(fit||q)){const b=new kakao.maps.LatLngBounds();vis.forEach(p=>b.extend(new kakao.maps.LatLng(p[10],p[11])));b.extend(new kakao.maps.LatLng(HUB.lat,HUB.lon));map.setBounds(b)}
   if(q&&vis.length===1)pick(vis[0]);
 }
@@ -153,13 +164,18 @@ function toggleLive(){
   if(liveOn&&cur)fetchLive(cur,false);
 }
 function pick(p){
-  if(cur){const o=items.find(i=>i.p===cur);if(o)o.el.classList.remove('sel')}
-  cur=p;const it=items.find(i=>i.p===p);if(it)it.el.classList.add('sel');
+  const old=cur;cur=p;items.forEach(g=>{if(g.ps.includes(p)||(old&&g.ps.includes(old)))paint(g)});
   $('hint').hidden=true;render(p);$('sheet').classList.add('open');
   map.panTo(new kakao.maps.LatLng(p[10]-(map.getLevel()>8?0:0),p[11]));
   if(liveOn)fetchLive(p,false);
 }
-function closeSheet(){$('sheet').classList.remove('open');if(cur){const o=items.find(i=>i.p===cur);if(o)o.el.classList.remove('sel')}cur=null;if(liveOn)$('hint').hidden=false}
+function closeSheet(){$('sheet').classList.remove('open');const old=cur;cur=null;if(old)items.forEach(g=>{if(g.ps.includes(old))paint(g)});if(liveOn)$('hint').hidden=false}
+function pickGroup(g){
+  $('hint').hidden=true;
+  $('sb').innerHTML='<h2>같은 건물 '+g.vis.length+'곳</h2><p class="sub">'+esc(g.vis[0][9])+'</p><div class="pk">'+g.vis.map((p,i)=>'<button type="button" data-i="'+i+'">'+esc(p[4])+'<span>'+esc(p[0])+(p[3]==='상차 노선'?'반':'')+' · '+esc(p[1]||'')+' · TR '+(p[6]?'가능':'불가')+'</span></button>').join('')+'</div>';
+  $('sb').querySelectorAll('.pk button').forEach(b=>b.addEventListener('click',()=>pick(g.vis[+b.dataset.i])));
+  $('sheet').classList.add('open');
+}
 $('x').addEventListener('click',closeSheet);
 function delta(live,base){const d=Math.round(live-base);if(Math.abs(d)<1)return '<span class="d mu">기준과 같음</span>';return '<span class="d '+(d>0?'up':'dn')+'">기준보다 '+(d>0?'+':'−')+hm(Math.abs(d))+'</span>'}
 function render(p){
