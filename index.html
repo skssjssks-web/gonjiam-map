@@ -32,6 +32,14 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);font-family
 .dot b{position:absolute;left:15px;top:50%;transform:translateY(-50%);white-space:nowrap;font-size:12px;font-weight:900;color:#14202b;letter-spacing:-.02em;text-shadow:-1.5px 0 #fff,1.5px 0 #fff,0 -1.5px #fff,0 1.5px #fff,-1px -1px #fff,1px 1px #fff,-1px 1px #fff,1px -1px #fff;display:none;pointer-events:auto}
 body.lbl .dot b,.dot.sel b{display:block}
 body.lbls .dot b{font-size:10.5px}
+body.lblx .dot b{font-size:9.5px;font-weight:800}
+.nb{margin:12px 0 0}
+.nb h3{font-size:13px;margin:0 0 4px;color:var(--ink2)}
+.nb .r{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:8px 0;border-top:1px solid var(--line);cursor:pointer}
+.nb .n{font-weight:900;font-size:14px;color:var(--ok)}
+.nb .m{font-size:12px;color:var(--mute);grid-column:1}
+.nb .k{grid-row:1/3;grid-column:2;text-align:right;font-weight:800;font-variant-numeric:tabular-nums;font-size:13.5px}
+.nb .k small{display:block;font-size:11.5px;color:var(--mute);font-weight:700}
 .dot.sel b{font-size:13px}
 .pk{display:flex;flex-direction:column;gap:6px;margin:4px 0 4px}
 .pk button{height:44px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-size:14.5px;font-weight:800;text-align:left;padding:0 14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
@@ -118,6 +126,7 @@ async function unlock(pw,auto){
 }
 $('gf').addEventListener('submit',e=>{e.preventDefault();const v=$('pw').value.trim();if(v)unlock(v,false)});
 function init(){
+  ST.forEach(p=>BYN[p[4]]=p);
   map=new kakao.maps.Map($('map'),{center:new kakao.maps.LatLng(36.9,127.7),level:12});
   const hubEl=document.createElement('div');hubEl.className='hub';hubEl.textContent='H';hubEl.title='곤지암 Hub';
   new kakao.maps.CustomOverlay({map,position:new kakao.maps.LatLng(HUB.lat,HUB.lon),content:hubEl,yAnchor:.5,xAnchor:.5,zIndex:5});
@@ -139,7 +148,7 @@ function init(){
   $('live').addEventListener('click',toggleLive);
   apply(false);
 }
-function lbl(){const l=map.getLevel();document.body.classList.toggle('lbl',l<=12);document.body.classList.toggle('lbls',l>=10)}
+function lbl(){const l=map.getLevel();document.body.classList.add('lbl');document.body.classList.toggle('lbls',l>=10);document.body.classList.toggle('lblx',l>=12)}
 const short=p=>p[4].replace(/(Sub|Hub|센터)$/,'');
 function paint(g){const v=g.vis;g.el.className='dot '+(v.some(p=>p[6])?'ok':'no')+(v.length>1?' grp':'')+(cur&&v.includes(cur)?' sel':'');g.el.dataset.n=v.length;g.el.innerHTML='<b>'+esc(v.map(short).join('·'))+'</b>'}
 function match(p,q){
@@ -168,6 +177,13 @@ function pick(p){
   $('hint').hidden=true;render(p);$('sheet').classList.add('open');
   map.panTo(new kakao.maps.LatLng(p[10]-(map.getLevel()>8?0:0),p[11]));
   if(liveOn)fetchLive(p,false);
+}
+let BYN={};
+function nearHtml(p){
+  const nb=p[20]||[];if(!nb.length)return '';
+  return '<div class="nb"><h3>가까운 점소</h3>'+nb.map(([n,km,mn])=>{const q=BYN[n];if(!q)return '';
+    return '<div class="r" data-n="'+esc(n)+'"><span class="n">'+esc(n)+'</span><span class="m">'+esc(q[0])+(q[3]==='상차 노선'?'반':'')+' · '+esc(q[1]||'-')+' · '+esc(q[2])+' · '+esc(q[7])+' · TR '+(q[6]?'가능':'불가')+'</span><span class="k">'+(km===0?'같은 건물':km.toFixed(1)+'km<small>'+hm(mn)+'</small>')+'</span></div>'}).join('')+
+   '<p class="note" style="margin-top:4px">점소끼리 = 카카오내비 도로거리 · 시간은 60km/h 주행만(휴식 없음)</p></div>';
 }
 function closeSheet(){$('sheet').classList.remove('open');const old=cur;cur=null;if(old)items.forEach(g=>{if(g.ps.includes(old))paint(g)});if(liveOn)$('hint').hidden=false}
 function pickGroup(g){
@@ -204,9 +220,11 @@ function render(p){
    '<tr><td class="l">오는길</td><td><span class="v">'+hm(p[15])+'</span><span class="d mu">'+p[13].toFixed(1)+'km</span></td>'+c(lb)+'</tr>'+
    '<tr><td class="l">왕복</td><td><span class="v">'+hm(p[16])+'</span></td>'+c(lr)+'</tr>'+
    '<tr><td class="l">다회전<span class="d mu">서브지연 +20분</span></td><td><span class="v">'+hm(p[17])+'</span></td>'+c(lt)+'</tr></table>'+
+   nearHtml(p)+
    '<div class="btns"><a class="btn" target="_blank" rel="noopener" href="https://map.kakao.com/link/to/'+encodeURIComponent(p[4])+','+p[10]+','+p[11]+'">카카오맵 길찾기</a>'+(liveOn&&!hubSelf?'<button class="btn pri" id="rf" type="button">지금 다시 받기</button>':'')+'</div>'+
    '<p class="note">기준 = 화물차 평균 60km/h + 이동 중 휴식 20분 (밤 1시 출발 기준 거리). 지금 교통 = 카카오내비 현재 교통 반영 시간과 60km/h 시간 중 더 오래 걸리는 쪽 + 휴식 20분.'+(liveOn&&live?' · '+new Date(live.at).toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})+' 기준':'')+'</p>';
   const rf=$('rf');if(rf)rf.addEventListener('click',()=>fetchLive(p,true));
+  $('sb').querySelectorAll('.nb .r').forEach(r=>r.addEventListener('click',()=>{const q=BYN[r.dataset.n];if(q){map.panTo(new kakao.maps.LatLng(q[10],q[11]));pick(q)}}));
 }
 async function fetchLive(p,force){
   if(p[12]===0)return;
