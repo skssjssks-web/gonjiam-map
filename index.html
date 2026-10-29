@@ -180,7 +180,7 @@ function pick(p){
 }
 let BYN={};
 function nearHtml(p){
-  const nb=p[20]||[];if(!nb.length)return '';
+  const nb=(p[20]||[]).slice().sort((a,b)=>a[1]-b[1]);if(!nb.length)return '';
   return '<div class="nb"><h3>가까운 점소</h3>'+nb.map(([n,km,mn])=>{const q=BYN[n];if(!q)return '';
     return '<div class="r" data-n="'+esc(n)+'"><span class="n">'+esc(n)+'</span><span class="m">'+esc(q[0])+(q[3]==='상차 노선'?'반':'')+' · '+esc(q[1]||'-')+' · '+esc(q[2])+' · '+esc(q[7])+' · TR '+(q[6]?'가능':'불가')+'</span><span class="k">'+(km===0?'같은 건물':km.toFixed(1)+'km<small>'+hm(mn)+'</small>')+'</span></div>'}).join('')+
    '<p class="note" style="margin-top:4px">점소끼리 = 카카오내비 도로거리 · 시간은 60km/h 주행만(휴식 없음)</p></div>';
