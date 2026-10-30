@@ -41,6 +41,11 @@ body.lblx .dot b{font-size:9.5px;font-weight:800}
 .nb .k{margin-left:auto;flex:0 0 auto}
 @media (max-width:400px){.nb .r{font-size:11.5px;gap:4px}}
 .dot.sel b{font-size:13px}
+.dot.hit{width:18px;height:18px;z-index:2}
+.dot.hit i.fl{position:absolute;left:50%;bottom:50%;width:3px;height:34px;margin-left:-1.5px;background:#14202b;border-radius:2px;pointer-events:none}
+.dot.hit i.fl::after{content:"";position:absolute;left:3px;top:0;width:22px;height:15px;background:#ff4d17;border:2px solid #fff;border-left:0;border-radius:0 3px 3px 0;box-shadow:0 1px 4px rgba(0,0,0,.45);animation:wave 1.2s ease-in-out infinite alternate;transform-origin:left center}
+@keyframes wave{from{transform:skewY(0)}to{transform:skewY(-6deg)}}
+.dot.hit b{display:block!important;font-size:13px!important;font-weight:900!important;background:#ffc52e;color:#14202b;padding:1px 6px;border-radius:6px;text-shadow:none;left:20px;box-shadow:0 1px 4px rgba(0,0,0,.35)}
 .pk{display:flex;flex-direction:column;gap:6px;margin:4px 0 4px}
 .pk button{height:44px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-size:14.5px;font-weight:800;text-align:left;padding:0 14px;display:flex;justify-content:space-between;align-items:center;cursor:pointer}
 .pk button span{font-size:12px;color:var(--mute);font-weight:700}
@@ -155,20 +160,23 @@ function init(){
 }
 function lbl(){const l=map.getLevel();document.body.classList.add('lbl');document.body.classList.toggle('lbls',l>=10);document.body.classList.toggle('lblx',l>=12)}
 const short=p=>p[4].replace(/(Sub|Hub|센터)$/,'');
-function paint(g){const v=g.vis;g.el.className='dot '+(v.some(p=>p[6])?'ok':'no')+(v.length>1?' grp':'')+(cur&&v.includes(cur)?' sel':'');g.el.dataset.n=v.length;g.el.innerHTML='<b>'+esc(v.map(short).join('·'))+'</b>'}
+function paint(g){const v=g.vis,h=g.hit&&g.hit.length;g.el.className='dot '+(v.some(p=>p[6])?'ok':'no')+(v.length>1?' grp':'')+(cur&&v.includes(cur)?' sel':'')+(h?' hit':'');g.el.dataset.n=v.length;g.el.innerHTML=(h?'<i class="fl"></i>':'')+'<b>'+esc(v.map(short).join('·'))+'</b>';g.ov.setZIndex(h?20:(cur&&v.includes(cur)?10:3))}
 function match(p,q){
   if(filt==='TR불가'&&p[6])return false;
   if(filt==='셔틀'&&p[3]!=='셔틀')return false;
   if(filt==='직출고'&&p[3]!=='직출고')return false;
   if(/^\d/.test(filt)&&!(p[0]===filt||p[0].split('/').includes(filt)))return false;
-  if(q&&![p[2],p[4],p[5],p[7],p[8],p[9],p[1]].join(' ').toLowerCase().includes(q))return false;
   return true;
 }
+const hitQ=(p,q)=>!!q&&[p[2],p[4],p[5],p[7],p[8],p[9],p[1]].join(' ').toLowerCase().includes(q);
 function apply(fit){
   const q=$('q').value.trim().toLowerCase();const vis=[];
-  items.forEach(g=>{g.vis=g.ps.filter(p=>match(p,q));const ok=g.vis.length>0;if(ok!==g.on){g.ov.setMap(ok?map:null);g.on=ok}if(ok){paint(g);vis.push(...g.vis)}});
-  if(vis.length&&(fit||q)){const b=new kakao.maps.LatLngBounds();vis.forEach(p=>b.extend(new kakao.maps.LatLng(p[10],p[11])));b.extend(new kakao.maps.LatLng(HUB.lat,HUB.lon));map.setBounds(b)}
-  if(q&&vis.length===1)pick(vis[0]);
+  const hits=[];
+  items.forEach(g=>{g.vis=g.ps.filter(p=>match(p,q));g.hit=g.vis.filter(p=>hitQ(p,q));const ok=g.vis.length>0;if(ok!==g.on){g.ov.setMap(ok?map:null);g.on=ok}if(ok){paint(g);vis.push(...g.vis);hits.push(...g.hit)}});
+  const tgt=q?hits:vis;
+  if(tgt.length&&(fit||q)){const b=new kakao.maps.LatLngBounds();tgt.forEach(p=>b.extend(new kakao.maps.LatLng(p[10],p[11])));b.extend(new kakao.maps.LatLng(HUB.lat,HUB.lon));map.setBounds(b)}
+  if(q&&!hits.length)toast('「'+$('q').value.trim()+'」 찾는 점소가 없어요',1800);
+  if(q&&hits.length===1)pick(hits[0]);
 }
 function toggleLive(){
   liveOn=!liveOn;$('live').classList.toggle('on',liveOn);document.body.classList.toggle('live',liveOn);$('hint').hidden=!(liveOn&&!cur);
