@@ -3,8 +3,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#14202b">
 <meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="점소 지도">
-<title>곤지암 점소 지도</title>
+<meta name="apple-mobile-web-app-title" content="곤지암 지도">
+<title>곤지암 지도</title>
 <style>
 :root{--bg:#f3f5f7;--card:#fff;--ink:#14202b;--ink2:#4a5866;--mute:#7a8794;--line:#d8dee4;--acc:#b07a00;--ok:#2f6fb5;--no:#d23b3b;--up:#d23b3b;--down:#1f8a4d;--sh:0 6px 24px rgba(10,20,30,.18)}
 @media (prefers-color-scheme:dark){:root{--bg:#0f1720;--card:#17222d;--ink:#e8edf2;--ink2:#a9b6c3;--mute:#7d8a97;--line:#2a3745;--acc:#ffc52e;--ok:#5aa2ee;--no:#ff7676;--up:#ff7676;--down:#4cd08a;--sh:0 6px 24px rgba(0,0,0,.5)}}
@@ -91,6 +91,13 @@ td{white-space:nowrap}
 .gate button{width:100%;height:48px;margin-top:10px;border-radius:12px;border:0;background:var(--ink);color:var(--card);font:inherit;font-size:15px;font-weight:900;cursor:pointer}
 .gate .err{min-height:18px;margin-top:10px;font-size:12.5px;font-weight:700;color:var(--no)}
 .toast{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:60;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;max-width:300px;font-size:13px;line-height:1.5;box-shadow:var(--sh);display:none;text-align:center}
+.hrt{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
+.hbn,.hln,.hcd{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:7px;font-size:12.5px;font-weight:900;line-height:1;white-space:nowrap}
+.hbn{background:rgba(255,197,46,.18);color:#9A6A00}.hln{background:rgba(59,130,246,.14);color:#1D5FD1}.hcd{background:rgba(120,130,150,.14);font-family:ui-monospace,Menlo,monospace;font-weight:800}
+.cpi{width:28px!important;height:26px!important;border-radius:8px!important;border:1px solid rgba(120,140,170,.45)!important;background:rgba(120,140,170,.10)!important;color:#4F6478!important}
+.cpi svg{width:15px!important;height:15px!important;stroke-width:2!important}
+.cpi.ok{background:#22B59A!important;border-color:#22B59A!important;color:#fff!important}
+@media (prefers-color-scheme:dark){.hbn{color:#FFC52E}.hln{color:#8CC0FF;background:rgba(96,165,250,.18)}.cpi{color:#C9D6E3!important;border-color:rgba(200,214,227,.35)!important;background:rgba(200,214,227,.08)!important}}
 </style></head>
 <body>
 <div id="map"></div>
@@ -101,7 +108,7 @@ td{white-space:nowrap}
 </div>
 <div class="sheet" id="sheet"><div class="grab"></div><button class="x" id="x" type="button" aria-label="닫기">✕</button><div id="sb"></div></div>
 <div class="toast" id="toast"></div>
-<div class="gate" id="gate"><form class="box" id="gf"><h1>곤지암 점소 지도</h1><p>팀 비밀번호를 넣어 주세요</p><input id="pw" type="password" inputmode="numeric" autocomplete="current-password" placeholder="••••••"><button type="submit">열기</button><div class="err" id="ge"></div></form></div>
+<div class="gate" id="gate"><form class="box" id="gf"><h1>곤지암 지도</h1><p>팀 비밀번호를 넣어 주세요</p><input id="pw" type="password" inputmode="numeric" autocomplete="current-password" placeholder="••••••"><button type="submit">열기</button><div class="err" id="ge"></div></form></div>
 <script>
 const JSKEY='73b3a31a7a224855459473a53318c6e9';
 const FN='https://enkhkggtnelgrsicmrlm.supabase.co/functions/v1/route';
@@ -233,7 +240,7 @@ function render(p){
   const col=liveOn?'<th>지금 교통</th>':'';
   const c=h=>liveOn?'<td>'+h+'</td>':'';
   $('sb').innerHTML=
-   '<h2>'+esc(p[4])+'</h2><p class="sub">'+esc(p[0])+(p[3]==='상차 노선'?'반':'')+' · '+esc(p[1]||'-')+' · '+esc(p[2])+' · '+esc(p[5])+'</p>'+
+   '<h2 class="hrt"><span class="hbn">'+esc(p[0])+(p[3]==='상차 노선'?'반':'')+'</span>'+(p[1]?'<span class="hln">'+esc(p[1])+'</span>':'')+esc(p[2])+'<span class="hcd">'+esc(p[5])+'</span></h2><p class="sub">'+esc(p[4])+'</p>'+
    '<div class="tags"><span class="tag '+(p[6]?'ok':'no')+'">TR '+(p[6]?'가능':'불가')+'</span><span class="tag tw">'+esc(p[7])+'</span><span class="tag tw">'+esc(p[8])+'</span>'+(p[18]!=='정확'?'<span class="tag no">위치 대략</span>':'')+'</div>'+
    '<p class="addr"><span>'+esc(p[9])+'</span><button type="button" class="cpi" id="cpa" aria-label="주소 복사" title="주소 복사">'+CPI+'</button></p>'+
    '<table><tr><th></th><th>기준 (60km/h)</th>'+col+'</tr>'+
