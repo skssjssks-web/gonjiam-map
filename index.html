@@ -102,7 +102,7 @@ td{white-space:nowrap}
 .gate button:disabled{opacity:.6}
 .gate .err{min-height:18px;margin-top:10px;font-size:13px;font-weight:700;color:var(--no);line-height:1.45}
 .gate .foot{font-size:11.5px;margin:12px 0 0}
-.acct{flex:0 0 auto;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:0 12px;font:inherit;font-size:13px;font-weight:800;box-shadow:var(--sh);cursor:pointer;max-width:96px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}@media (max-width:400px){.acct{padding:0 9px;max-width:68px;font-size:12.5px}.live{padding:0 9px 0 8px;gap:6px}}
+.acct.app .n{display:none}@media (max-width:440px){.acct.app .n{display:inline;font-size:12px}.acct.app .w{display:none}.acct.app{padding:0 8px}}.acct{flex:0 0 auto;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:0 12px;font:inherit;font-size:13px;font-weight:800;box-shadow:var(--sh);cursor:pointer;max-width:96px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}@media (max-width:400px){.acct{padding:0 9px;max-width:68px;font-size:12.5px}.acct.app{padding:0 7px;max-width:none}.acct.app .w{display:none}.live{padding:0 9px 0 8px;gap:6px}}
 .pane{position:fixed;inset:0;z-index:90;background:var(--bg);overflow:auto;padding:calc(12px + env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) calc(24px + env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))}
 .pane .in{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
 .pane .hd{display:flex;align-items:center;gap:10px}
@@ -143,7 +143,7 @@ td{white-space:nowrap}
 <body>
 <div id="map"></div>
 <div class="top" id="top" hidden>
-  <div class="row1"><input class="search" id="q" type="search" placeholder="점소·노선·간선사 검색" autocomplete="off"><button class="live" id="live" type="button"><span>실시간 교통</span><i></i></button><button class="acct" id="acct" type="button">계정</button></div>
+  <div class="row1"><input class="search" id="q" type="search" placeholder="점소·노선·간선사 검색" autocomplete="off"><button class="live" id="live" type="button"><span>실시간 교통</span><i></i></button><button class="acct app" id="appBtn" type="button" title="홈 화면에 앱으로 추가" aria-label="홈 화면에 앱으로 추가">📲<span class="w"> 홈화면</span><span class="n">앱</span></button><button class="acct" id="acct" type="button">계정</button></div>
   <div class="chips" id="chips"></div>
   <div class="hint" id="hint" hidden>점소를 누르면 지금 교통 기준 소요시간이 떠요</div>
 </div>
@@ -281,13 +281,14 @@ $('meAdm').addEventListener('click',()=>{$('me').hidden=true;$('adm').hidden=fal
 $('admX').addEventListener('click',()=>{$('adm').hidden=true});
 let DIP=null;addEventListener('beforeinstallprompt',e=>{e.preventDefault();DIP=e});
 const STANDALONE=matchMedia('(display-mode: standalone)').matches||navigator.standalone;
-if(STANDALONE)$('meApp').hidden=true;
-$('meApp').addEventListener('click',async()=>{
-  if(DIP){DIP.prompt();try{const r=await DIP.userChoice;if(r.outcome==='accepted')$('meApp').hidden=true}catch(e){}DIP=null;return}
+if(STANDALONE){$('meApp').hidden=true;$('appBtn').hidden=true}
+async function instApp(){
+  if(DIP){DIP.prompt();try{const r=await DIP.userChoice;if(r.outcome==='accepted'){$('meApp').hidden=true;$('appBtn').hidden=true}}catch(e){}DIP=null;return}
   const u=navigator.userAgent||'';
   if(/iPhone|iPad/.test(u))toast('사파리 아래 [공유] 버튼 → 「홈 화면에 추가」를 눌러 주세요',6000);
   else if(/KAKAOTALK|NAVER|Instagram/.test(u))toast('카톡 안에서는 설치가 안 돼요. 오른쪽 위 메뉴 → 「다른 브라우저로 열기」(크롬·삼성 인터넷) 후 다시 눌러 주세요',7000);
-  else toast('브라우저 메뉴(⋮) → 「앱 설치」 또는 「홈 화면에 추가」를 눌러 주세요',6000)});
+  else toast('브라우저 메뉴(⋮) → 「앱 설치」 또는 「홈 화면에 추가」를 눌러 주세요',6000)}
+$('meApp').addEventListener('click',instApp);$('appBtn').addEventListener('click',instApp);
 if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 
 function init(){
