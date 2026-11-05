@@ -84,7 +84,7 @@ td{white-space:nowrap}
 .btn{flex:1;height:42px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-size:14px;font-weight:800;display:flex;align-items:center;justify-content:center;text-decoration:none;cursor:pointer}
 .btn.pri{background:var(--ink);color:var(--card);border-color:var(--ink)}
 .note{font-size:11.5px;color:var(--mute);margin:10px 0 0;line-height:1.5}
-.gate{position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:24px max(16px,env(safe-area-inset-right)) 24px max(16px,env(safe-area-inset-left));overflow:auto}
+.gate{position:fixed;inset:0;z-index:100;background:var(--bg);display:flex;align-items:flex-start;justify-content:center;padding:24px max(16px,env(safe-area-inset-right)) 24px max(16px,env(safe-area-inset-left));overflow:auto}
 .gate .box{width:100%;max-width:360px;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:26px 22px 20px;box-shadow:var(--sh);text-align:center}
 .mark{display:inline-flex;align-items:baseline;justify-content:center;gap:.35em;flex-wrap:wrap;line-height:1.15;font-size:26px;margin:2px 0 6px}
 .mark .kr{font-family:"Nanum Gothic",inherit;font-weight:800;color:var(--rv1);letter-spacing:-.01em}
@@ -127,7 +127,7 @@ td{white-space:nowrap}
 .devs span{flex:1;min-width:0}
 .acts{display:flex;flex-wrap:wrap;gap:6px}
 .logs{font-size:12px;color:var(--ink2);display:flex;flex-direction:column;gap:2px;font-variant-numeric:tabular-nums;max-height:220px;overflow:auto}
-.note2{font-size:12px;color:var(--mute);margin:0;line-height:1.5}
+.note2{font-size:12px;color:var(--mute);margin:0;line-height:1.5}.rinfo{text-align:left;background:color-mix(in srgb,var(--rvb) 9%,var(--card));border:1px solid color-mix(in srgb,var(--rvb) 40%,transparent);border-radius:12px;padding:10px 12px;font-size:12.5px;line-height:1.5;color:var(--ink)}.rinfo>b{color:var(--rvb);font-size:13px}.rinfo ul{margin:4px 0 0;padding-left:16px}.rinfo li{margin:2px 0}.rinfo li b{color:var(--rvb)}
 .toast{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:60;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;max-width:300px;font-size:13px;line-height:1.5;box-shadow:var(--sh);display:none;text-align:center}
 .hrt{display:flex;flex-wrap:wrap;align-items:center;gap:6px}
 .hbn,.hln,.hcd{display:inline-flex;align-items:center;height:22px;padding:0 8px;border-radius:7px;font-size:12.5px;font-weight:900;line-height:1;white-space:nowrap}
@@ -136,7 +136,7 @@ td{white-space:nowrap}
 .cpi svg{width:15px!important;height:15px!important;stroke-width:2!important}
 .cpi.ok{background:#22B59A!important;border-color:#22B59A!important;color:#fff!important}
 @media (prefers-color-scheme:dark){.hbn{color:#FFC52E}.hln{color:#8CC0FF;background:rgba(96,165,250,.18)}.cpi{color:#C9D6E3!important;border-color:rgba(200,214,227,.35)!important;background:rgba(200,214,227,.08)!important}}
-</style></head>
+.gate>div{margin:auto 0}.gate p,.rinfo{word-break:keep-all}</style></head>
 <body>
 <div id="map"></div>
 <div class="top" id="top" hidden>
@@ -157,6 +157,7 @@ td{white-space:nowrap}
 <input id="sck" placeholder="전화번호 끝 4자리 또는 확인번호" inputmode="numeric" autocomplete="off">
 <input id="sp1" type="password" placeholder="새 비밀번호 (4자리 이상)" autocomplete="new-password">
 <input id="sp2" type="password" placeholder="새 비밀번호 한 번 더" autocomplete="new-password">
+<div class="rinfo" role="note"><b>ⓘ 로그아웃 기준</b><ul><li>로그인하면 이 기기에서 <b>30일</b> 동안 유지돼요. 30일이 지나면 다시 로그인해요.</li><li><b>2주</b> 동안 한 번도 안 열면 자동으로 로그아웃돼요.</li><li>비밀번호를 <b>5번</b> 틀리면 10분 동안 잠겨요. 하루 <b>10번</b> 넘게 틀리면 관리자에게 풀어 달라고 해 주세요.</li><li>다른 폰·PC는 그 기기에서 한 번 로그인하면 돼요.</li><li>로그아웃돼도 다시 로그인만 하면 되고, 승인은 다시 안 받아도 돼요.</li></ul></div>
 <button type="submit" id="sbtn">비밀번호 저장하고 열기</button>
 <button type="button" class="lnk" id="sback">로그인 화면으로</button></form>
 <div class="err" id="ge" role="status"></div>
@@ -173,7 +174,7 @@ td{white-space:nowrap}
 <div class="af"><label for="aN">이름<input id="aN" autocomplete="off"></label><label for="aP">전화번호<input id="aP" inputmode="tel" autocomplete="off" placeholder="010-0000-0000"></label>
 <label for="aI">아이디 (숫자 4자리 가능)<input id="aI" autocomplete="off" autocapitalize="off"></label><label for="aW">비밀번호 (비우면 본인이 정함)<input id="aW" type="password" autocomplete="new-password" placeholder="선택"></label>
 <button class="pbtn pri" type="submit" id="aGo" style="height:42px">계정 만들고 승인</button></div>
-<p class="note2">비밀번호를 비우면 그 사람이 처음 로그인할 때 전화번호 끝 4자리를 넣고 직접 정해요. 전화번호가 없으면 확인번호 6자리가 나와요.</p></form>
+<p class="note2">비밀번호를 비우면 그 사람이 처음 로그인할 때 전화번호 끝 4자리를 넣고 직접 정해요. 전화번호가 없으면 확인번호 6자리가 나와요. 로그인은 30일 유지 · 2주 안 쓰면 자동 로그아웃 · 5번 틀리면 10분 잠김(하루 10번 넘으면 여기서 「잠금 풀기」)이에요.</p></form>
 <div id="aList" class="in" style="gap:10px"></div>
 </div></div>
 <script>
