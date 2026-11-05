@@ -1,7 +1,10 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#14202b">
+<meta name="theme-color" content="#0F4C9C">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="곤지암 Road View">
 <title>곤지암 Road View</title>
@@ -166,7 +169,7 @@ td{white-space:nowrap}
 <div class="pane" id="me" hidden><div class="in">
 <div class="hd"><div class="mark"><span class="kr">곤지암</span><span class="en">Road View</span></div><h2></h2><button class="pbtn" id="meX" type="button">닫기</button></div>
 <div class="pcard"><div class="arow"><b id="meN"></b><span class="id" id="meL"></span></div><p class="note2">이 기기는 마지막으로 쓴 날부터 2주, 로그인한 날부터 30일 동안 로그인이 유지돼요.</p>
-<div class="acts"><button class="pbtn pri" id="meAdm" type="button" hidden>계정 관리</button><button class="pbtn red" id="meOut" type="button">이 기기 로그아웃</button></div></div>
+<div class="acts"><button class="pbtn" id="meApp" type="button">📲 홈 화면에 앱으로 추가</button><button class="pbtn pri" id="meAdm" type="button" hidden>계정 관리</button><button class="pbtn red" id="meOut" type="button">이 기기 로그아웃</button></div></div>
 </div></div>
 <div class="pane" id="adm" hidden><div class="in">
 <div class="hd"><div class="mark"><span class="kr">곤지암</span><span class="en">Road View</span></div><h2>계정 관리</h2><button class="pbtn" id="admX" type="button">닫기</button></div>
@@ -276,6 +279,17 @@ $('af').addEventListener('submit',async e=>{e.preventDefault();const n=$('aN').v
   ['aN','aP','aI','aW'].forEach(k=>$(k).value='');toast(pw?`${n} 계정을 만들었어요 · 바로 로그인할 수 있어요`:(j.code?`${n} 계정을 만들었어요 · 확인번호 ${j.code} (첫 로그인 때 필요)`:`${n} 계정을 만들었어요 · 첫 로그인 때 전화번호 끝 4자리로 비밀번호를 정해요`),6000);admLoad()});
 $('meAdm').addEventListener('click',()=>{$('me').hidden=true;$('adm').hidden=false;admLoad()});
 $('admX').addEventListener('click',()=>{$('adm').hidden=true});
+let DIP=null;addEventListener('beforeinstallprompt',e=>{e.preventDefault();DIP=e});
+const STANDALONE=matchMedia('(display-mode: standalone)').matches||navigator.standalone;
+if(STANDALONE)$('meApp').hidden=true;
+$('meApp').addEventListener('click',async()=>{
+  if(DIP){DIP.prompt();try{const r=await DIP.userChoice;if(r.outcome==='accepted')$('meApp').hidden=true}catch(e){}DIP=null;return}
+  const u=navigator.userAgent||'';
+  if(/iPhone|iPad/.test(u))toast('사파리 아래 [공유] 버튼 → 「홈 화면에 추가」를 눌러 주세요',6000);
+  else if(/KAKAOTALK|NAVER|Instagram/.test(u))toast('카톡 안에서는 설치가 안 돼요. 오른쪽 위 메뉴 → 「다른 브라우저로 열기」(크롬·삼성 인터넷) 후 다시 눌러 주세요',7000);
+  else toast('브라우저 메뉴(⋮) → 「앱 설치」 또는 「홈 화면에 추가」를 눌러 주세요',6000)});
+if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+
 function init(){
   ST.forEach(p=>BYN[p[4]]=p);
   map=new kakao.maps.Map($('map'),{center:new kakao.maps.LatLng(36.9,127.7),level:12});
