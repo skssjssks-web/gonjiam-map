@@ -139,7 +139,33 @@ td{white-space:nowrap}
 .cpi svg{width:15px!important;height:15px!important;stroke-width:2!important}
 .cpi.ok{background:#22B59A!important;border-color:#22B59A!important;color:#fff!important}
 @media (prefers-color-scheme:dark){.hbn{color:#FFC52E}.hln{color:#8CC0FF;background:rgba(96,165,250,.18)}.cpi{color:#C9D6E3!important;border-color:rgba(200,214,227,.35)!important;background:rgba(200,214,227,.08)!important}}
-.gate>div{margin:auto 0}.gate p,.rinfo{word-break:keep-all}</style></head>
+.gate>div{margin:auto 0}.gate p,.rinfo{word-break:keep-all}
+.fab{position:fixed;right:max(12px,env(safe-area-inset-right));bottom:calc(18px + env(safe-area-inset-bottom));z-index:25;width:48px;height:48px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--ink);box-shadow:var(--sh);font-size:22px;line-height:1;display:grid;place-items:center;cursor:pointer;padding:0}
+.fab.on{border-color:var(--rvb);color:var(--rvb)}
+.fab.fol{background:var(--rvb);color:#fff;border-color:var(--rvb)}
+.fab:disabled{opacity:.6}
+body.sh .fab,body.fix .fab{display:none}
+.me{width:18px;height:18px;border-radius:50%;background:#1E8BF0;border:3px solid #fff;box-shadow:0 0 0 2px rgba(30,139,240,.4),0 1px 6px rgba(0,0,0,.45);position:relative}
+.me::before{content:"";position:absolute;left:50%;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:50%;background:rgba(30,139,240,.35);animation:mep 1.8s ease-out infinite}
+@keyframes mep{from{transform:scale(1);opacity:.8}to{transform:scale(3.2);opacity:0}}
+.eta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0 0;padding:9px 12px;border-radius:12px;background:color-mix(in srgb,var(--rvb) 10%,var(--card));border:1px solid color-mix(in srgb,var(--rvb) 35%,transparent);font-size:13px;font-weight:800;color:var(--ink);line-height:1.4;word-break:keep-all}
+.eta b{font-size:17px;font-weight:900;color:var(--rvb)}
+.eta .mu{color:var(--mute);font-weight:700;font-size:12px}
+.lgd{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:11px;color:var(--mute);margin:6px 0 0}
+.lgd i{display:inline-block;width:14px;height:4px;border-radius:2px;vertical-align:middle;margin-right:3px}
+.btns.g{display:grid;grid-template-columns:1fr 1fr}
+.btns .btn{min-width:0;white-space:nowrap;font-size:13.5px}
+.btn.nav{color:var(--rvb);border-color:color-mix(in srgb,var(--rvb) 55%,var(--line))}
+.btn.fixb{grid-column:1/-1;color:var(--acc);border-color:var(--acc)}
+.xh{position:fixed;left:50%;top:50%;z-index:26;width:34px;height:34px;margin:-17px 0 0 -17px;pointer-events:none}
+.xh::before,.xh::after{content:"";position:absolute;background:#d23b3b;box-shadow:0 0 0 1.5px #fff}
+.xh::before{left:16px;top:0;width:2px;height:34px}.xh::after{top:16px;left:0;height:2px;width:34px}
+.fixbar{position:fixed;left:0;right:0;bottom:0;z-index:31;background:var(--card);border-radius:20px 20px 0 0;box-shadow:0 -8px 30px rgba(0,0,0,.28);padding:14px 16px calc(16px + env(safe-area-inset-bottom))}
+.fixbar h3{margin:0 0 4px;font-size:15px}
+.fixbar p{margin:0 0 10px;font-size:12.5px;color:var(--mute);line-height:1.5;word-break:keep-all}
+.nb .r.ld{color:var(--mute);cursor:default}
+.nb .r.dis{opacity:.55}
+.sheet{padding-bottom:calc(16px + env(safe-area-inset-bottom))}</style></head>
 <body>
 <div id="map"></div>
 <div class="top" id="top" hidden>
@@ -148,6 +174,9 @@ td{white-space:nowrap}
   <div class="hint" id="hint" hidden>점소를 누르면 지금 교통 기준 소요시간이 떠요</div>
 </div>
 <div class="sheet" id="sheet"><div class="grab"></div><button class="x" id="x" type="button" aria-label="닫기">✕</button><div id="sb"></div></div>
+<button class="fab" id="loc" type="button" title="내 위치" aria-label="내 위치" hidden>◎</button>
+<div class="xh" id="xh" hidden></div>
+<div class="fixbar" id="fixbar" hidden><h3 id="fxT">점소 위치 바로잡기</h3><p id="fxP">지도를 움직여 빨간 십자가 점소 입구에 오게 한 뒤 저장해 주세요.</p><div class="btns g"><button class="btn pri" id="fxC" type="button">십자 자리로 저장</button><button class="btn" id="fxM" type="button">내 위치로 저장</button><button class="btn" id="fxX" type="button" style="grid-column:1/-1">취소</button></div></div>
 <div class="toast" id="toast"></div>
 <div class="gate" id="gate"><div class="box">
 <div class="mark"><span class="kr">곤지암</span><span class="en">Road View</span></div>
@@ -189,7 +218,8 @@ const REST=20,SUBWAIT=20,SPEED=60;
 const $=id=>document.getElementById(id);
 const hm=m=>{m=Math.round(m);const h=Math.floor(m/60),r=m%60;return h?h+'시간 '+String(r).padStart(2,'0')+'분':r+'분'};
 const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-let TOK='',ME=null,ST=[],map=null,items=[],cur=null,liveOn=false,traffic=false,filt='전체',cache={};
+let TOK='',ME=null,ST=[],map=null,items=[],cur=null,liveOn=false,traffic=false,filt='전체',cache={},mcache={};
+let POS=null,meOv=null,meCir=null,watchId=null,follow=false,nearOpen=false,nearAt=0,lines={hub:[],me:[]},fitKey='',fixP=null;
 const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
 function toast(t,ms){const e=$('toast');e.textContent=t;e.style.display='block';clearTimeout(toast.t);if(ms)toast.t=setTimeout(()=>e.style.display='none',ms)}
 function loadSdk(){return new Promise((res,rej)=>{
@@ -219,7 +249,7 @@ async function start(j){
   $('acct').textContent=ME.name||'계정';$('meN').textContent=ME.name||'';$('meL').textContent='아이디 '+(ME.login||'');$('meAdm').hidden=!ME.admin;
   $('gate').style.display='none';$('gpw').value='';$('sp1').value='';$('sp2').value='';$('sck').value='';
   if(started){$('top').hidden=false;return}
-  $('top').hidden=false;
+  $('top').hidden=false;$('loc').hidden=false;
   try{await loadSdk()}catch(e){toast('카카오 지도를 불러오지 못했어요.\n인터넷을 확인하고 새로고침해 주세요.');return}
   started=true;init();
 }
@@ -306,7 +336,10 @@ function init(){
     items.push(g);
   });
   const b=new kakao.maps.LatLngBounds();ST.forEach(p=>{if(p[12]<260)b.extend(new kakao.maps.LatLng(p[10],p[11]))});map.setBounds(b);
-  kakao.maps.event.addListener(map,'zoom_changed',lbl);kakao.maps.event.addListener(map,'click',closeSheet);lbl();
+  kakao.maps.event.addListener(map,'zoom_changed',lbl);kakao.maps.event.addListener(map,'click',()=>{if(!document.body.classList.contains('fix'))closeSheet()});lbl();
+  kakao.maps.event.addListener(map,'dragstart',()=>{if(follow){follow=false;$('loc').classList.remove('fol')}});
+  $('loc').addEventListener('click',locTap);$('fxX').addEventListener('click',()=>fixEnd(false));$('fxC').addEventListener('click',()=>fixSave('c'));$('fxM').addEventListener('click',()=>fixSave('m'));
+  setInterval(tick,30000);
   const fs=['전체','1-1','1-2','2-1','2-2','3-1','3-2','4-1','4-2','셔틀','직출고','TR불가'];
   $('chips').innerHTML=fs.map(f=>'<button class="chip'+(f===filt?' on':'')+'" type="button" data-f="'+f+'">'+(/^\d/.test(f)?f+'반':f)+'</button>').join('');
   $('chips').addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;filt=c.dataset.f;[...$('chips').children].forEach(x=>x.classList.toggle('on',x===c));apply(true)});
@@ -343,10 +376,13 @@ function toggleLive(){
 }
 function pick(p){
   const old=cur;cur=p;items.forEach(g=>{if(g.ps.includes(p)||(old&&g.ps.includes(old)))paint(g)});
-  $('hint').hidden=true;render(p);$('sheet').classList.add('open');
-  map.panTo(new kakao.maps.LatLng(p[10]-(map.getLevel()>8?0:0),p[11]));
+  $('hint').hidden=true;nearOpen=false;render(p);openSheet();
+  if(!(liveOn&&cache[p[5]]&&cache[p[5]].roads)&&!(POS&&mcache[p[5]]&&mcache[p[5]].roads))map.panTo(new kakao.maps.LatLng(p[10],p[11]));
   if(liveOn)fetchLive(p,false);
+  if(POS)fetchMe(p,false);
+  drawFor(p);
 }
+function openSheet(){$('sheet').classList.add('open');document.body.classList.add('sh')}
 let BYN={};
 function nearHtml(p){
   const nb=(p[20]||[]).slice().sort((a,b)=>a[1]-b[1]);if(!nb.length)return '';
@@ -356,12 +392,12 @@ function nearHtml(p){
 }
 const CPI='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg>',CPOK='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 function copyTxt(t,b){const ok=()=>{b.innerHTML=CPOK;b.classList.add('ok');setTimeout(()=>{b.innerHTML=CPI;b.classList.remove('ok')},1500)},fb=()=>{try{const a=document.createElement('textarea');a.value=t;a.setAttribute('readonly','');a.style.cssText='position:fixed;top:-1000px;opacity:0';document.body.appendChild(a);a.select();a.setSelectionRange(0,t.length);const r=document.execCommand('copy');a.remove();if(r)ok();else alert('주소를 길게 눌러 복사하세요')}catch(e){alert('주소를 길게 눌러 복사하세요')}};try{navigator.clipboard.writeText(t).then(ok,fb)}catch(e){fb()}}
-function closeSheet(){$('sheet').classList.remove('open');const old=cur;cur=null;if(old)items.forEach(g=>{if(g.ps.includes(old))paint(g)});if(liveOn)$('hint').hidden=false}
+function closeSheet(){$('sheet').classList.remove('open');document.body.classList.remove('sh');nearOpen=false;clearLines('hub');clearLines('me');fitKey='';const old=cur;cur=null;if(old)items.forEach(g=>{if(g.ps.includes(old))paint(g)});if(liveOn)$('hint').hidden=false}
 function pickGroup(g){
   $('hint').hidden=true;
   $('sb').innerHTML='<h2>같은 건물 '+g.vis.length+'곳</h2><p class="sub">'+esc(g.vis[0][9])+'</p><div class="pk">'+g.vis.map((p,i)=>'<button type="button" data-i="'+i+'">'+esc(p[4])+'<span>'+esc(p[0])+(p[3]==='상차 노선'?'반':'')+' · '+esc(p[1]||'')+' · TR '+(p[6]?'가능':'불가')+'</span></button>').join('')+'</div>';
   $('sb').querySelectorAll('.pk button').forEach(b=>b.addEventListener('click',()=>pick(g.vis[+b.dataset.i])));
-  $('sheet').classList.add('open');
+  nearOpen=false;openSheet();
 }
 $('x').addEventListener('click',closeSheet);
 function delta(live,base){const d=Math.round(live-base);if(Math.abs(d)<1)return '<span class="d mu">±0</span>';return '<span class="d '+(d>0?'up':'dn')+'">'+(d>0?'+':'−')+hm(Math.abs(d))+'</span>'}
@@ -388,11 +424,17 @@ function render(p){
    '<p class="addr"><span>'+esc(p[9])+'</span><button type="button" class="cpi" id="cpa" aria-label="주소 복사" title="주소 복사">'+CPI+'</button></p>'+
    '<table><tr><th></th><th>기준 (60km/h)</th>'+col+'</tr>'+
    '<tr><td class="l">가는길</td><td><span class="v">'+hm(p[14])+'</span><span class="sm">'+p[12].toFixed(1)+'km</span></td>'+c(lg)+'</tr>'+
-   '<tr><td class="l">다회전 왕복</td><td><span class="v">'+hm(p[17])+'</span></td>'+c(lt)+'</tr></table>'+
+   '<tr><td class="l">다회전 왕복</td><td><span class="v">'+hm(p[17])+'</span></td>'+c(lt)+'</tr>'+meRow(p)+'</table>'+
+   etaHtml(p,live)+lgdHtml(p,live)+
    nearHtml(p)+
-   '<div class="btns"><a class="btn" target="_blank" rel="noopener" href="https://map.kakao.com/link/to/'+encodeURIComponent(p[4])+','+p[10]+','+p[11]+'">카카오맵 길찾기</a>'+(liveOn&&!hubSelf?'<button class="btn pri" id="rf" type="button">지금 다시 받기</button>':'')+'</div>'+
-   '<p class="note">기준 = 화물차 평균 60km/h + 이동 중 휴식 20분 (밤 1시 출발 기준 거리). 지금 교통 = 카카오내비 현재 교통 반영 시간과 60km/h 시간 중 더 오래 걸리는 쪽 + 휴식 20분.'+(liveOn&&live?' · '+new Date(live.at).toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'})+' 기준':'')+'</p>';
+   '<div class="btns g"><a class="btn" target="_blank" rel="noopener" href="https://map.kakao.com/link/to/'+encodeURIComponent(p[4])+','+p[10]+','+p[11]+'">카카오맵 길찾기</a>'+(liveOn&&!hubSelf?'<button class="btn pri" id="rf" type="button">지금 다시 받기</button>':'<button class="btn" id="rfm" type="button"'+(POS&&!hubSelf?'':' disabled')+'>내 위치 다시 받기</button>')+
+   '<button class="btn nav" id="nvK" type="button">🚘 카카오내비</button><button class="btn nav" id="nvT" type="button">🚘 T맵</button>'+(ME&&ME.admin?'<button class="btn fixb" id="fxB" type="button">📍 점소 위치 바로잡기'+(p[18]!=='정확'?' (지금 「위치 대략」)':'')+'</button>':'')+'</div>'+
+   '<p class="note">기준 = 화물차 평균 60km/h + 이동 중 휴식 20분 (밤 1시 출발 기준 거리). 지금 교통 = 카카오내비 현재 교통 반영 시간과 60km/h 시간 중 더 오래 걸리는 쪽 + 휴식 20분.'+(liveOn&&live?' · '+tm(live.at)+' 기준':'')+' 카카오내비·T맵 버튼은 폰에 그 앱이 있을 때 음성 길 안내로 바로 이어져요.</p>';
   const rf=$('rf');if(rf)rf.addEventListener('click',()=>fetchLive(p,true));
+  const rfm=$('rfm');if(rfm)rfm.addEventListener('click',()=>fetchMe(p,true));
+  $('nvK').addEventListener('click',()=>openNav('kakaomap://route?ep='+p[10]+','+p[11]+'&by=CAR','https://map.kakao.com/link/to/'+encodeURIComponent(p[4])+','+p[10]+','+p[11],'카카오맵'));
+  $('nvT').addEventListener('click',()=>openNav('tmap://route?goalname='+encodeURIComponent(p[4])+'&goalx='+p[11]+'&goaly='+p[10],'','T맵'));
+  const fxB=$('fxB');if(fxB)fxB.addEventListener('click',()=>fixStart(p));
   const ca=$('cpa');if(ca)ca.addEventListener('click',()=>copyTxt(p[9],ca));
   $('sb').querySelectorAll('.nb .r').forEach(r=>r.addEventListener('click',()=>{const q=BYN[r.dataset.n];if(q){map.panTo(new kakao.maps.LatLng(q[10],q[11]));pick(q)}}));
 }
@@ -403,15 +445,120 @@ async function fetchLive(p,force){
   if(c&&c.loading)return;
   cache[k]={loading:true};render(p);
   try{
-    const r=await fetch(FN,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tok:TOK,lat:p[10],lon:p[11]})});
+    const r=await fetch(FN,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tok:TOK,lat:p[10],lon:p[11],path:true})});
     if(r.status===401){cache[k]={err:'로그인이 풀렸어요. 다시 로그인해 주세요'};store.del('gj_rv_tok');render(p);showGate(ERR.idle);return}
     const j=await r.json();
     if(!j.go||!j.go.ok||!j.back||!j.back.ok){cache[k]={err:'길찾기 실패: '+((j.go&&j.go.msg)||(j.back&&j.back.msg)||'')};render(p);return}
     const t=(leg)=>Math.max(leg.trafficMin,leg.km*60/SPEED)+REST;
     const go=t(j.go),back=t(j.back);
-    cache[k]={ready:true,t:Date.now(),at:j.at,go,back,rt:go+back,turn:go+back+SUBWAIT};
+    cache[k]={ready:true,t:Date.now(),at:j.at,go,back,rt:go+back,turn:go+back+SUBWAIT,min:j.go.trafficMin,km:j.go.km,roads:j.go.roads||[]};
   }catch(e){cache[k]={err:'연결 실패 · 인터넷을 확인해 주세요'}}
-  if(cur===p)render(p);
+  if(cur===p){render(p);drawFor(p)}
+}
+// ===== 내 위치 · 도로 경로 · 도착 예정 (2026-11-06) =====
+const tm=t=>new Date(t).toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
+const TC={0:'#1E8BF0',4:'#22B573',3:'#F5B400',2:'#F07F1F',1:'#E0322E',6:'#111'};
+function clearLines(k){lines[k].forEach(l=>l.setMap(null));lines[k]=[]}
+function drawLines(k,roads,w,op){clearLines(k);(roads||[]).forEach(r=>{const path=[];for(let i=0;i+1<r.v.length;i+=2)path.push(new kakao.maps.LatLng(r.v[i+1],r.v[i]));lines[k].push(new kakao.maps.Polyline({map,path,strokeWeight:w,strokeColor:TC[r.s]||TC[0],strokeOpacity:op,strokeStyle:'solid',zIndex:2}))})}
+function drawFor(p){
+  const H=liveOn&&cache[p[5]]&&cache[p[5]].ready?cache[p[5]].roads:null,M=POS&&mcache[p[5]]&&mcache[p[5]].ready?mcache[p[5]].roads:null;
+  if(M){drawLines('me',M,7,.95);if(H)drawLines('hub',H,4,.45);else clearLines('hub')}else{clearLines('me');if(H)drawLines('hub',H,6,.9);else clearLines('hub')}
+  const key=p[5]+(M?'m':H?'h':'');if(key!==fitKey&&(M||H)){fitKey=key;const b=new kakao.maps.LatLngBounds();(M||H).forEach(r=>{for(let i=0;i+1<r.v.length;i+=2)b.extend(new kakao.maps.LatLng(r.v[i+1],r.v[i]))});
+    const sh=$('sheet').getBoundingClientRect().height||0;try{map.setBounds(b,150,24,Math.min(sh,innerHeight*.72)+24,24)}catch(e){map.setBounds(b)}}
+}
+function lgdHtml(p,live){const on=(liveOn&&live&&live.roads&&live.roads.length)||(POS&&mcache[p[5]]&&mcache[p[5]].ready);if(!on)return '';
+  return '<div class="lgd"><span>지도 경로 선 =</span><span><i style="background:'+TC[4]+'"></i>원활</span><span><i style="background:'+TC[3]+'"></i>서행</span><span><i style="background:'+TC[2]+'"></i>지체</span><span><i style="background:'+TC[1]+'"></i>정체</span><span><i style="background:'+TC[0]+'"></i>정보 없음</span></div>'}
+function etaHtml(p,live){
+  const M=POS&&mcache[p[5]];let a='';
+  if(M&&M.ready)a+='<div class="eta">📍 내 위치에서 지금 출발하면 <b>'+tm(Date.now()+M.min*60000)+'</b> 도착 <span class="mu">· '+hm(M.min)+' · '+M.km.toFixed(1)+'km · 휴식 없이 · '+tm(M.at)+' 기준</span></div>';
+  if(liveOn&&live&&p[12]!==0)a+='<div class="eta">🏭 곤지암에서 지금 출발하면 <b>'+tm(Date.now()+live.go*60000)+'</b> 도착 <span class="mu">· '+hm(live.go)+' · 휴식 20분 포함 · '+tm(live.at)+' 기준</span></div>';
+  return a}
+function meRow(p){if(!POS)return '';const M=mcache[p[5]];let v;
+  if(!M||M.loading)v='<span class="mu">받는 중…</span>';else if(M.err)v='<span class="mu">'+esc(M.err)+'</span>';else v='<span class="v">'+hm(M.min)+'</span><span class="sm">'+M.km.toFixed(1)+'km</span>';
+  return '<tr><td class="l">📍 내 위치에서</td><td colspan="2">'+v+'</td></tr>'}
+async function fetchMe(p,force){
+  if(!POS)return;const k=p[5],c=mcache[k];
+  if(!force&&c&&c.ready&&Date.now()-c.t<300000){return}
+  if(c&&c.loading)return;
+  mcache[k]={loading:true};if(cur===p)render(p);
+  try{
+    const r=await fetch(FN,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tok:TOK,lat:p[10],lon:p[11],from:{lat:POS.lat,lon:POS.lon},one:true,path:true})});
+    if(r.status===401){mcache[k]={err:'로그인이 풀렸어요'};if(cur===p)render(p);return}
+    const j=await r.json();
+    if(!j.go||!j.go.ok){mcache[k]={err:'길찾기 실패: '+((j.go&&j.go.msg)||'')};if(cur===p)render(p);return}
+    mcache[k]={ready:true,t:Date.now(),at:j.at,min:j.go.trafficMin,km:j.go.km,roads:j.go.roads||[]};
+  }catch(e){mcache[k]={err:'연결 실패 · 인터넷을 확인해 주세요'}}
+  if(cur===p){render(p);drawFor(p)}
+}
+function tick(){if(document.hidden)return;
+  if(cur&&$('sheet').classList.contains('open')){const c=cache[cur[5]],m=mcache[cur[5]];
+    if(liveOn&&c&&c.ready&&Date.now()-c.t>300000)fetchLive(cur,true);
+    if(POS&&m&&m.ready&&Date.now()-m.t>300000)fetchMe(cur,true)}
+  if(nearOpen&&POS&&Date.now()-nearAt>300000)showNear();
+}
+function openNav(scheme,web,nm){const t0=Date.now();location.href=scheme;
+  setTimeout(()=>{if(document.hidden||Date.now()-t0>3000)return;if(web)window.open(web,'_blank','noopener');else toast(nm+' 앱이 없거나 열리지 않았어요. 앱을 설치하면 바로 음성 길 안내가 돼요',4000)},1600)}
+// --- 내 위치 ---
+function locTap(){if(watchId==null)startLoc();else if(follow)stopLoc();else{follow=true;$('loc').classList.add('fol');if(POS)map.panTo(new kakao.maps.LatLng(POS.lat,POS.lon))}}
+function startLoc(){
+  if(!navigator.geolocation){toast('이 기기는 위치를 지원하지 않아요',2500);return}
+  if(!isSecureContext){toast('https 주소에서만 위치를 쓸 수 있어요',2500);return}
+  follow=true;$('loc').classList.add('on','fol');$('loc').textContent='…';
+  watchId=navigator.geolocation.watchPosition(onPos,onPosErr,{enableHighAccuracy:true,maximumAge:3000,timeout:25000});
+}
+function stopLoc(){if(watchId!=null)navigator.geolocation.clearWatch(watchId);watchId=null;follow=false;POS=null;$('loc').className='fab';$('loc').textContent='◎';
+  if(meOv)meOv.setMap(null);if(meCir)meCir.setMap(null);meOv=meCir=null;mcache={};clearLines('me');
+  if(nearOpen)closeSheet();else if(cur){render(cur);drawFor(cur)}}
+function onPosErr(e){$('loc').textContent='◎';
+  if(e.code===1){toast('위치 권한이 꺼져 있어요. 브라우저(또는 앱) 설정에서 이 사이트의 위치 권한을 허용해 주세요',5000);stopLoc()}
+  else if(!POS)toast('위치를 아직 못 잡았어요. 하늘이 보이는 곳에서 다시 눌러 주세요',3500)}
+function onPos(g){
+  const lat=g.coords.latitude,lon=g.coords.longitude,acc=Math.round(g.coords.accuracy||0),first=!POS;
+  const moved=POS?dist(POS.lat,POS.lon,lat,lon):9;
+  POS={lat,lon,acc,t:Date.now()};const ll=new kakao.maps.LatLng(lat,lon);
+  if(!meOv){const el=document.createElement('div');el.className='me';el.title='내 위치';meOv=new kakao.maps.CustomOverlay({map,position:ll,content:el,yAnchor:.5,xAnchor:.5,zIndex:30});
+    meCir=new kakao.maps.Circle({map,center:ll,radius:Math.max(acc,5),strokeWeight:1,strokeColor:'#1E8BF0',strokeOpacity:.5,fillColor:'#1E8BF0',fillOpacity:.12,zIndex:1})}
+  else{meOv.setPosition(ll);meCir.setPosition(ll);meCir.setRadius(Math.max(acc,5))}
+  $('loc').textContent='◎';
+  if(follow){if(first&&map.getLevel()>6)map.setLevel(6,{anchor:ll});map.panTo(ll)}
+  if(first){if(cur){fetchMe(cur,true)}else if(!$('sheet').classList.contains('open'))showNear()}
+  else if(moved>1.5){mcache={};if(cur)fetchMe(cur,true);if(nearOpen)showNear()}
+  else if(nearOpen&&$('nearSub'))$('nearSub').textContent=nearSub();
+}
+function dist(a1,o1,a2,o2){const R=6371,d=Math.PI/180,x=(a2-a1)*d,y=(o2-o1)*d,h=Math.sin(x/2)**2+Math.cos(a1*d)*Math.cos(a2*d)*Math.sin(y/2)**2;return 2*R*Math.asin(Math.sqrt(h))}
+const nearSub=()=>'위치 오차 ±'+POS.acc+'m · '+tm(POS.t)+' 기준 · 카카오내비 지금 교통(휴식 없음)';
+let nearSeq=0;
+async function showNear(){
+  if(!POS)return;nearOpen=true;nearAt=Date.now();const seq=++nearSeq;
+  const top=ST.map(p=>[p,dist(POS.lat,POS.lon,p[10],p[11])]).sort((a,b)=>a[1]-b[1]).slice(0,3);
+  const row=(p,d,inner)=>'<div class="r'+(inner?'':' ld')+'" data-n="'+esc(p[4])+'"><span class="m">'+esc(p[0])+(p[3]==='상차 노선'?'반':'')+'·'+esc(p[1]||'-')+'</span><span class="n">'+esc(p[4].replace(/Sub$/,''))+'</span><span class="m">'+esc((p[7]||'').split('(')[0].replace(/·.*$/,''))+'</span><span class="k">'+(inner||'직선 '+d.toFixed(1)+'km · 받는 중…')+'</span></div>';
+  const paint=(res)=>{if(seq!==nearSeq||!nearOpen)return;
+    $('sb').innerHTML='<h2>📍 내 위치에서 가까운 점소</h2><p class="sub" id="nearSub">'+nearSub()+'</p><div class="nb">'+top.map(([p,d],i)=>row(p,d,res[i])).join('')+'</div><p class="note">점소를 누르면 지도에 실제 도로 경로와 도착 예정 시각이 떠요. 화면을 끄면 위치 따라가기도 멈춰요(웹 앱 한계).</p>';
+    $('sb').querySelectorAll('.nb .r').forEach(r=>r.addEventListener('click',()=>{const q=BYN[r.dataset.n];if(q)pick(q)}))};
+  const res=[null,null,null];paint(res);openSheet();
+  await Promise.all(top.map(async([p],i)=>{try{
+    const r=await fetch(FN,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tok:TOK,lat:p[10],lon:p[11],from:{lat:POS.lat,lon:POS.lon},one:true})});
+    const j=await r.json();res[i]=j.go&&j.go.ok?hm(j.go.trafficMin)+'<span style="display:inline-block;width:12px"></span>'+j.go.km.toFixed(1)+'km':'<span class="mu">실패</span>';
+  }catch(e){res[i]='<span class="mu">연결 실패</span>'}paint(res)}));
+}
+// --- 점소 위치 바로잡기 (관리자) ---
+function fixStart(p){fixP=p;document.body.classList.add('fix');$('sheet').classList.remove('open');document.body.classList.remove('sh');$('xh').hidden=false;$('fixbar').hidden=false;
+  $('fxT').textContent='📍 '+p[4]+' 위치 바로잡기';$('fxM').disabled=!POS;$('fxM').textContent=POS?'내 위치로 저장 (±'+POS.acc+'m)':'내 위치 없음';
+  $('fxP').textContent='지도를 움직여 빨간 십자가 점소 입구(상차 도크)에 오게 한 뒤 저장해 주세요. 지금 위치: '+p[10]+', '+p[11]+(p[18]!=='정확'?' (위치 대략)':'');
+  map.setLevel(3);map.panTo(new kakao.maps.LatLng(p[10],p[11]))}
+function fixEnd(){document.body.classList.remove('fix');$('xh').hidden=true;$('fixbar').hidden=true;const p=fixP;fixP=null;if(p){pick(p)}}
+async function fixSave(how){const p=fixP;if(!p)return;let lat,lon;
+  if(how==='m'){if(!POS)return;lat=POS.lat;lon=POS.lon;if(POS.acc>80&&!confirm('위치 오차가 ±'+POS.acc+'m 로 커요. 그래도 내 위치로 저장할까요?'))return}
+  else{const c=map.getCenter();lat=c.getLat();lon=c.getLng()}
+  lat=Math.round(lat*1e5)/1e5;lon=Math.round(lon*1e5)/1e5;
+  if(!confirm(p[4]+' 위치를 '+lat+', '+lon+' 로 저장할까요?\n(바꾸기 전 값은 서버에 한 벌 남아요)'))return;
+  $('fxC').disabled=$('fxM').disabled=true;let j=null;try{j=await rpc('rv_store_fix',{p_token:TOK,p_code:p[5],p_lat:lat,p_lon:lon})}catch(e){}
+  $('fxC').disabled=false;$('fxM').disabled=!POS;
+  if(!j||!j.ok){toast(j&&j.err==='not_admin'?'관리자만 저장할 수 있어요':'저장 못 했어요 · '+(j&&j.err||'연결'),3000);return}
+  p[10]=j.lat;p[11]=j.lon;p[18]='정확';delete cache[p[5]];delete mcache[p[5]];
+  const g=items.find(g=>g.ps.includes(p));if(g&&g.ps.length===1)g.ov.setPosition(new kakao.maps.LatLng(p[10],p[11]));
+  toast('저장했어요 · '+p[4]+' → '+j.lat+', '+j.lon,2500);fixEnd();
+  if(g&&g.ps.length>1)setTimeout(()=>location.reload(),1500);
 }
 if(innerWidth<400)$('q').placeholder='점소·노선 검색';store.del('gj_map_pw');{const t=store.get('gj_rv_tok');if(t){$('ge').textContent='확인 중…';$('gf').hidden=true;openWith(t).then(ok=>{if(!ok)$('gf').hidden=false})}else showGate('')}
 </script>
