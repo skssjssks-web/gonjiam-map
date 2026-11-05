@@ -1,6 +1,6 @@
 {
-  "name": "곤지암 Road View",
-  "short_name": "Road View",
+  "name": "곤지암로드",
+  "short_name": "곤지암로드",
   "description": "곤지암 점소 지도 · 실시간 길찾기",
   "lang": "ko",
   "start_url": "./",
