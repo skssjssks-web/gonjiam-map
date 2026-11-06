@@ -181,7 +181,8 @@ body.sh .rtp{display:none}
 .rt td.t{width:1%;padding-right:14px}
 .rt td.k{text-align:left}
 .rt td.k .v,.rt td.t .v{font-weight:800}
-body.live .rt td{font-size:13.5px}body.live .rt td.lv{white-space:normal;width:auto}body.live .rt td.lv .d{display:block;margin:0}body.live .rt td.l,body.live .rt td.t{padding-right:8px}
+body.live .rt td{font-size:13.5px}body.live .rt td.lv{white-space:normal;width:auto}body.live .rt td.lv .d{display:block;margin:0}
+.rt td.lv .v{white-space:nowrap}body.live .rt td.l{padding-right:6px}body.live .rt td.l,body.live .rt td.t{padding-right:8px}
 .eta{display:block;padding:10px 14px}
 .eta .eh{font-size:15px;font-weight:900;color:var(--ink);margin:0 0 4px}
 .eta .er{display:grid;grid-template-columns:minmax(0,1fr) auto 4.4em;align-items:center;gap:10px;font-size:15px;font-weight:800;line-height:1.9;font-variant-numeric:tabular-nums}
@@ -617,8 +618,8 @@ function etaHtml(p,live){
     n+='<li>내 위치 '+hm(M.min)+' · '+M.km.toFixed(1)+'km · 휴식 없이</li>'}
   return '<div class="eta"><div class="eh">지금 출발하면</div>'+r+'<ul class="en">'+n+'</ul></div>'}
 function meRow(p){if(!POS)return '';const M=mcache[p[5]];let v;
-  if(!M||M.loading)v='<span class="mu">받는 중…</span>';else if(M.err)v='<span class="mu">'+esc(M.err)+'</span>';else return '<tr><td class="l">📍 내 위치에서</td><td class="t"><span class="v">'+hm(M.min)+'</span></td><td class="k">'+M.km.toFixed(1)+'km</td>'+(liveOn?'<td></td>':'')+'</tr>';
-  return '<tr><td class="l">📍 내 위치에서</td><td colspan="'+(liveOn?3:2)+'">'+v+'</td></tr>'}
+  if(!M||M.loading)v='<span class="mu">받는 중…</span>';else if(M.err)v='<span class="mu">'+esc(M.err)+'</span>';else return '<tr><td class="l">'+(liveOn?'📍 내 위치':'📍 내 위치에서')+'</td><td class="t"><span class="v">'+hm(M.min)+'</span></td><td class="k">'+M.km.toFixed(1)+'km</td>'+(liveOn?'<td></td>':'')+'</tr>';
+  return '<tr><td class="l">'+(liveOn?'📍 내 위치':'📍 내 위치에서')+'</td><td colspan="'+(liveOn?3:2)+'">'+v+'</td></tr>'}
 async function fetchMe(p,force){
   if(!POS)return;const k=p[5],c=mcache[k];
   if(!force&&c&&c.ready&&Date.now()-c.t<300000){return}
@@ -667,6 +668,6 @@ function onPos(g){
   else if(moved>1.5){mcache={};if(RP)fetchMe(RP,true)}
 }
 function dist(a1,o1,a2,o2){const R=6371,d=Math.PI/180,x=(a2-a1)*d,y=(o2-o1)*d,h=Math.sin(x/2)**2+Math.cos(a1*d)*Math.cos(a2*d)*Math.sin(y/2)**2;return 2*R*Math.asin(Math.sqrt(h))}
-if(innerWidth<400)$('q').placeholder='점소·노선 검색';store.del('gj_map_pw');{const t=store.get('gj_rv_tok');if(t){$('ge').textContent='확인 중…';$('gf').hidden=true;openWith(t).then(ok=>{if(!ok)$('gf').hidden=false})}else showGate('')}
+if(innerWidth<380)$('q').placeholder='점소 검색';else if(innerWidth<400)$('q').placeholder='점소·노선 검색';store.del('gj_map_pw');{const t=store.get('gj_rv_tok');if(t){$('ge').textContent='확인 중…';$('gf').hidden=true;openWith(t).then(ok=>{if(!ok)$('gf').hidden=false})}else showGate('')}
 </script>
 </body></html>
