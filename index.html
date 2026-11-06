@@ -172,6 +172,23 @@ body.sh .fab{display:none}
 .rtp #rtpO{flex:1;min-width:0;padding-left:14px;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left}
 .rtp #rtpX{flex:0 0 auto;font-size:15px;color:var(--mute);border-left:1px solid var(--line);padding:0 13px}
 body.sh .rtp{display:none}
+.hrt{align-items:center;gap:8px}
+.hrt .hbn,.hrt .hln,.hrt .hnm{font-size:19px;font-weight:900;line-height:1.25;letter-spacing:0;font-variant-numeric:tabular-nums}
+.hrt .hsx{font-size:13px}
+.rt td,.rt th{vertical-align:middle}
+.rt td{font-size:15px;font-weight:800;font-variant-numeric:tabular-nums}
+.rt td.l{width:1%;padding-right:14px}
+.rt td.t{width:1%;padding-right:14px}
+.rt td.k{text-align:left}
+.rt td.k .v,.rt td.t .v{font-weight:800}
+body.live .rt td{font-size:13.5px}body.live .rt td.lv{white-space:normal;width:auto}body.live .rt td.lv .d{display:block;margin:0}body.live .rt td.l,body.live .rt td.t{padding-right:8px}
+.eta{display:block;padding:10px 14px}
+.eta .eh{font-size:15px;font-weight:900;color:var(--ink);margin:0 0 4px}
+.eta .er{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;font-size:15px;font-weight:800;line-height:1.9;font-variant-numeric:tabular-nums}
+.eta .er b{font-size:15px;font-weight:900;color:var(--rvb);text-align:right;white-space:nowrap}
+.eta .en{list-style:none;margin:6px 0 0;padding:6px 0 0;border-top:1px dashed color-mix(in srgb,var(--rvb) 35%,transparent)}
+.eta .en li{font-size:12.5px;font-weight:700;color:var(--mute);line-height:1.6;padding-left:10px;text-indent:-10px}
+.eta .en li::before{content:"· "}
 .chip.mn{font-weight:900;color:var(--ink);max-width:62vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .chip.mn.on{background:var(--rvb);border-color:var(--rvb);color:#fff}
 .mnp{position:fixed;inset:0;z-index:45;background:rgba(10,20,30,.38);display:flex;align-items:flex-end;justify-content:center}
@@ -368,6 +385,8 @@ function init(){
     items.push(g);
   });
   const b=new kakao.maps.LatLngBounds();ST.forEach(p=>{if(p[12]<260)b.extend(new kakao.maps.LatLng(p[10],p[11]))});map.setBounds(b);
+  try{map.setMaxLevel(13)}catch(e){}
+  {let rz=0;addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(()=>{try{map.relayout()}catch(e){}},150)})}
   kakao.maps.event.addListener(map,'zoom_changed',lbl);kakao.maps.event.addListener(map,'click',closeSheet);lbl();
   kakao.maps.event.addListener(map,'dragstart',()=>{if(follow){follow=false;$('loc').classList.remove('fol')}});
   $('loc').addEventListener('click',locTap);$('rtpO').addEventListener('click',()=>{if(RP)pick(RP)});$('rtpX').addEventListener('click',clearRoute);
@@ -454,18 +473,17 @@ function render(p){
     }else{lg=lb=lr=lt='<span class="mu">—</span>'}
   }
   const col=liveOn?'<th>지금 교통</th>':'';
-  const c=h=>liveOn?'<td>'+h+'</td>':'';
+  const c=h=>liveOn?'<td class="lv">'+h+'</td>':'';
   $('sb').innerHTML=
-   '<h2 class="hrt"><span class="hbn">'+esc(p[0])+'</span>'+(p[1]?'<span class="hln">'+esc(p[1])+'</span>':'')+'<span class="hnm">'+esc(p[2])+(sfx(p)?'<span class="hsx">'+sfx(p)+'</span>':'')+'</span><span class="hcd">'+esc(p[5])+'</span></h2>'+(p[4]!==p[2]+sfx(p)?'<p class="sub">'+esc(p[4])+'</p>':'')+
+   '<h2 class="hrt"><span class="hbn">'+esc(p[0])+'</span>'+(p[1]?'<span class="hln">'+esc(p[1])+'</span>':'')+'<span class="hnm">'+esc(fnm(p))+(sfx(p)?'<span class="hsx">'+sfx(p)+'</span>':'')+'</span><span class="hcd">'+esc(p[5])+'</span></h2>'+
    '<div class="tags"><span class="tag '+(p[6]?'ok':'no')+'">TR '+(p[6]?'가능':'불가')+'</span><span class="tag tw">'+esc(p[7])+'</span><span class="tag tw">'+esc(p[8])+'</span>'+(p[18]!=='정확'?'<span class="tag no">위치 대략</span>':'')+'</div>'+
    '<p class="addr"><span>'+esc(p[9])+'</span><button type="button" class="cpi" id="cpa" aria-label="주소 복사" title="주소 복사">'+CPI+'</button></p>'+
-   '<table><tr><th></th><th>기준 (60km/h)</th>'+col+'</tr>'+
-   '<tr><td class="l">가는길</td><td><span class="v">'+hm(p[14])+'</span><span class="sm">'+p[12].toFixed(1)+'km</span></td>'+c(lg)+'</tr>'+
-   '<tr><td class="l">다회전 왕복</td><td><span class="v">'+hm(p[17])+'</span></td>'+c(lt)+'</tr>'+meRow(p)+'</table>'+
+   '<table class="rt"><tr><th></th><th colspan="2">기준 (60km/h)</th>'+col+'</tr>'+
+   '<tr><td class="l">가는길</td><td class="t"><span class="v">'+hm(p[14])+'</span></td><td class="k">'+p[12].toFixed(1)+'km</td>'+c(lg)+'</tr>'+
+   '<tr><td class="l">다회전 왕복</td><td class="t"><span class="v">'+hm(p[17])+'</span></td><td class="k">'+(p[12]+p[13]).toFixed(1)+'km</td>'+c(lt)+'</tr>'+meRow(p)+'</table>'+
    etaHtml(p,live)+lgdHtml(p,live)+
    nearHtml(p)+
-   '<div class="btns g"><button class="btn nav" id="nvK" type="button">🚘 카카오내비</button><button class="btn nav" id="nvT" type="button">🚘 T맵</button></div>'+
-   '<p class="note">기준 = 화물차 평균 60km/h + 이동 중 휴식 20분 (밤 1시 출발 기준 거리). 지금 교통 = 카카오내비 현재 교통 반영 시간과 60km/h 시간 중 더 오래 걸리는 쪽 + 휴식 20분.'+(liveOn&&live?' · '+tm(live.at)+' 기준':'')+' 실시간을 켜 두면 5분마다 새로 받아요. 카카오내비·T맵 버튼은 폰에 그 앱이 있을 때 음성 길 안내로 바로 이어져요.</p>';
+   '<div class="btns g"><button class="btn nav" id="nvK" type="button">🚘 카카오내비</button><button class="btn nav" id="nvT" type="button">🚘 T맵</button></div>';
   $('nvK').addEventListener('click',()=>openNav('kakaomap://route?ep='+p[10]+','+p[11]+'&by=CAR','https://map.kakao.com/link/to/'+encodeURIComponent(p[4])+','+p[10]+','+p[11],'카카오맵'));
   $('nvT').addEventListener('click',()=>openNav('tmap://route?goalname='+encodeURIComponent(p[4])+'&goalx='+p[11]+'&goaly='+p[10],'','T맵'));
   const ca=$('cpa');if(ca)ca.addEventListener('click',()=>copyTxt(p[9],ca));
@@ -489,8 +507,9 @@ async function fetchLive(p,force){
   if(cur===p)render(p);if(RP===p)drawFor(p);
 }
 // ===== 2차 다듬기 (2026-11-06) =====
-const sfx=p=>{const s=/MP/.test(p[4])?'MP':/Hub$/.test(p[4])?'Hub':/Sub$/.test(p[4])?'Sub':'';return s&&!String(p[2]).endsWith(s)?s:''};
-function rtpSync(){const on=!!RP&&(lines.hub.length||lines.me.length);$('rtp').hidden=!on;if(on)$('rtpO').textContent='🧭 '+RP[2]+' 경로 · 다시 보기'}
+const sfx=p=>{const n=String(p[4]);if(/MP/.test(n))return /MP$/.test(n)&&n.length>2?'MP':'';const m=n.match(/(Sub|Hub)$/);return m&&n.length>3?m[1]:''};
+const fnm=p=>{const n=String(p[4]),x=sfx(p);if(/MP/.test(n))return x?n.slice(0,-2):n.replace(/MP(Hub|Sub)$/,'MP');return x?n.slice(0,-x.length):n};
+function rtpSync(){const on=!!RP&&(lines.hub.length||lines.me.length);$('rtp').hidden=!on;if(on)$('rtpO').textContent='🧭 '+fnm(RP)+' 경로 · 다시 보기'}
 function clearRoute(){RP=null;clearLines('hub');clearLines('me');fitKey='';$('rtp').hidden=true}
 // 상세정보: 맨 위 누르기 / 아래로 밀기 → 내리기
 (()=>{const sh=$('sheet');let y0=0,t0=0,dy=0,on=false,cand=false;
@@ -527,7 +546,7 @@ function menuDraw(){
   const cnt={},sub={};let rows=[];
   if(mnTab==='ban'){ST.forEach(p=>p[0].split('/').forEach(b=>{cnt[b]=(cnt[b]||0)+1}));
     rows=Object.keys(cnt).sort((a,b)=>(/^\d/.test(a)?0:1)-(/^\d/.test(b)?0:1)||a.localeCompare(b)).map(b=>({v:b,l:/^\d/.test(b)?b+'반':b,c:cnt[b]}))}
-  else if(mnTab==='car'){ST.forEach(p=>{const c=carOf(p);cnt[c]=(cnt[c]||0)+1;(sub[c]=sub[c]||[]).push(p[2])});const q=$('mnQ').value.trim().toLowerCase();
+  else if(mnTab==='car'){ST.forEach(p=>{const c=carOf(p);cnt[c]=(cnt[c]||0)+1;(sub[c]=sub[c]||[]).push(fnm(p))});const q=$('mnQ').value.trim().toLowerCase();
     rows=Object.keys(cnt).sort((a,b)=>cnt[b]-cnt[a]||a.localeCompare(b)).filter(c=>!q||c.toLowerCase().includes(q)||sub[c].some(n=>n.toLowerCase().includes(q))).map(c=>({v:c,l:c,c:cnt[c],s:sub[c].slice(0,8).join('·')+(sub[c].length>8?' …':'')}))}
   else{ST.forEach(p=>{const r=regOf(p);cnt[r]=(cnt[r]||0)+1});rows=RG.map(r=>r[0]).concat(['기타']).filter(r=>cnt[r]).map(r=>({v:r,l:r,c:cnt[r],s:(RG.find(x=>x[0]===r)||[,,])[1]||''}))}
   $('mnL').innerHTML=rows.length?rows.map(r=>'<button type="button" class="it'+(mf&&mf.k===mnTab&&mf.v===r.v?' on':'')+'" data-k="'+mnTab+'" data-v="'+esc(r.v)+'" data-l="'+esc(r.l)+'"><span class="t">'+esc(r.l)+(r.s?'<small>'+esc(r.s)+'</small>':'')+'</span><span class="c">'+r.c+'곳</span></button>').join(''):'<p class="note2" style="padding:10px 2px">찾는 간선사가 없어요</p>';
@@ -536,8 +555,8 @@ function menuDraw(){
 function sxFind(n){n=String(n||'').trim().toLowerCase().replace(/\s+/g,'');if(!n)return null;const k=x=>String(x||'').toLowerCase().replace(/\s+/g,'');
   return ST.find(p=>k(p[4])===n)||ST.find(p=>k(p[2])===n)||ST.find(p=>k(short(p))===n)||ST.find(p=>k(p[5])===n)||null}
 function sxInit(){
-  $('sxL').innerHTML=ST.map(p=>'<option value="'+esc(p[2])+'">'+esc(p[4]+' · '+p[0]+' '+(p[1]||''))+'</option>').join('');
-  const ap=ST.filter(p=>p[18]!=='정확').map(p=>p[2]);$('sxNote').textContent+=ap.length?' 지금 「위치 대략」 점소: '+ap.join(', '):'';
+  $('sxL').innerHTML=ST.map(p=>'<option value="'+esc(fnm(p))+'">'+esc(p[4]+' · '+p[0]+' '+(p[1]||''))+'</option>').join('');
+  const ap=ST.filter(p=>p[18]!=='정확').map(fnm);$('sxNote').textContent+=ap.length?' 지금 「위치 대략」 점소: '+ap.join(', '):'';
   $('sxN').addEventListener('change',()=>{const p=sxFind($('sxN').value);$('sxR').innerHTML=p?'<p class="cur">지금 위치: '+esc(p[9])+' ('+p[10]+', '+p[11]+')'+(p[18]!=='정확'?' · 위치 대략':'')+'</p>':''});
   $('sxf').addEventListener('submit',async e=>{e.preventDefault();const p=sxFind($('sxN').value),q=$('sxQ').value.trim();const R=$('sxR');
     if(!p){R.innerHTML='<p class="cur" style="color:var(--no)">「'+esc($('sxN').value)+'」 점소를 못 찾았어요. 목록에서 골라 주세요</p>';return}
@@ -568,20 +587,29 @@ function drawFor(p){
   const H=liveOn&&cache[p[5]]&&cache[p[5]].ready?cache[p[5]].roads:null,M=POS&&mcache[p[5]]&&mcache[p[5]].ready?mcache[p[5]].roads:null;
   if(M){drawLines('me',M,7,.95);if(H)drawLines('hub',H,4,.45);else clearLines('hub')}else{clearLines('me');if(H)drawLines('hub',H,6,.9);else clearLines('hub')}
   const key=p[5]+(M?'m':H?'h':'');if(key!==fitKey&&(M||H)){fitKey=key;const b=new kakao.maps.LatLngBounds();(M||H).forEach(r=>{for(let i=0;i+1<r.v.length;i+=2)b.extend(new kakao.maps.LatLng(r.v[i+1],r.v[i]))});
-    const sh=$('sheet').classList.contains('open')?$('sheet').getBoundingClientRect().height||0:0;try{map.setBounds(b,150,24,Math.min(sh,innerHeight*.72)+24,24)}catch(e){map.setBounds(b)}}
+    fitRoute(b)}
   rtpSync();
 }
+// 경로 맞춤: 상세 창이 화면 대부분을 덮어도 지도가 전국으로 멀어지지 않게
+function fitRoute(b){const H=innerHeight,sh=$('sheet').classList.contains('open')?Math.max(0,H-$('sheet').getBoundingClientRect().top):0;
+  const bot=Math.max(24,Math.min(sh+24,H-150-260));const lv=map.getLevel();
+  try{map.setBounds(b,150,24,bot,24)}catch(e){map.setBounds(b)}
+  if(map.getLevel()>MAXFIT)map.setLevel(MAXFIT)}
+const MAXFIT=12;
 function lgdHtml(p,live){const on=(liveOn&&live&&live.roads&&live.roads.length)||(POS&&mcache[p[5]]&&mcache[p[5]].ready);if(!on)return '';
   return '<div class="lgd"><span>지도 경로 선 =</span><span><i style="background:'+TC[4]+'"></i>원활</span><span><i style="background:'+TC[3]+'"></i>서행</span><span><i style="background:'+TC[2]+'"></i>지체</span><span><i style="background:'+TC[1]+'"></i>정체</span><span><i style="background:'+TC[0]+'"></i>정보 없음</span></div>'}
 function etaHtml(p,live){
-  const M=POS&&mcache[p[5]];let a='';
-  if(p[12]!==0){const L=liveOn&&live,go=L?live.go:p[14],turn=L?live.turn:p[17],now=Date.now(),wait=liveOn&&!live;
-    a+='<div class="eta"><span class="el">🏭 곤지암에서 지금 출발하면 <b>'+tm(now+go*60000)+'</b> 도착</span><span class="el">🔁 다회전 왕복하면 <b>'+tm(now+turn*60000)+'</b> 곤지암 복귀</span><span class="mu">· 가는길 '+hm(go)+' · 왕복 '+hm(turn)+' · 휴식 20분 포함 · '+(L?'지금 교통 '+tm(live.at)+' 기준':wait?'지금 교통 받는 중… (기준 시간으로 먼저 보여요)':'기준 60km/h · 실시간을 켜면 지금 교통으로 바뀌어요')+'</span></div>'}
-  if(M&&M.ready)a+='<div class="eta">📍 내 위치에서 지금 출발하면 <b>'+tm(Date.now()+M.min*60000)+'</b> 도착 <span class="mu">· '+hm(M.min)+' · '+M.km.toFixed(1)+'km · 휴식 없이 · '+tm(M.at)+' 기준</span></div>';
-  return a}
+  const M=POS&&mcache[p[5]],me=M&&M.ready,hub=p[12]!==0;if(!hub&&!me)return '';
+  const now=Date.now(),L=liveOn&&live,wait=liveOn&&!live;let r='',n='';
+  if(hub){const go=L?live.go:p[14],turn=L?live.turn:p[17];
+    r+='<div class="er"><span>🏭 곤지암 → 도착</span><b>'+tm(now+go*60000)+'</b></div><div class="er"><span>🔁 다회전 왕복 → 곤지암 복귀</span><b>'+tm(now+turn*60000)+'</b></div>';
+    n+='<li>가는길 '+hm(go)+' · 왕복 '+hm(turn)+'</li><li>휴식 20분 포함 · '+(L?'지금 교통 '+tm(live.at)+' 기준':'기준 60km/h')+'</li><li>'+(L?'실시간은 5분마다 새로 받아요':wait?'지금 교통 받는 중… (기준 시간 먼저)':'실시간을 켜면 지금 교통으로 바뀌어요')+'</li>'}
+  if(me){r+='<div class="er"><span>📍 내 위치 → 도착</span><b>'+tm(now+M.min*60000)+'</b></div>';
+    n+='<li>내 위치 '+hm(M.min)+' · '+M.km.toFixed(1)+'km · 휴식 없이</li>'}
+  return '<div class="eta"><div class="eh">지금 출발하면</div>'+r+'<ul class="en">'+n+'</ul></div>'}
 function meRow(p){if(!POS)return '';const M=mcache[p[5]];let v;
-  if(!M||M.loading)v='<span class="mu">받는 중…</span>';else if(M.err)v='<span class="mu">'+esc(M.err)+'</span>';else v='<span class="v">'+hm(M.min)+'</span><span class="sm">'+M.km.toFixed(1)+'km</span>';
-  return '<tr><td class="l">📍 내 위치에서</td><td colspan="2">'+v+'</td></tr>'}
+  if(!M||M.loading)v='<span class="mu">받는 중…</span>';else if(M.err)v='<span class="mu">'+esc(M.err)+'</span>';else return '<tr><td class="l">📍 내 위치에서</td><td class="t"><span class="v">'+hm(M.min)+'</span></td><td class="k">'+M.km.toFixed(1)+'km</td>'+(liveOn?'<td></td>':'')+'</tr>';
+  return '<tr><td class="l">📍 내 위치에서</td><td colspan="'+(liveOn?3:2)+'">'+v+'</td></tr>'}
 async function fetchMe(p,force){
   if(!POS)return;const k=p[5],c=mcache[k];
   if(!force&&c&&c.ready&&Date.now()-c.t<300000){return}
