@@ -285,7 +285,22 @@ body.live .rt td{font-size:13.5px}body.live .rt td.lv{white-space:normal;width:a
 .dot.in.cu.sel{box-shadow:0 0 0 4px rgba(123,75,214,.45),0 1px 4px rgba(0,0,0,.5)}
 .dot.in.cu.grp::before{transform:none}
 .tag.cu{background:#7b4bd6;color:#fff;border-color:#7b4bd6}
-.flw{border:1px solid var(--line);border-radius:10px;padding:6px 8px;margin:5px 0;font-size:13px;display:flex;flex-wrap:wrap;align-items:center;gap:3px 5px;min-width:0}
+.flw{border:1px solid var(--line);border-radius:10px;padding:7px 8px;margin:6px 0;font-size:13px;min-width:0}
+.flw.oft{border-color:#7b4bd6;background:rgba(123,75,214,.06)}
+.fh{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px}.fh .fn{margin-left:auto;font-size:12px;font-weight:800;color:var(--ink2)}
+.ofb{font-size:11px;font-weight:900;color:#fff;background:#7b4bd6;border-radius:6px;padding:1px 6px}
+.fcu{font:inherit;font-weight:900;color:var(--ink);background:none;border:0;padding:0;text-align:left;cursor:pointer;text-decoration:underline;text-underline-offset:3px;overflow-wrap:anywhere}
+.adp{display:block;font:inherit;font-size:12px;color:#1E8BF0;background:none;border:0;padding:3px 0;text-align:left;cursor:pointer;overflow-wrap:anywhere;width:100%}
+.adl{cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}
+.ft{margin-top:3px;font-size:12.5px}
+.fr{display:flex;flex-wrap:wrap;align-items:center;gap:2px 6px;border-top:1px dashed var(--line);padding:4px 0}
+.fr .l{color:#1E8BF0;font-weight:900;flex:none}.fr .l2{color:#7b4bd6}
+.fr .rt1{flex:1 1 140px;min-width:0;overflow-wrap:anywhere}
+.fr .nm{display:flex;align-items:center;gap:6px;margin-left:auto;flex:none}
+.fr .nm i{font-style:normal;color:var(--ink2);font-weight:700}.fr .nm b{font-weight:900}.fr .nm small{color:#d9534f;font-weight:800}
+.ft button{font:inherit;font-size:11px;font-weight:900;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:6px;padding:2px 5px;cursor:pointer}.ft button.on{background:#1E8BF0;color:#fff;border-color:#1E8BF0}
+.ipin{position:relative;display:flex;flex-direction:column;align-items:center;pointer-events:none}.ipin i{font-style:normal;font-size:26px;line-height:1}.ipin b{font-size:12px;font-weight:900;background:#fff;color:#111;border-radius:6px;padding:1px 5px;box-shadow:0 1px 3px rgba(0,0,0,.4);white-space:nowrap}
+.dot.in.cu.dl{background:#e08a00;border-radius:3px}.tag.cu.dl{background:#e08a00;border-color:#e08a00}
 .flw b{font-weight:900;overflow-wrap:anywhere}.flw i{font-style:normal;font-size:12px;color:var(--ink2)}
 .flw .fsb{font:inherit;font-weight:900;color:#7b4bd6;background:none;border:1px solid #7b4bd6;border-radius:8px;padding:1px 6px;cursor:pointer}
 .fsum{flex-basis:100%;font-size:12px;font-weight:800;color:var(--ink)}.fsum small{color:var(--ink2);font-weight:700}
@@ -944,7 +959,7 @@ if(innerWidth<380)$('q').placeholder='점소 검색';else if(innerWidth<400)$('q
 
 // ===== 2페이즈: 서브·집화·대리점 → 곤지암 입고 (2026-11-09) =====
 let PH='out',IB=[],IIT=null,ICUR=null,IF='전체',ICACHE={};
-const IKIND=[['Sub','Sub'],['Hub','Hub'],['MP','MP'],['LM','LM센터'],['집화','집화센터'],['경유C','고객사 경유'],['경유D','대리점·집화 경유'],['경유','경유지(이름 확인)']];
+const IKIND=[['Sub','Sub'],['Hub','Hub'],['MP','MP'],['LM','LM센터'],['집화','집화센터'],['경유C','고객사 경유'],['경유D','집화점·대리점'],['경유','경유지(이름 확인)']];
 const IRG={'수':'수도권','충':'충청권','경':'경상권','호':'호남권','강':'강원권','제':'제주권'};
 const IVK={'고직':'고정간선(직발송)','고':'고정간선','직':'직발송용차','터':'터미널용차','편':'고정편도(H→S)','집':'집배점차량','영':'직영간선'};
 const ivk=s=>String(s||'').split(' ').filter(Boolean).map(t=>{const m=t.match(/^(\D+)(\d+)$/);return m?[IVK[m[1]]||m[1],+m[2]]:[t,'']});
@@ -968,7 +983,7 @@ function phDraw(){
   ch.insertAdjacentHTML('afterbegin',tg+gs.map(g=>'<button class="chip ig'+(IF===g[0]?' on':'')+'" type="button" data-g="'+g[0]+'">'+esc(g[1])+'</button>').join(''));
   $('q').placeholder='입고 점소·코드 검색';
 }
-function phSet(v){if(v===PH)return;PH=v;try{localStorage.setItem('gj_rv_ph',v)}catch(e){}
+function phSet(v){if(v===PH)return;PH=v;if(IPIN){IPIN.setMap(null);IPIN=null}try{localStorage.setItem('gj_rv_ph',v)}catch(e){}
   closeSheet();clearRoute();clearLines('hub');clearLines('me');$('q').value='';
   if(PH==='in'){items.forEach(g=>{g.ov.setMap(null);g.on=null});inBuild();if(IIT)IIT.forEach(g=>{g.on=null})}
   else{if(IIT)IIT.forEach(g=>{g.ov.setMap(null);g.on=null})}
@@ -980,7 +995,7 @@ function inBuild(){if(IIT)return;IIT=[];const gm={};
     el.addEventListener('click',ev=>{ev.stopPropagation();g.vis.length>1?inGroup(g):pickIn(g.vis[0])});
     g.ov=new kakao.maps.CustomOverlay({position:new kakao.maps.LatLng(ps[0][6],ps[0][7]),content:el,yAnchor:.5,xAnchor:.5,zIndex:3});IIT.push(g)});
 }
-function inPaint(g){const v=g.vis,h=g.hit&&g.hit.length;g.el.className='dot in'+(v.every(isCu)?' cu':'')+(v.some(r=>r[10]!=='정확')?' ax':'')+(v.length>1?' grp':'')+(ICUR&&v.includes(ICUR)?' sel':'')+(h?' hit':'');g.el.dataset.n=v.length;g.el.innerHTML=(h?'<i class="fl"></i>':'')+'<b>'+esc(v.map(inm).join('·'))+'</b>';g.ov.setZIndex(h?20:(ICUR&&v.includes(ICUR)?10:3))}
+function inPaint(g){const v=g.vis,h=g.hit&&g.hit.length;g.el.className='dot in'+(v.every(isCu)?' cu'+(v.every(r=>r[2]==='경유D')?' dl':''):'')+(v.some(r=>r[10]!=='정확')?' ax':'')+(v.length>1?' grp':'')+(ICUR&&v.includes(ICUR)?' sel':'')+(h?' hit':'');g.el.dataset.n=v.length;g.el.innerHTML=(h?'<i class="fl"></i>':'')+'<b>'+esc(v.map(inm).join('·'))+'</b>';g.ov.setZIndex(h?20:(ICUR&&v.includes(ICUR)?10:3))}
 function inMatch(r){if(IF==='전체')return true;if(IF[0]==='r')return r[3]===IF.slice(1);return r[2]===IF}
 const isCu=r=>String(r[2]).startsWith('경유');
 const ixt=r=>(r[16]&&typeof r[16]==='object')?r[16]:{};
@@ -1020,7 +1035,7 @@ function inRender(r){const self=r[8]===0,c=ICACHE[r[0]],L=liveOn&&c&&c.ready?c:n
   const now=Date.now(),eta=self?'':'<div class="eta"><div class="eh">지금 출발하면</div><div class="er"><span>🏁 '+esc(inm(r))+' → 곤지암</span><b>'+tm(now+(L?L.min:r[9])*60000)+'</b><i>'+(+(L?L.km:r[8])).toFixed(1)+'km</i></div><ul class="en"><li>휴식 20분 포함 · '+(L?'지금 교통 기준':'기준 60km/h')+'</li></ul></div>';
   $('sb').innerHTML=
    '<h2 class="hrt"><span class="hbn">'+(cuP?'경유':'입고')+'</span><span class="hnm">'+esc(r[1])+'</span>'+(cuP?'':'<span class="hcd">'+esc(r[0])+'</span>')+'</h2>'+
-   '<div class="tags"><span class="tag '+(cuP?'cu':'in')+'">'+esc(kind)+'</span><span class="tag tw">'+esc(IRG[r[3]]||r[3])+'</span>'+(r[4]?'<span class="tag tw">분류 '+esc(r[4])+'</span>':'')+(r[14]?'<span class="tag '+(r[14]==='Y'?'ok':'no')+'">T/R 진입 '+(r[14]==='Y'?'가능':'불가')+'</span>':'')+(r[15]&&!cuP?'<span class="tag tw">출고 '+esc(r[15])+'</span>':'')+(r[10]!=='정확'?'<span class="tag no">위치 '+esc(r[10])+'</span>':'')+'</div>'+
+   '<div class="tags"><span class="tag '+(cuP?'cu'+(r[2]==='경유D'?' dl':''):'in')+'">'+esc(kind)+'</span><span class="tag tw">'+esc(IRG[r[3]]||r[3])+'</span>'+(r[4]?'<span class="tag tw">분류 '+esc(r[4])+'</span>':'')+(r[14]?'<span class="tag '+(r[14]==='Y'?'ok':'no')+'">T/R 진입 '+(r[14]==='Y'?'가능':'불가')+'</span>':'')+(r[15]&&!cuP?'<span class="tag tw">출고 '+esc(r[15])+'</span>':'')+(r[10]!=='정확'?'<span class="tag no">위치 '+esc(r[10])+'</span>':'')+'</div>'+
    '<p class="addr"><span>'+esc(r[5])+'</span><button type="button" class="cpi" id="cpa" aria-label="주소 복사" title="주소 복사">'+CPI+'</button></p>'+
    (self?'<p class="inote">곤지암 메가허브 같은 건물이에요.</p>':
    '<table class="rt"><tr><th></th><th colspan="2">기준 (60km/h·휴식 20분)</th>'+(liveOn?'<th>지금 교통</th>':'')+'</tr>'+
@@ -1032,31 +1047,48 @@ function inRender(r){const self=r[8]===0,c=ICACHE[r[0]],L=liveOn&&c&&c.ready?c:n
    (liveOn&&L&&L.roads.length?lgdHtml0():'')+
    '<div class="btns g"><button class="btn nav" id="nvK" type="button">🚘 점소로 (카카오)</button><button class="btn nav" id="nvT" type="button">🚘 점소로 (T맵)</button></div>'+
    '<div class="btns g" style="margin-top:6px"><button class="btn nav" id="nvH" type="button">🏁 곤지암으로 (카카오)</button><button class="btn nav" id="nvHT" type="button">🏁 곤지암으로 (T맵)</button></div>'+
-   (cuP?'<p class="inote">경유 = 로이스 입고의 경유 주소예요. 서브 차가 이 고객사·집화점·대리점에 들러 짐을 싣고 곤지암에 와요. 지도에 보라 점선 = 서브 → 경유, 초록 점선 = 경유 → 곤지암. 이름은 고객사명·비고에서 따왔어요.</p>':'')+
+   (cuP?'<p class="inote">경유 = 로이스 입고의 경유 주소예요. 서브 차가 이 고객사·집화점·대리점에 들러 짐을 싣고 곤지암에 와요. 1차 「선」 = 서브 → 곤지암 직행(파랑), 2차 「선」 = 서브 → 경유(보라) → 곤지암(초록). 주소를 누르면 지도에 📍로 찍혀요. 이름은 고객사명·비고에서 따왔어요.</p>':'')+
    '<p class="inote">입고 = 이 점소에서 출발해 곤지암에 하차하러 오는 차예요. 「실시간」을 켜면 지금 교통으로 곤지암까지 시간과 도로 선이 나와요.</p>';
   $('nvK').addEventListener('click',()=>{use('nav',r[0]);openNav('kakaomap://route?ep='+r[6]+','+r[7]+'&by=CAR','https://map.kakao.com/link/to/'+encodeURIComponent(r[1])+','+r[6]+','+r[7],'카카오맵')});
   $('nvT').addEventListener('click',()=>{use('nav',r[0]);openNav('tmap://route?goalname='+encodeURIComponent(r[1])+'&goalx='+r[7]+'&goaly='+r[6],'','T맵')});
   $('nvH').addEventListener('click',()=>{use('nav','HUB');openNav('kakaomap://route?sp='+r[6]+','+r[7]+'&ep='+HUB.lat+','+HUB.lon+'&by=CAR','https://map.kakao.com/link/from/'+encodeURIComponent(r[1])+','+r[6]+','+r[7]+'/to/'+encodeURIComponent('곤지암Hub')+','+HUB.lat+','+HUB.lon,'카카오맵')});
   $('nvHT').addEventListener('click',()=>{use('nav','HUB');openNav('tmap://route?startname='+encodeURIComponent(r[1])+'&startx='+r[7]+'&starty='+r[6]+'&goalname='+encodeURIComponent('곤지암Hub')+'&goalx='+HUB.lon+'&goaly='+HUB.lat,'','T맵')});
   const ca=$('cpa');if(ca)ca.addEventListener('click',()=>copyTxt(r[5],ca));
-  $('sb').querySelectorAll('.fsb,.fcu').forEach(b=>b.addEventListener('click',()=>{const x=IB.find(y=>y[0]===b.dataset.c);if(x)pickIn(x)}));
+  const sb=$('sb');sb.querySelectorAll('.fsb,.fcu').forEach(b=>b.addEventListener('click',()=>{const x=iby(b.dataset.c);if(x)pickIn(x)}));
+  sb.querySelectorAll('.adp').forEach(b=>b.addEventListener('click',()=>{const x=iby(b.dataset.c);if(x)pinAt(x[6],x[7],x[1])}));
+  sb.querySelectorAll('.fl1,.fl2').forEach(b=>b.addEventListener('click',()=>{sb.querySelectorAll('.fl1,.fl2').forEach(y=>y.classList.remove('on'));b.classList.add('on');drawFlow(b.dataset.s,b.dataset.v,b.classList.contains('fl1')?1:2,true)}));
+  const ad=sb.querySelector('.addr span');if(ad){ad.classList.add('adl');ad.addEventListener('click',()=>pinAt(r[6],r[7],r[1]))}
 }
-function inFlow(r,fit){if(!isCu(r))return;const E=ixt(r),V=new kakao.maps.LatLng(r[6],r[7]),Hb=new kakao.maps.LatLng(HUB.lat,HUB.lon),b=new kakao.maps.LatLngBounds();b.extend(V);b.extend(Hb);
-  (E.sub||[]).forEach(s=>{const p=IB.find(x=>x[0]===s[0]);if(!p)return;const P=new kakao.maps.LatLng(p[6],p[7]);b.extend(P);
-    lines.hub.push(new kakao.maps.Polyline({map,path:[P,V],strokeWeight:4,strokeColor:'#7b4bd6',strokeOpacity:.9,strokeStyle:'shortdash',zIndex:6}))});
-  if(!(liveOn&&ICACHE[r[0]]&&ICACHE[r[0]].ready))lines.hub.push(new kakao.maps.Polyline({map,path:[V,Hb],strokeWeight:4,strokeColor:'#159a6a',strokeOpacity:.9,strokeStyle:'shortdash',zIndex:6}));
+let IPIN=null;
+function pinAt(lat,lon,nm){if(IPIN)IPIN.setMap(null);const el=document.createElement('div');el.className='ipin';el.innerHTML='<i>📍</i><b>'+esc(nm||'')+'</b>';
+  IPIN=new kakao.maps.CustomOverlay({map,position:new kakao.maps.LatLng(lat,lon),content:el,yAnchor:1,zIndex:30});const b=new kakao.maps.LatLngBounds();b.extend(new kakao.maps.LatLng(lat-.004,lon-.004));b.extend(new kakao.maps.LatLng(lat+.004,lon+.004));fitRoute(b);toast('📍 '+(nm||'주소')+' 위치',1200)}
+const iby=c=>IB.find(x=>x[0]===c);
+const LL=(x)=>new kakao.maps.LatLng(x[6],x[7]);
+// mode 1 = 1차 서브→곤지암 직행, 2 = 2차 서브→경유→곤지암
+function drawFlow(sc,vc,mode,fit){const S=iby(sc),V=vc?iby(vc):null;if(!S)return;clearLines('hub');const Hb=new kakao.maps.LatLng(HUB.lat,HUB.lon),b=new kakao.maps.LatLngBounds();b.extend(LL(S));b.extend(Hb);
+  const pl=(path,c)=>lines.hub.push(new kakao.maps.Polyline({map,path,strokeWeight:5,strokeColor:c,strokeOpacity:.92,strokeStyle:'shortdash',zIndex:6}));
+  if(mode===1||!V)pl([LL(S),Hb],'#1E8BF0');else{b.extend(LL(V));pl([LL(S),LL(V)],'#7b4bd6');pl([LL(V),Hb],'#159a6a')}
   if(fit)fitRoute(b)}
+function inFlow(r,fit){if(!isCu(r))return;const E=ixt(r),s=(E.sub||[])[0];if(s)drawFlow(s[0],r[0],2,fit)}
+const often=(n,d)=>d>=2&&n>=2||n>=4;
+function vRow(S,V,n,d,a){// S 서브행, V 경유행, n 대수, d 일수, a 서브→경유 km
+  const t2=a!=null?a+(+V[8]):null,m1=+S[9],m2=t2!=null?Math.round(t2+20):null,dm=m2!=null?m2-m1:null;
+  return '<div class="flw'+(often(n,d)?' oft':'')+'">'+
+   '<div class="fh"><button type="button" class="fcu" data-c="'+esc(V[0])+'">'+esc(V[1])+'</button>'+(often(n,d)?'<span class="ofb">★ 자주 경유</span>':'')+'<span class="fn">'+n+'대 · '+d+'일</span></div>'+
+   '<button type="button" class="adp" data-c="'+esc(V[0])+'">📍 '+esc(V[5])+'</button>'+
+   '<div class="ft"><div class="fr"><b class="l">1차</b><span class="rt1">'+esc(S[1])+' → 곤지암</span><span class="nm"><i>'+(+S[8]).toFixed(1)+'km</i><b>'+hm(m1)+'</b><button type="button" class="fl1" data-s="'+esc(S[0])+'" data-v="'+esc(V[0])+'">선</button></span></div>'+
+   '<div class="fr"><b class="l l2">2차</b><span class="rt1">'+esc(S[1])+' → '+esc(V[1])+' → 곤지암</span><span class="nm"><i>'+(t2!=null?t2.toFixed(1)+'km':'—')+'</i><b>'+(m2!=null?hm(m2):'—')+'</b>'+(dm>0?'<small>+'+dm+'분</small>':'')+'<button type="button" class="fl2" data-s="'+esc(S[0])+'" data-v="'+esc(V[0])+'">선</button></span></div></div></div>'}
 function inExt(r,E,cuP){let h='';const li=(a,b)=>'<li><span>'+esc(a)+'</span><b>'+esc(b)+'</b></li>';
   if(cuP){
-    if(E.sub&&E.sub.length)h+='<h3 class="h3i">흐름 <small>서브 → 경유 → 곤지암 · 도로 거리</small></h3>'+E.sub.map(s=>{const p=IB.find(x=>x[0]===s[0]),a=s[2],t=a!=null?a+(+r[8]):null;
-      return '<div class="flw"><button type="button" class="fsb" data-c="'+esc(s[0])+'">'+esc(p?p[1]:s[0])+'</button><i>'+(a!=null?a.toFixed(1)+'km':'')+' →</i><b>'+esc(r[1])+'</b><i>'+(+r[8]).toFixed(1)+'km →</i><b>곤지암</b>'+
-      '<div class="fsum">'+s[1]+'대 · 합계 '+(t!=null?t.toFixed(1)+'km · '+hm(Math.round(t+20)):'—')+' <small>(휴식 20분 포함)</small></div></div>'}).join('');
+    const fl=(E.sub||[]).map(s=>{const S=iby(s[0]);if(!S)return'';const vx=(ixt(S).vx||[]).find(v=>v[0]===r[0]);return vRow(S,r,s[1],vx?vx[2]:1,s[2])}).join('');
+    if(fl)h+='<h3 class="h3i">1차·2차 시간 <small>1차 = 서브 → 곤지암 직행 · 2차 = 서브 → 경유 → 곤지암 · 도로 km · 휴식 20분 포함 · 경유지 상차시간 제외</small></h3>'+fl;
     if(E.cu&&E.cu.length)h+='<h3 class="h3i">고객사</h3><ul class="cul">'+E.cu.map(c=>li(c[0],c[1]+'대')).join('')+'</ul>';
     if(E.memo&&E.memo.length)h+='<h3 class="h3i">비고 <small>(로이스)</small></h3><ul class="cul memo">'+E.memo.map(m=>'<li><span>'+esc(m)+'</span></li>').join('')+'</ul>';
   }else{
+    const vx=(E.vx||[]).filter(v=>iby(v[0]));
+    if(vx.length){const tot=vx.reduce((a,v)=>a+v[1],0),of=vx.filter(v=>often(v[1],v[2])).length;
+      h+='<h3 class="h3i">이 점소 차의 경유 '+vx.length+'곳 · '+tot+'대'+(of?' · ★자주 '+of+'곳':'')+' <small>('+esc(E.days||'')+' · 모든 차가 경유하는 건 아니에요)</small></h3>'+vx.map(v=>vRow(r,iby(v[0]),v[1],v[2],v[3])).join('')}
     if(E.cu&&E.cu.length){const n=E.cu.reduce((a,c)=>a+c[2],0);h+='<h3 class="h3i">이 점소로 잡힌 고객사 '+E.cu.length+'곳 · '+n+'대 <small>('+esc(E.days||'')+')</small></h3><ul class="cul">'+E.cu.map(c=>li(c[1],c[2]+'대')).join('')+'</ul>'}
-    const xs=IB.filter(x=>isCu(x)&&(ixt(x).sub||[]).some(s=>s[0]===r[0]));
-    if(xs.length)h+='<h3 class="h3i">이 점소 차가 들르는 경유지 '+xs.length+'곳 <small>(서브 → 경유 → 곤지암)</small></h3><div class="pk">'+xs.map(x=>{const s=ixt(x).sub.find(s=>s[0]===r[0]);return '<button type="button" class="fcu" data-c="'+esc(x[0])+'">'+esc(x[1])+'<span>'+esc((IKIND.find(k=>k[0]===x[2])||[,''])[1])+' · '+s[1]+'대'+(s[2]!=null?' · 서브에서 '+s[2].toFixed(1)+'km':'')+'</span></button>'}).join('')+'</div>';
     if(E.via&&E.via.length){h+='<h3 class="h3i">이 건물을 거쳐 온 다른 점소 차 <small>('+esc(E.days||'')+')</small></h3><ul class="cul">'+E.via.map(v=>li(v[1],v[0]+'대')).join('')+'</ul>'}
   }return h}
 function lgdHtml0(){return '<div class="lgd"><span>지도 경로 선 =</span><span><i style="background:'+TC[4]+'"></i>원활</span><span><i style="background:'+TC[3]+'"></i>서행</span><span><i style="background:'+TC[2]+'"></i>지체</span><span><i style="background:'+TC[1]+'"></i>정체</span><span><i style="background:'+TC[0]+'"></i>정보 없음</span></div>'}
