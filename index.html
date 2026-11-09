@@ -222,6 +222,21 @@ body.live .rt td{font-size:13.5px}body.live .rt td.lv{white-space:normal;width:a
 .hs td small{font-size:12px;color:var(--mute);font-weight:700}
 .same{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;margin:10px 0 0;min-height:42px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-size:14px;font-weight:800;padding:0 14px;cursor:pointer}
 .same span{font-size:12px;color:var(--mute);font-weight:700}
+.pho .phg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.pho .phi{margin:0;background:var(--bg);border:1px solid var(--line);border-radius:10px;overflow:hidden;min-width:0}
+.pho .phi.w{border-style:dashed;opacity:.92}
+.pho .pht{display:block;width:100%;padding:0;border:0;background:#000;cursor:zoom-in}
+.pho .pht img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover}
+.pho figcaption{padding:6px 8px;font-size:13px;font-weight:800;line-height:1.4;word-break:keep-all;overflow-wrap:anywhere}
+.pho figcaption small{display:block;font-size:11px;color:var(--mute);font-weight:700;margin-top:2px}
+.pho .pha{display:flex;gap:4px;padding:0 8px 8px}.pho .pha .pbtn{flex:1;height:32px;padding:0 4px;min-width:0}
+.pho .phf{display:flex;gap:6px;margin-top:8px}
+.pho .phf input{flex:1;min-width:0;height:42px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-size:14.5px;padding:0 10px}
+.pho .phb{height:42px;display:inline-flex;align-items:center;flex:none}.pho .phb.busy{opacity:.6;pointer-events:none}
+.phx{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.92);display:none;flex-direction:column;align-items:center;justify-content:center;padding:16px;gap:10px}
+.phx.open{display:flex}.phx img{max-width:100%;max-height:80vh;object-fit:contain;border-radius:6px}
+.phx p{color:#fff;font-weight:800;font-size:15px;text-align:center;margin:0;max-width:100%;overflow-wrap:anywhere}
+.phx .phc{position:absolute;top:12px;right:12px;width:44px;height:44px;border-radius:22px;border:0;background:rgba(255,255,255,.18);color:#fff;font-size:20px;cursor:pointer}
 .mm{margin:16px 0 0;padding:12px 0 0;border-top:2px solid var(--line)}
 .mm h3{font-size:14px;margin:0 0 8px;display:flex;align-items:center;gap:6px}
 .mm .mi{background:color-mix(in srgb,#f0a020 10%,var(--card));border-left:4px solid #f0a020;border-radius:8px;padding:8px 10px;margin:0 0 6px;font-size:14px;font-weight:700;line-height:1.5;word-break:keep-all;overflow-wrap:anywhere}
@@ -622,8 +637,8 @@ function render(p){
    '<tr><td class="l">다회전 왕복</td><td class="t"><span class="v">'+hm(p[17])+'</span></td><td class="k">'+(p[12]+p[13]).toFixed(1)+'km</td>'+c(lt)+'</tr>'+meRow(p)+'</table>'+
    etaHtml(p,live)+lgdHtml(p,live)+
    nearHtml(p)+
-   '<div class="btns g"><button class="btn nav" id="nvK" type="button">🚘 카카오내비</button><button class="btn nav" id="nvT" type="button">🚘 T맵</button></div>'+memoHtml(p[5]);
-  memoBind(p[5]);
+   '<div class="btns g"><button class="btn nav" id="nvK" type="button">🚘 카카오내비</button><button class="btn nav" id="nvT" type="button">🚘 T맵</button></div>'+memoHtml(p[5])+phHtml(p[5]);
+  memoBind(p[5]);phBind(p[5]);
   $('nvK').addEventListener('click',()=>openNav('kakaomap://route?ep='+p[10]+','+p[11]+'&by=CAR','https://map.kakao.com/link/to/'+encodeURIComponent(p[4])+','+p[10]+','+p[11],'카카오맵'));
   $('nvT').addEventListener('click',()=>openNav('tmap://route?goalname='+encodeURIComponent(p[4])+'&goalx='+p[11]+'&goaly='+p[10],'','T맵'));
   $('nvK').addEventListener('click',()=>use('nav',p[5]));$('nvT').addEventListener('click',()=>use('nav',p[5]));
@@ -836,8 +851,8 @@ function renderHub(){if(!HUBON)return;
    (same.length?same.map(p=>'<button type="button" class="same" data-c="'+esc(p[5])+'">🏢 같은 건물: '+esc(p[4])+'<span>'+esc(p[0])+' · '+esc(p[1]||'')+' ›</span></button>').join(''):'')+
    '<div class="nb"><h3>곤지암에서 가까운 점소</h3>'+near.map(p=>'<div class="r" data-c="'+esc(p[5])+'"><span class="m">'+esc(p[0])+'·'+esc(p[1]||'-')+'</span><span class="n">'+esc(fnm(p))+'</span><span class="m" style="margin-left:5px;color:var(--'+(p[6]?'ok':'no')+')">TR'+(p[6]?'가능':'불가')+'</span><span class="k">'+hm(p[14])+'<span style="display:inline-block;width:12px"></span>'+p[12].toFixed(1)+'km</span></div>').join('')+
    '<p class="note" style="margin-top:4px">가는길 = 기준 60km/h · 휴식 20분 포함</p></div>'+
-   '<div class="btns g"><button class="btn nav" id="nvK" type="button">🚘 카카오내비</button><button class="btn nav" id="nvT" type="button">🚘 T맵</button></div>'+memoHtml('HUB');
-  memoBind('HUB');
+   '<div class="btns g"><button class="btn nav" id="nvK" type="button">🚘 카카오내비</button><button class="btn nav" id="nvT" type="button">🚘 T맵</button></div>'+memoHtml('HUB')+phHtml('HUB');
+  memoBind('HUB');phBind('HUB');
   $('nvK').addEventListener('click',()=>{use('nav','HUB');openNav('kakaomap://route?ep='+HUB.lat+','+HUB.lon+'&by=CAR','https://map.kakao.com/link/to/'+encodeURIComponent('곤지암 Hub')+','+HUB.lat+','+HUB.lon,'카카오맵')});
   $('nvT').addEventListener('click',()=>{use('nav','HUB');openNav('tmap://route?goalname='+encodeURIComponent('곤지암 Hub')+'&goalx='+HUB.lon+'&goaly='+HUB.lat,'','T맵')});
   const ca=$('cpa');if(ca)ca.addEventListener('click',()=>copyTxt(HUB_ADDR,ca));
@@ -868,6 +883,37 @@ function memoBind(code){if(Date.now()-MEMO.t>300000)memoLoad();
     $('mmB').disabled=true;let j=null;try{j=await rpc('rv_memo_add',{p_token:TOK,p_code:code,p_body:v})}catch(x){}$('mmB').disabled=false;
     if(!j||!j.ok){toast('안 보냈어요 · '+(j&&MERR[j.err]||errMsg(j)),2600);return}
     $('mmI').value='';toast(j.status==='ok'?'메모를 올렸어요 · 모두에게 보여요':'보냈어요 · 마스터가 승인하면 모두에게 보여요',2600);await memoLoad();memoRefresh(code)})}
+
+// --- 특이사항 사진 ---
+const PHC={},PERR={long:'설명은 60자까지만 쓸 수 있어요',img:'사진 파일만 올릴 수 있어요',big:'사진이 너무 커요',code:'점소를 못 찾았어요',day:'사진은 하루 3장까지 올릴 수 있어요',full:'이 점소 사진이 12장 꽉 찼어요',admin:'관리자만 할 수 있어요',none:'사진을 못 찾았어요'};
+function phHtml(code){return '<div class="mm pho" id="pho" data-c="'+esc(code)+'"><h3>📷 특이사항 사진</h3><div class="phl" id="phL">'+phInner(code)+'</div>'+
+  '<form id="phF" class="phf"><input id="phN" maxlength="60" placeholder="설명 먼저 (예: 고가 밑으로 진입)" autocomplete="off"><label class="pbtn phb" id="phB">📷 사진 올리기<input type="file" id="phI" accept="image/*" hidden></label></form>'+
+  '<p class="note">진입로·고가 밑·좁은 골목처럼 처음 가면 헷갈리는 곳을 찍어 주세요. '+(ME&&ME.admin?'관리자 사진은 바로 모두에게 보여요.':'마스터가 승인하면 모두에게 보여요. 승인 전에는 나만 보여요.')+'</p></div>'}
+function phInner(code){const L=PHC[code];if(!L)return '<p class="note" style="margin:0">불러오는 중…</p>';
+  if(!L.length)return '<p class="note" style="margin:0 0 4px">아직 사진이 없어요.</p>';
+  return '<div class="phg">'+L.map(x=>'<figure class="phi'+(x.status==='wait'?' w':'')+'" data-id="'+x.id+'"><button type="button" class="pht" aria-label="사진 크게 보기"><img src="'+esc(x.thumb)+'" alt="" loading="lazy"></button>'+
+    '<figcaption>'+(x.status==='wait'?'<span class="mt w">승인 대기</span>':'')+esc(x.note||'')+'<small>'+dshort(x.at)+(x.name?' · '+esc(x.name):'')+'</small></figcaption>'+
+    ((ME&&ME.admin)||(x.mine&&x.status==='wait')?'<div class="pha">'+(ME&&ME.admin&&x.status==='wait'?'<button type="button" class="pbtn grn" data-a="ok">승인</button>':'')+'<button type="button" class="pbtn red" data-a="del" data-k="한 번 더 누르면 삭제">삭제</button></div>':'')+'</figure>').join('')+'</div>'}
+async function phLoad(code){let j=null;try{j=await rpc('rv_photo_get',{p_token:TOK,p_code:code})}catch(e){}
+  PHC[code]=j&&j.ok?j.list||[]:(PHC[code]||[]);const P=$('pho');if(P&&P.dataset.c===code)$('phL').innerHTML=phInner(code)}
+function phShrink(file,max,q){return new Promise((ok,no)=>{const u=URL.createObjectURL(file),im=new Image();im.onload=()=>{const k=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);
+  c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);ok(c.toDataURL('image/jpeg',q))};im.onerror=()=>{URL.revokeObjectURL(u);no()};im.src=u})}
+function phBox(src,cap){let b=$('phx');if(!b){b=document.createElement('div');b.id='phx';b.className='phx';b.addEventListener('click',()=>b.classList.remove('open'));document.body.appendChild(b)}
+  b.innerHTML='<img alt="" src="'+esc(src)+'"><p>'+esc(cap||'')+'</p><button type="button" class="phc" aria-label="닫기">✕</button>';b.classList.add('open')}
+function phBind(code){phLoad(code);const P=$('pho');if(!P)return;
+  P.addEventListener('click',async e=>{const t=e.target.closest('.pht');if(t){const f=t.closest('.phi'),id=+f.dataset.id,x=(PHC[code]||[]).find(y=>y.id===id);if(!x)return;
+      phBox(x.thumb,x.note);let j=null;try{j=await rpc('rv_photo_img',{p_token:TOK,p_id:id})}catch(_){}const b=$('phx');if(j&&j.ok&&b&&b.classList.contains('open')){const im=b.querySelector('img');if(im)im.src=j.img}return}
+    const a=e.target.closest('button[data-a]');if(!a)return;
+    if(a.dataset.k&&!a.classList.contains('arm')){a.dataset.t=a.textContent;a.textContent=a.dataset.k;a.classList.add('arm');setTimeout(()=>{if(a.isConnected){a.textContent=a.dataset.t;a.classList.remove('arm')}},4000);return}
+    a.disabled=true;let j=null;try{j=await rpc('rv_photo_act',{p_token:TOK,p_id:+a.closest('.phi').dataset.id,p_act:a.dataset.a})}catch(_){}
+    if(!j||!j.ok){a.disabled=false;toast('안 됐어요 · '+(j&&PERR[j.err]||errMsg(j)),2400);return}
+    toast(a.dataset.a==='ok'?'승인했어요 · 모두에게 보여요':'사진을 지웠어요',1800);phLoad(code)});
+  $('phF').addEventListener('submit',e=>e.preventDefault());
+  $('phI').addEventListener('change',async e=>{const f=e.target.files&&e.target.files[0];e.target.value='';if(!f)return;const B=$('phB');B.classList.add('busy');B.firstChild.textContent='올리는 중…';
+    let j=null;try{const img=await phShrink(f,1280,.75),th=await phShrink(f,360,.65);j=await rpc('rv_photo_add',{p_token:TOK,p_code:code,p_note:$('phN').value.trim(),p_thumb:th,p_img:img})}catch(_){}
+    if(B.isConnected){B.classList.remove('busy');B.firstChild.textContent='📷 사진 올리기'}
+    if(!j||!j.ok){toast('안 올렸어요 · '+(j&&PERR[j.err]||(j?errMsg(j):'사진을 못 읽었어요')),2600);return}
+    if($('phN'))$('phN').value='';toast(j.status==='ok'?'사진을 올렸어요 · 모두에게 보여요':'보냈어요 · 마스터가 승인하면 모두에게 보여요',2600);phLoad(code)})}
 // --- 관리: 탭 ---
 let ATAB='use',USED_D=7;
 function admTab(t){ATAB=t;[...$('atb').children].forEach(b=>b.classList.toggle('on',b.dataset.t===t));['use','memo','store','acc'].forEach(k=>$('a_'+k).hidden=k!==t);
@@ -1043,7 +1089,7 @@ function inRender(r){const self=r[8]===0,c=ICACHE[r[0]],L=liveOn&&c&&c.ready?c:n
    (cuP?'<h3 class="h3i">여기를 거쳐 곤지암에 온 차 <b>'+r[11]+'대</b> <small>('+esc(E.days||'')+')</small></h3>':
    '<h3 class="h3i">최근 5일 곤지암 입고 <b>'+r[11]+'대</b> <small>('+r[12]+'일 들어옴 · 10/30·11/2~11/5)</small></h3>')+
    '<div class="ivk">'+ivk(r[13]).map(([n,c])=>'<span>'+esc(n)+'<b>'+c+'</b></span>').join('')+'</div>'+
-   inExt(r,E,cuP)+
+   inExt(r,E,cuP)+phHtml(r[0])+
    (liveOn&&L&&L.roads.length?lgdHtml0():'')+
    '<div class="btns g"><button class="btn nav" id="nvK" type="button">🚘 점소로 (카카오)</button><button class="btn nav" id="nvT" type="button">🚘 점소로 (T맵)</button></div>'+
    '<div class="btns g" style="margin-top:6px"><button class="btn nav" id="nvH" type="button">🏁 곤지암으로 (카카오)</button><button class="btn nav" id="nvHT" type="button">🏁 곤지암으로 (T맵)</button></div>'+
@@ -1053,7 +1099,7 @@ function inRender(r){const self=r[8]===0,c=ICACHE[r[0]],L=liveOn&&c&&c.ready?c:n
   $('nvT').addEventListener('click',()=>{use('nav',r[0]);openNav('tmap://route?goalname='+encodeURIComponent(r[1])+'&goalx='+r[7]+'&goaly='+r[6],'','T맵')});
   $('nvH').addEventListener('click',()=>{use('nav','HUB');openNav('kakaomap://route?sp='+r[6]+','+r[7]+'&ep='+HUB.lat+','+HUB.lon+'&by=CAR','https://map.kakao.com/link/from/'+encodeURIComponent(r[1])+','+r[6]+','+r[7]+'/to/'+encodeURIComponent('곤지암Hub')+','+HUB.lat+','+HUB.lon,'카카오맵')});
   $('nvHT').addEventListener('click',()=>{use('nav','HUB');openNav('tmap://route?startname='+encodeURIComponent(r[1])+'&startx='+r[7]+'&starty='+r[6]+'&goalname='+encodeURIComponent('곤지암Hub')+'&goalx='+HUB.lon+'&goaly='+HUB.lat,'','T맵')});
-  const ca=$('cpa');if(ca)ca.addEventListener('click',()=>copyTxt(r[5],ca));
+  const ca=$('cpa');if(ca)ca.addEventListener('click',()=>copyTxt(r[5],ca));phBind(r[0]);
   const sb=$('sb');sb.querySelectorAll('.fsb,.fcu').forEach(b=>b.addEventListener('click',()=>{const x=iby(b.dataset.c);if(x)pickIn(x)}));
   sb.querySelectorAll('.adp').forEach(b=>b.addEventListener('click',()=>{const x=iby(b.dataset.c);if(x)pinAt(x[6],x[7],x[1])}));
   sb.querySelectorAll('.fl1,.fl2').forEach(b=>b.addEventListener('click',()=>{sb.querySelectorAll('.fl1,.fl2').forEach(y=>y.classList.remove('on'));b.classList.add('on');drawFlow(b.dataset.s,b.dataset.v,b.classList.contains('fl1')?1:2,true)}));
