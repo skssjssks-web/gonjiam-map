@@ -285,6 +285,10 @@ body.live .rt td{font-size:13.5px}body.live .rt td.lv{white-space:normal;width:a
 .dot.in.cu.sel{box-shadow:0 0 0 4px rgba(123,75,214,.45),0 1px 4px rgba(0,0,0,.5)}
 .dot.in.cu.grp::before{transform:none}
 .tag.cu{background:#7b4bd6;color:#fff;border-color:#7b4bd6}
+.flw{border:1px solid var(--line);border-radius:10px;padding:6px 8px;margin:5px 0;font-size:13px;display:flex;flex-wrap:wrap;align-items:center;gap:3px 5px;min-width:0}
+.flw b{font-weight:900;overflow-wrap:anywhere}.flw i{font-style:normal;font-size:12px;color:var(--ink2)}
+.flw .fsb{font:inherit;font-weight:900;color:#7b4bd6;background:none;border:1px solid #7b4bd6;border-radius:8px;padding:1px 6px;cursor:pointer}
+.fsum{flex-basis:100%;font-size:12px;font-weight:800;color:var(--ink)}.fsum small{color:var(--ink2);font-weight:700}
 .cul{margin:4px 0 2px;padding:0;list-style:none;font-size:13px}
 .cul li{display:flex;gap:6px;justify-content:space-between;border-bottom:1px dashed var(--line);padding:4px 0;min-width:0}
 .cul li span{min-width:0;overflow-wrap:anywhere}
@@ -940,7 +944,7 @@ if(innerWidth<380)$('q').placeholder='점소 검색';else if(innerWidth<400)$('q
 
 // ===== 2페이즈: 서브·집화·대리점 → 곤지암 입고 (2026-11-09) =====
 let PH='out',IB=[],IIT=null,ICUR=null,IF='전체',ICACHE={};
-const IKIND=[['Sub','Sub'],['Hub','Hub'],['MP','MP'],['LM','LM센터'],['집화','집화센터'],['경유','고객사·경유지']];
+const IKIND=[['Sub','Sub'],['Hub','Hub'],['MP','MP'],['LM','LM센터'],['집화','집화센터'],['경유C','고객사 경유'],['경유D','대리점·집화 경유'],['경유','경유지(이름 확인)']];
 const IRG={'수':'수도권','충':'충청권','경':'경상권','호':'호남권','강':'강원권','제':'제주권'};
 const IVK={'고직':'고정간선(직발송)','고':'고정간선','직':'직발송용차','터':'터미널용차','편':'고정편도(H→S)','집':'집배점차량','영':'직영간선'};
 const ivk=s=>String(s||'').split(' ').filter(Boolean).map(t=>{const m=t.match(/^(\D+)(\d+)$/);return m?[IVK[m[1]]||m[1],+m[2]]:[t,'']});
@@ -976,8 +980,9 @@ function inBuild(){if(IIT)return;IIT=[];const gm={};
     el.addEventListener('click',ev=>{ev.stopPropagation();g.vis.length>1?inGroup(g):pickIn(g.vis[0])});
     g.ov=new kakao.maps.CustomOverlay({position:new kakao.maps.LatLng(ps[0][6],ps[0][7]),content:el,yAnchor:.5,xAnchor:.5,zIndex:3});IIT.push(g)});
 }
-function inPaint(g){const v=g.vis,h=g.hit&&g.hit.length;g.el.className='dot in'+(v.every(r=>r[2]==='경유')?' cu':'')+(v.some(r=>r[10]!=='정확')?' ax':'')+(v.length>1?' grp':'')+(ICUR&&v.includes(ICUR)?' sel':'')+(h?' hit':'');g.el.dataset.n=v.length;g.el.innerHTML=(h?'<i class="fl"></i>':'')+'<b>'+esc(v.map(inm).join('·'))+'</b>';g.ov.setZIndex(h?20:(ICUR&&v.includes(ICUR)?10:3))}
+function inPaint(g){const v=g.vis,h=g.hit&&g.hit.length;g.el.className='dot in'+(v.every(isCu)?' cu':'')+(v.some(r=>r[10]!=='정확')?' ax':'')+(v.length>1?' grp':'')+(ICUR&&v.includes(ICUR)?' sel':'')+(h?' hit':'');g.el.dataset.n=v.length;g.el.innerHTML=(h?'<i class="fl"></i>':'')+'<b>'+esc(v.map(inm).join('·'))+'</b>';g.ov.setZIndex(h?20:(ICUR&&v.includes(ICUR)?10:3))}
 function inMatch(r){if(IF==='전체')return true;if(IF[0]==='r')return r[3]===IF.slice(1);return r[2]===IF}
+const isCu=r=>String(r[2]).startsWith('경유');
 const ixt=r=>(r[16]&&typeof r[16]==='object')?r[16]:{};
 const inHit=(r,q)=>{if(!q)return false;const e=ixt(r);return [r[0],r[1],r[4],r[5],r[15],r[13]].concat((e.cu||[]).map(c=>c[1]||c[0])).join(' ').toLowerCase().includes(q)};
 function applyIn(fit){inBuild();
@@ -990,12 +995,12 @@ function applyIn(fit){inBuild();
 }
 function inClose(){const o=ICUR;ICUR=null;if(o&&IIT)IIT.forEach(g=>{if(g.ps.includes(o))inPaint(g)})}
 function inGroup(g){$('hint').hidden=true;hubOff();
-  $('sb').innerHTML='<h2>같은 곳 '+g.vis.length+'곳</h2><p class="sub">'+esc(g.vis[0][5])+'</p><div class="pk">'+g.vis.map((r,i)=>'<button type="button" data-i="'+i+'">'+esc(r[1])+'<span>'+(r[2]==='경유'?'고객사·경유 '+r[11]+'대':esc(r[0])+' · 5일 입고 '+r[11]+'대')+'</span></button>').join('')+'</div>';
+  $('sb').innerHTML='<h2>같은 곳 '+g.vis.length+'곳</h2><p class="sub">'+esc(g.vis[0][5])+'</p><div class="pk">'+g.vis.map((r,i)=>'<button type="button" data-i="'+i+'">'+esc(r[1])+'<span>'+(isCu(r)?'경유 '+r[11]+'대':esc(r[0])+' · 5일 입고 '+r[11]+'대')+'</span></button>').join('')+'</div>';
   $('sb').querySelectorAll('.pk button').forEach(b=>b.addEventListener('click',()=>pickIn(g.vis[+b.dataset.i])));openSheet()}
 function pickIn(r){const o=ICUR;ICUR=r;IIT.forEach(g=>{if(g.ps.includes(r)||(o&&g.ps.includes(o)))inPaint(g)});
   $('hint').hidden=true;hubOff();if(o!==r){use('store',r[0]);clearLines('hub');clearLines('me');fitKey=''}
   inRender(r);openSheet();
-  if(liveOn&&r[8]>0)inLive(r);else{clearLines('hub');map.panTo(new kakao.maps.LatLng(r[6],r[7]))}
+  if(liveOn&&r[8]>0)inLive(r);else{clearLines('hub');if(isCu(r))inFlow(r,true);else map.panTo(new kakao.maps.LatLng(r[6],r[7]))}
 }
 async function inLive(r){const k=r[0],c=ICACHE[k];
   if(c&&(c.loading||(c.ready&&Date.now()-c.t<180000))){if(c.ready)inDraw(r);return}
@@ -1007,10 +1012,10 @@ async function inLive(r){const k=r[0],c=ICACHE[k];
   }catch(e){ICACHE[k]={err:'연결 실패 · 인터넷을 확인해 주세요'}}
   if(ICUR===r){inRender(r);inDraw(r)}
 }
-function inDraw(r){const c=ICACHE[r[0]];if(!c||!c.ready||ICUR!==r)return;drawLines('hub',c.roads,6,.9);
+function inDraw(r){const c=ICACHE[r[0]];if(!c||!c.ready||ICUR!==r)return;drawLines('hub',c.roads,6,.9);inFlow(r,false);
   const key='i'+r[0];if(fitKey!==key){fitKey=key;const b=new kakao.maps.LatLngBounds();c.roads.forEach(x=>{for(let i=0;i+1<x.v.length;i+=2)b.extend(new kakao.maps.LatLng(x.v[i+1],x.v[i]))});fitRoute(b)}}
 function inRender(r){const self=r[8]===0,c=ICACHE[r[0]],L=liveOn&&c&&c.ready?c:null;
-  const kind=(IKIND.find(k=>k[0]===r[2])||[,r[2]])[1],E=ixt(r),cuP=r[2]==='경유';
+  const kind=(IKIND.find(k=>k[0]===r[2])||[,r[2]])[1],E=ixt(r),cuP=isCu(r);
   let lv='';if(liveOn&&!self){lv=c&&c.loading?'<span class="mu">받는 중…</span>':c&&c.err?'<span class="mu">'+esc(c.err)+'</span>':L?'<span class="v">'+hm(L.min)+'</span>'+delta(L.min,r[9]):'<span class="mu">—</span>'}
   const now=Date.now(),eta=self?'':'<div class="eta"><div class="eh">지금 출발하면</div><div class="er"><span>🏁 '+esc(inm(r))+' → 곤지암</span><b>'+tm(now+(L?L.min:r[9])*60000)+'</b><i>'+(+(L?L.km:r[8])).toFixed(1)+'km</i></div><ul class="en"><li>휴식 20분 포함 · '+(L?'지금 교통 기준':'기준 60km/h')+'</li></ul></div>';
   $('sb').innerHTML=
@@ -1027,21 +1032,31 @@ function inRender(r){const self=r[8]===0,c=ICACHE[r[0]],L=liveOn&&c&&c.ready?c:n
    (liveOn&&L&&L.roads.length?lgdHtml0():'')+
    '<div class="btns g"><button class="btn nav" id="nvK" type="button">🚘 점소로 (카카오)</button><button class="btn nav" id="nvT" type="button">🚘 점소로 (T맵)</button></div>'+
    '<div class="btns g" style="margin-top:6px"><button class="btn nav" id="nvH" type="button">🏁 곤지암으로 (카카오)</button><button class="btn nav" id="nvHT" type="button">🏁 곤지암으로 (T맵)</button></div>'+
-   (cuP?'<p class="inote">고객사·경유지 = 로이스 입고의 경유 주소예요. 점소 차가 여기 들러 짐을 싣고 곤지암에 와요. 이름은 고객사명·비고에서 따왔어요.</p>':'')+
+   (cuP?'<p class="inote">경유 = 로이스 입고의 경유 주소예요. 서브 차가 이 고객사·집화점·대리점에 들러 짐을 싣고 곤지암에 와요. 지도에 보라 점선 = 서브 → 경유, 초록 점선 = 경유 → 곤지암. 이름은 고객사명·비고에서 따왔어요.</p>':'')+
    '<p class="inote">입고 = 이 점소에서 출발해 곤지암에 하차하러 오는 차예요. 「실시간」을 켜면 지금 교통으로 곤지암까지 시간과 도로 선이 나와요.</p>';
   $('nvK').addEventListener('click',()=>{use('nav',r[0]);openNav('kakaomap://route?ep='+r[6]+','+r[7]+'&by=CAR','https://map.kakao.com/link/to/'+encodeURIComponent(r[1])+','+r[6]+','+r[7],'카카오맵')});
   $('nvT').addEventListener('click',()=>{use('nav',r[0]);openNav('tmap://route?goalname='+encodeURIComponent(r[1])+'&goalx='+r[7]+'&goaly='+r[6],'','T맵')});
   $('nvH').addEventListener('click',()=>{use('nav','HUB');openNav('kakaomap://route?sp='+r[6]+','+r[7]+'&ep='+HUB.lat+','+HUB.lon+'&by=CAR','https://map.kakao.com/link/from/'+encodeURIComponent(r[1])+','+r[6]+','+r[7]+'/to/'+encodeURIComponent('곤지암Hub')+','+HUB.lat+','+HUB.lon,'카카오맵')});
   $('nvHT').addEventListener('click',()=>{use('nav','HUB');openNav('tmap://route?startname='+encodeURIComponent(r[1])+'&startx='+r[7]+'&starty='+r[6]+'&goalname='+encodeURIComponent('곤지암Hub')+'&goalx='+HUB.lon+'&goaly='+HUB.lat,'','T맵')});
   const ca=$('cpa');if(ca)ca.addEventListener('click',()=>copyTxt(r[5],ca));
+  $('sb').querySelectorAll('.fsb,.fcu').forEach(b=>b.addEventListener('click',()=>{const x=IB.find(y=>y[0]===b.dataset.c);if(x)pickIn(x)}));
 }
+function inFlow(r,fit){if(!isCu(r))return;const E=ixt(r),V=new kakao.maps.LatLng(r[6],r[7]),Hb=new kakao.maps.LatLng(HUB.lat,HUB.lon),b=new kakao.maps.LatLngBounds();b.extend(V);b.extend(Hb);
+  (E.sub||[]).forEach(s=>{const p=IB.find(x=>x[0]===s[0]);if(!p)return;const P=new kakao.maps.LatLng(p[6],p[7]);b.extend(P);
+    lines.hub.push(new kakao.maps.Polyline({map,path:[P,V],strokeWeight:4,strokeColor:'#7b4bd6',strokeOpacity:.9,strokeStyle:'shortdash',zIndex:6}))});
+  if(!(liveOn&&ICACHE[r[0]]&&ICACHE[r[0]].ready))lines.hub.push(new kakao.maps.Polyline({map,path:[V,Hb],strokeWeight:4,strokeColor:'#159a6a',strokeOpacity:.9,strokeStyle:'shortdash',zIndex:6}));
+  if(fit)fitRoute(b)}
 function inExt(r,E,cuP){let h='';const li=(a,b)=>'<li><span>'+esc(a)+'</span><b>'+esc(b)+'</b></li>';
   if(cuP){
-    if(E.sub&&E.sub.length)h+='<h3 class="h3i">출발 점소</h3><ul class="cul">'+E.sub.map(s=>{const p=IB.find(x=>x[0]===s[0]);return li((p?p[1]:s[0])+' · '+s[0],s[1]+'대')}).join('')+'</ul>';
+    if(E.sub&&E.sub.length)h+='<h3 class="h3i">흐름 <small>서브 → 경유 → 곤지암 · 도로 거리</small></h3>'+E.sub.map(s=>{const p=IB.find(x=>x[0]===s[0]),a=s[2],t=a!=null?a+(+r[8]):null;
+      return '<div class="flw"><button type="button" class="fsb" data-c="'+esc(s[0])+'">'+esc(p?p[1]:s[0])+'</button><i>'+(a!=null?a.toFixed(1)+'km':'')+' →</i><b>'+esc(r[1])+'</b><i>'+(+r[8]).toFixed(1)+'km →</i><b>곤지암</b>'+
+      '<div class="fsum">'+s[1]+'대 · 합계 '+(t!=null?t.toFixed(1)+'km · '+hm(Math.round(t+20)):'—')+' <small>(휴식 20분 포함)</small></div></div>'}).join('');
     if(E.cu&&E.cu.length)h+='<h3 class="h3i">고객사</h3><ul class="cul">'+E.cu.map(c=>li(c[0],c[1]+'대')).join('')+'</ul>';
     if(E.memo&&E.memo.length)h+='<h3 class="h3i">비고 <small>(로이스)</small></h3><ul class="cul memo">'+E.memo.map(m=>'<li><span>'+esc(m)+'</span></li>').join('')+'</ul>';
   }else{
     if(E.cu&&E.cu.length){const n=E.cu.reduce((a,c)=>a+c[2],0);h+='<h3 class="h3i">이 점소로 잡힌 고객사 '+E.cu.length+'곳 · '+n+'대 <small>('+esc(E.days||'')+')</small></h3><ul class="cul">'+E.cu.map(c=>li(c[1],c[2]+'대')).join('')+'</ul>'}
+    const xs=IB.filter(x=>isCu(x)&&(ixt(x).sub||[]).some(s=>s[0]===r[0]));
+    if(xs.length)h+='<h3 class="h3i">이 점소 차가 들르는 경유지 '+xs.length+'곳 <small>(서브 → 경유 → 곤지암)</small></h3><div class="pk">'+xs.map(x=>{const s=ixt(x).sub.find(s=>s[0]===r[0]);return '<button type="button" class="fcu" data-c="'+esc(x[0])+'">'+esc(x[1])+'<span>'+esc((IKIND.find(k=>k[0]===x[2])||[,''])[1])+' · '+s[1]+'대'+(s[2]!=null?' · 서브에서 '+s[2].toFixed(1)+'km':'')+'</span></button>'}).join('')+'</div>';
     if(E.via&&E.via.length){h+='<h3 class="h3i">이 건물을 거쳐 온 다른 점소 차 <small>('+esc(E.days||'')+')</small></h3><ul class="cul">'+E.via.map(v=>li(v[1],v[0]+'대')).join('')+'</ul>'}
   }return h}
 function lgdHtml0(){return '<div class="lgd"><span>지도 경로 선 =</span><span><i style="background:'+TC[4]+'"></i>원활</span><span><i style="background:'+TC[3]+'"></i>서행</span><span><i style="background:'+TC[2]+'"></i>지체</span><span><i style="background:'+TC[1]+'"></i>정체</span><span><i style="background:'+TC[0]+'"></i>정보 없음</span></div>'}
