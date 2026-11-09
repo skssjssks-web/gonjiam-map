@@ -222,6 +222,14 @@ body.live .rt td{font-size:13.5px}body.live .rt td.lv{white-space:normal;width:a
 .hs td small{font-size:12px;color:var(--mute);font-weight:700}
 .same{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;margin:10px 0 0;min-height:42px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;font-size:14px;font-weight:800;padding:0 14px;cursor:pointer}
 .same span{font-size:12px;color:var(--mute);font-weight:700}
+.rvx{position:fixed;inset:0;z-index:9998;background:var(--card);display:none;flex-direction:column}
+.rvx.open{display:flex}
+.rvh{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--line);min-width:0}
+.rvh b{flex:1;min-width:0;font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rvk{flex:none;font-size:13px;font-weight:800;color:var(--rvb);text-decoration:none;border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.rvc{flex:none;width:40px;height:40px;border-radius:20px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-size:18px;cursor:pointer}
+.rvv{flex:1;min-height:0;background:#111}
+.rvn{margin:0;padding:8px 12px calc(8px + env(safe-area-inset-bottom));font-size:13px;font-weight:700;color:var(--mute);word-break:keep-all}
 .pho .phg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .pho .phi{margin:0;background:var(--bg);border:1px solid var(--line);border-radius:10px;overflow:hidden;min-width:0}
 .pho .phi.w{border-style:dashed;opacity:.92}
@@ -637,8 +645,8 @@ function render(p){
    '<tr><td class="l">다회전 왕복</td><td class="t"><span class="v">'+hm(p[17])+'</span></td><td class="k">'+(p[12]+p[13]).toFixed(1)+'km</td>'+c(lt)+'</tr>'+meRow(p)+'</table>'+
    etaHtml(p,live)+lgdHtml(p,live)+
    nearHtml(p)+
-   '<div class="btns g"><button class="btn nav" id="nvK" type="button">🚘 카카오내비</button><button class="btn nav" id="nvT" type="button">🚘 T맵</button></div>'+memoHtml(p[5])+phHtml(p[5]);
-  memoBind(p[5]);phBind(p[5]);
+   '<div class="btns g"><button class="btn nav" id="nvK" type="button">🚘 카카오내비</button><button class="btn nav" id="nvT" type="button">🚘 T맵</button></div>'+rvHtml()+memoHtml(p[5])+phHtml(p[5]);
+  memoBind(p[5]);phBind(p[5]);rvBind(p[10],p[11],fnm(p));
   $('nvK').addEventListener('click',()=>openNav('kakaomap://route?ep='+p[10]+','+p[11]+'&by=CAR','https://map.kakao.com/link/to/'+encodeURIComponent(p[4])+','+p[10]+','+p[11],'카카오맵'));
   $('nvT').addEventListener('click',()=>openNav('tmap://route?goalname='+encodeURIComponent(p[4])+'&goalx='+p[11]+'&goaly='+p[10],'','T맵'));
   $('nvK').addEventListener('click',()=>use('nav',p[5]));$('nvT').addEventListener('click',()=>use('nav',p[5]));
@@ -851,8 +859,8 @@ function renderHub(){if(!HUBON)return;
    (same.length?same.map(p=>'<button type="button" class="same" data-c="'+esc(p[5])+'">🏢 같은 건물: '+esc(p[4])+'<span>'+esc(p[0])+' · '+esc(p[1]||'')+' ›</span></button>').join(''):'')+
    '<div class="nb"><h3>곤지암에서 가까운 점소</h3>'+near.map(p=>'<div class="r" data-c="'+esc(p[5])+'"><span class="m">'+esc(p[0])+'·'+esc(p[1]||'-')+'</span><span class="n">'+esc(fnm(p))+'</span><span class="m" style="margin-left:5px;color:var(--'+(p[6]?'ok':'no')+')">TR'+(p[6]?'가능':'불가')+'</span><span class="k">'+hm(p[14])+'<span style="display:inline-block;width:12px"></span>'+p[12].toFixed(1)+'km</span></div>').join('')+
    '<p class="note" style="margin-top:4px">가는길 = 기준 60km/h · 휴식 20분 포함</p></div>'+
-   '<div class="btns g"><button class="btn nav" id="nvK" type="button">🚘 카카오내비</button><button class="btn nav" id="nvT" type="button">🚘 T맵</button></div>'+memoHtml('HUB')+phHtml('HUB');
-  memoBind('HUB');phBind('HUB');
+   '<div class="btns g"><button class="btn nav" id="nvK" type="button">🚘 카카오내비</button><button class="btn nav" id="nvT" type="button">🚘 T맵</button></div>'+rvHtml()+memoHtml('HUB')+phHtml('HUB');
+  memoBind('HUB');phBind('HUB');rvBind(HUB.lat,HUB.lon,'곤지암 Hub');
   $('nvK').addEventListener('click',()=>{use('nav','HUB');openNav('kakaomap://route?ep='+HUB.lat+','+HUB.lon+'&by=CAR','https://map.kakao.com/link/to/'+encodeURIComponent('곤지암 Hub')+','+HUB.lat+','+HUB.lon,'카카오맵')});
   $('nvT').addEventListener('click',()=>{use('nav','HUB');openNav('tmap://route?goalname='+encodeURIComponent('곤지암 Hub')+'&goalx='+HUB.lon+'&goaly='+HUB.lat,'','T맵')});
   const ca=$('cpa');if(ca)ca.addEventListener('click',()=>copyTxt(HUB_ADDR,ca));
@@ -884,6 +892,22 @@ function memoBind(code){if(Date.now()-MEMO.t>300000)memoLoad();
     if(!j||!j.ok){toast('안 보냈어요 · '+(j&&MERR[j.err]||errMsg(j)),2600);return}
     $('mmI').value='';toast(j.status==='ok'?'메모를 올렸어요 · 모두에게 보여요':'보냈어요 · 마스터가 승인하면 모두에게 보여요',2600);await memoLoad();memoRefresh(code)})}
 
+
+// --- 카카오 로드뷰 ---
+const rvHtml=()=>'<div class="btns" style="margin-top:6px"><button class="btn nav rvb" id="nvR" type="button">👀 로드뷰 보기</button></div>';
+function rvBind(lat,lon,nm){const b=$('nvR');if(b)b.addEventListener('click',()=>rvOpen(+lat,+lon,nm))}
+function rvOpen(lat,lon,nm){let x=$('rvx');if(!x){x=document.createElement('div');x.id='rvx';x.className='rvx';document.body.appendChild(x)}
+  x.innerHTML='<div class="rvh"><b>👀 '+esc(nm||'')+'</b><a class="rvk" target="_blank" rel="noopener" href="https://map.kakao.com/link/roadview/'+lat+','+lon+'">카카오맵</a><button type="button" class="rvc" aria-label="닫기">✕</button></div><div class="rvv" id="rvv"></div><p class="rvn" id="rvn">로드뷰 찾는 중…</p>';
+  x.classList.add('open');x.querySelector('.rvc').addEventListener('click',()=>{x.classList.remove('open');x.innerHTML=''});
+  const pos=new kakao.maps.LatLng(lat,lon),cl=new kakao.maps.RoadviewClient(),R=[50,150,300];
+  const tryR=i=>cl.getNearestPanoId(pos,R[i],id=>{if(!$('rvv'))return;
+    if(id===null){if(i<R.length-1)return tryR(i+1);$('rvn').textContent='이 근처(300m)엔 로드뷰 사진이 없어요.';return}
+    const rv=new kakao.maps.Roadview($('rvv'));rv.setPanoId(id,pos);
+    kakao.maps.event.addListener(rv,'init',()=>{const p=rv.getPosition(),dy=lat-p.getLat(),dx=(lon-p.getLng())*Math.cos(lat*Math.PI/180);
+      const pan=(Math.atan2(dx,dy)*180/Math.PI+360)%360;rv.setViewpoint({pan,tilt:0,zoom:0});
+      new kakao.maps.Marker({position:pos,map:rv});
+      const m=Math.round(Math.hypot(dx,dy)*111320);$('rvn').textContent=(m>15?'핀에서 약 '+m+'m 떨어진 곳 사진이에요. ':'')+'손가락으로 돌려 보세요. 길 위 화살표를 누르면 앞으로 가요.'})});
+  tryR(0)}
 // --- 특이사항 사진 ---
 const PHC={},PERR={long:'설명은 60자까지만 쓸 수 있어요',img:'사진 파일만 올릴 수 있어요',big:'사진이 너무 커요',code:'점소를 못 찾았어요',day:'사진은 하루 3장까지 올릴 수 있어요',full:'이 점소 사진이 12장 꽉 찼어요',admin:'관리자만 할 수 있어요',none:'사진을 못 찾았어요'};
 function phHtml(code){return '<div class="mm pho" id="pho" data-c="'+esc(code)+'"><h3>📷 특이사항 사진</h3><div class="phl" id="phL">'+phInner(code)+'</div>'+
@@ -1092,14 +1116,14 @@ function inRender(r){const self=r[8]===0,c=ICACHE[r[0]],L=liveOn&&c&&c.ready?c:n
    inExt(r,E,cuP)+phHtml(r[0])+
    (liveOn&&L&&L.roads.length?lgdHtml0():'')+
    '<div class="btns g"><button class="btn nav" id="nvK" type="button">🚘 점소로 (카카오)</button><button class="btn nav" id="nvT" type="button">🚘 점소로 (T맵)</button></div>'+
-   '<div class="btns g" style="margin-top:6px"><button class="btn nav" id="nvH" type="button">🏁 곤지암으로 (카카오)</button><button class="btn nav" id="nvHT" type="button">🏁 곤지암으로 (T맵)</button></div>'+
+   '<div class="btns g" style="margin-top:6px"><button class="btn nav" id="nvH" type="button">🏁 곤지암으로 (카카오)</button><button class="btn nav" id="nvHT" type="button">🏁 곤지암으로 (T맵)</button></div>'+rvHtml()+
    (cuP?'<p class="inote">경유 = 로이스 입고의 경유 주소예요. 서브 차가 이 고객사·집화점·대리점에 들러 짐을 싣고 곤지암에 와요. 1차 「선」 = 서브 → 곤지암 직행(파랑), 2차 「선」 = 서브 → 경유(보라) → 곤지암(초록). 주소를 누르면 지도에 📍로 찍혀요. 이름은 고객사명·비고에서 따왔어요.</p>':'')+
    '<p class="inote">입고 = 이 점소에서 출발해 곤지암에 하차하러 오는 차예요. 「실시간」을 켜면 지금 교통으로 곤지암까지 시간과 도로 선이 나와요.</p>';
   $('nvK').addEventListener('click',()=>{use('nav',r[0]);openNav('kakaomap://route?ep='+r[6]+','+r[7]+'&by=CAR','https://map.kakao.com/link/to/'+encodeURIComponent(r[1])+','+r[6]+','+r[7],'카카오맵')});
   $('nvT').addEventListener('click',()=>{use('nav',r[0]);openNav('tmap://route?goalname='+encodeURIComponent(r[1])+'&goalx='+r[7]+'&goaly='+r[6],'','T맵')});
   $('nvH').addEventListener('click',()=>{use('nav','HUB');openNav('kakaomap://route?sp='+r[6]+','+r[7]+'&ep='+HUB.lat+','+HUB.lon+'&by=CAR','https://map.kakao.com/link/from/'+encodeURIComponent(r[1])+','+r[6]+','+r[7]+'/to/'+encodeURIComponent('곤지암Hub')+','+HUB.lat+','+HUB.lon,'카카오맵')});
   $('nvHT').addEventListener('click',()=>{use('nav','HUB');openNav('tmap://route?startname='+encodeURIComponent(r[1])+'&startx='+r[7]+'&starty='+r[6]+'&goalname='+encodeURIComponent('곤지암Hub')+'&goalx='+HUB.lon+'&goaly='+HUB.lat,'','T맵')});
-  const ca=$('cpa');if(ca)ca.addEventListener('click',()=>copyTxt(r[5],ca));phBind(r[0]);
+  const ca=$('cpa');if(ca)ca.addEventListener('click',()=>copyTxt(r[5],ca));phBind(r[0]);rvBind(r[6],r[7],r[1]);
   const sb=$('sb');sb.querySelectorAll('.fsb,.fcu').forEach(b=>b.addEventListener('click',()=>{const x=iby(b.dataset.c);if(x)pickIn(x)}));
   sb.querySelectorAll('.adp').forEach(b=>b.addEventListener('click',()=>{const x=iby(b.dataset.c);if(x)pinAt(x[6],x[7],x[1])}));
   sb.querySelectorAll('.fl1,.fl2').forEach(b=>b.addEventListener('click',()=>{sb.querySelectorAll('.fl1,.fl2').forEach(y=>y.classList.remove('on'));b.classList.add('on');drawFlow(b.dataset.s,b.dataset.v,b.classList.contains('fl1')?1:2,true)}));
