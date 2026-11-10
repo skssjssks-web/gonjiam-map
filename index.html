@@ -295,14 +295,14 @@ body.live .rt td{font-size:13.5px}body.live .rt td.lv{white-space:normal;width:a
 .phs{flex:0 0 auto;margin-top:2px;display:flex;height:30px;border-radius:99px;border:1px solid var(--ink);background:var(--card);box-shadow:0 2px 8px rgba(10,20,30,.12);overflow:hidden}
 .phs button{border:0;background:transparent;color:var(--ink2);font:inherit;font-size:12.5px;font-weight:900;padding:0 12px;cursor:pointer}
 .phs button.on{background:var(--ink);color:var(--card)}
-.phs button[data-ph=in].on{background:#159a6a;color:#fff}
-.dot.in{background:#159a6a;border-radius:4px;transform:rotate(45deg)}
+.phs button[data-ph=in].on{background:#ff6a00;color:#fff}
+.dot.in{background:#ff6a00;border-radius:4px;transform:rotate(45deg)}
 .dot.in b{transform:translateY(-50%) rotate(-45deg);transform-origin:left center;left:13px}
-.dot.in.ax{background:#e08a00}
-.dot.in.sel{box-shadow:0 0 0 4px rgba(21,154,106,.45),0 1px 4px rgba(0,0,0,.5)}
+.dot.in.ax{background:#8a96a3}
+.dot.in.sel{box-shadow:0 0 0 4px rgba(255,106,0,.45),0 1px 4px rgba(0,0,0,.5)}
 .dot.in.grp::before{transform:rotate(-45deg)}
 .dot.in.hit b{left:18px}
-.tag.in{background:#159a6a;color:#fff;border-color:#159a6a}
+.tag.in{background:#ff6a00;color:#fff;border-color:#ff6a00}
 .dot.in.cu{background:#7b4bd6;border-radius:50%;transform:none;width:12px;height:12px}
 .dot.in.cu b{transform:translateY(-50%);left:15px}
 .dot.in.cu.sel{box-shadow:0 0 0 4px rgba(123,75,214,.45),0 1px 4px rgba(0,0,0,.5)}
@@ -323,7 +323,7 @@ body.live .rt td{font-size:13.5px}body.live .rt td.lv{white-space:normal;width:a
 .fr .nm i{font-style:normal;color:var(--ink2);font-weight:700}.fr .nm b{font-weight:900}.fr .nm small{color:#d9534f;font-weight:800}
 .ft button{font:inherit;font-size:11px;font-weight:900;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:6px;padding:2px 5px;cursor:pointer}.ft button.on{background:#1E8BF0;color:#fff;border-color:#1E8BF0}
 .ipin{position:relative;display:flex;flex-direction:column;align-items:center;pointer-events:none}.ipin i{font-style:normal;font-size:26px;line-height:1}.ipin b{font-size:12px;font-weight:900;background:#fff;color:#111;border-radius:6px;padding:1px 5px;box-shadow:0 1px 3px rgba(0,0,0,.4);white-space:nowrap}
-.dot.in.cu.dl{background:#e08a00;border-radius:3px}.tag.cu.dl{background:#e08a00;border-color:#e08a00}
+.dot.in.cu.dl{background:#b5651d;border-radius:3px}.tag.cu.dl{background:#e08a00;border-color:#e08a00}
 .flw b{font-weight:900;overflow-wrap:anywhere}.flw i{font-style:normal;font-size:12px;color:var(--ink2)}
 .flw .fsb{font:inherit;font-weight:900;color:#7b4bd6;background:none;border:1px solid #7b4bd6;border-radius:8px;padding:1px 6px;cursor:pointer}
 .fsum{flex-basis:100%;font-size:12px;font-weight:800;color:var(--ink)}.fsum small{color:var(--ink2);font-weight:700}
@@ -1137,7 +1137,7 @@ const LL=(x)=>new kakao.maps.LatLng(x[6],x[7]);
 // mode 1 = 1차 서브→곤지암 직행, 2 = 2차 서브→경유→곤지암
 function drawFlow(sc,vc,mode,fit){const S=iby(sc),V=vc?iby(vc):null;if(!S)return;clearLines('hub');const Hb=new kakao.maps.LatLng(HUB.lat,HUB.lon),b=new kakao.maps.LatLngBounds();b.extend(LL(S));b.extend(Hb);
   const pl=(path,c)=>lines.hub.push(new kakao.maps.Polyline({map,path,strokeWeight:5,strokeColor:c,strokeOpacity:.92,strokeStyle:'shortdash',zIndex:6}));
-  if(mode===1||!V)pl([LL(S),Hb],'#1E8BF0');else{b.extend(LL(V));pl([LL(S),LL(V)],'#7b4bd6');pl([LL(V),Hb],'#159a6a')}
+  if(mode===1||!V)pl([LL(S),Hb],'#1E8BF0');else{b.extend(LL(V));pl([LL(S),LL(V)],'#7b4bd6');pl([LL(V),Hb],'#ff6a00')}
   if(fit)fitRoute(b)}
 function inFlow(r,fit){if(!isCu(r))return;const E=ixt(r),s=(E.sub||[])[0];if(s)drawFlow(s[0],r[0],2,fit)}
 const often=(n,d)=>d>=2&&n>=2||n>=4;
