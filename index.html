@@ -299,6 +299,14 @@ body.live .rt td{font-size:13.5px}body.live .rt td.lv{white-space:normal;width:a
 .dot.in{background:#ff6a00;border-radius:4px;transform:rotate(45deg)}
 .dot.in b{transform:translateY(-50%) rotate(-45deg);transform-origin:left center;left:13px}
 .dot.in.ax{background:#8a96a3}
+.phs button[data-ph=etc].on{background:#0e8a7e;color:#fff}
+.dot.in.et{background:#0e8a7e;border-radius:50%;transform:none;width:11px;height:11px}
+.dot.in.et b{transform:translateY(-50%);left:14px}
+.dot.in.et.ax{background:#8a96a3}
+.dot.in.et.sel{box-shadow:0 0 0 4px rgba(14,138,126,.45),0 1px 4px rgba(0,0,0,.5)}
+.dot.in.et.grp::before{transform:none}
+.tag.et{background:#0e8a7e;color:#fff;border-color:#0e8a7e}
+.hbn.et{background:#0e8a7e;color:#fff}
 .dot.in.sel{box-shadow:0 0 0 4px rgba(255,106,0,.45),0 1px 4px rgba(0,0,0,.5)}
 .dot.in.grp::before{transform:rotate(-45deg)}
 .dot.in.hit b{left:18px}
@@ -452,7 +460,7 @@ function showGate(msg,mode){$('gate').style.display='flex';$('top').hidden=true;
   $('gf').hidden=mode==='setup';$('sf').hidden=mode!=='setup';setTimeout(()=>{(mode==='setup'?$('sck'):($('gid').value?$('gpw'):$('gid'))).focus()},50)}
 let started=false;
 async function start(j){
-  ST=j.stores||[];IB=j.inbound||[];ME={name:j.name,login:j.login,admin:!!j.admin};
+  ST=j.stores||[];IB=j.inbound||[];INB=IB;ET=j.etc||[];ME={name:j.name,login:j.login,admin:!!j.admin};
   $('acct').textContent=ME.name||'계정';$('meN').textContent=ME.name||'';$('meL').textContent='아이디 '+(ME.login||'');$('meAdm').hidden=!ME.admin;
   $('gate').style.display='none';$('gpw').value='';$('sp1').value='';$('sp2').value='';$('sck').value='';
   memoLoad();use('open','');
@@ -552,7 +560,7 @@ function init(){
   setInterval(tick,30000);
   const fs=['셔틀','직출고','TR불가'];
   $('chips').innerHTML='<button class="chip mn" type="button" id="mnB">☰ 메뉴</button>'+fs.map(f=>'<button class="chip" type="button" data-f="'+f+'">'+(/^\d/.test(f)?f+'반':f)+'</button>').join('');
-  $('chips').addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c||PH==='in')return;if(c.id==='mnB'){openMenu();return}
+  $('chips').addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c||PH!=='out')return;if(c.id==='mnB'){openMenu();return}
     if(filt===c.dataset.f&&!mf){filt='전체'}else{filt=c.dataset.f}mf=null;chipSync();apply(true)});
   menuInit();chipSync();if(ME&&ME.admin){sxInit();seInit()}
   $('q').addEventListener('input',()=>apply(false));
@@ -573,7 +581,7 @@ function match(p,q){
 }
 const hitQ=(p,q)=>!!q&&[p[2],p[4],p[5],p[7],p[8],p[9],p[1]].join(' ').toLowerCase().includes(q);
 function apply(fit){
-  if(PH==='in'){applyIn(fit);return}
+  if(PH!=='out'){applyIn(fit);return}
   const q=$('q').value.trim().toLowerCase();const vis=[];
   const hits=[];
   items.forEach(g=>{g.vis=g.ps.filter(p=>match(p,q));g.hit=g.vis.filter(p=>hitQ(p,q));const ok=g.vis.length>0;if(ok!==g.on){g.ov.setMap(ok?map:null);g.on=ok}if(ok){paint(g);vis.push(...g.vis);hits.push(...g.hit)}});
@@ -1028,35 +1036,36 @@ async function seSave(){if(!SE)return;const r=SE.row;
 if(innerWidth<380)$('q').placeholder='점소 검색';else if(innerWidth<400)$('q').placeholder='점소·노선 검색';store.del('gj_map_pw');{const t=store.get('gj_rv_tok');if(t){$('ge').textContent='확인 중…';$('gf').hidden=true;openWith(t).then(ok=>{if(!ok)$('gf').hidden=false})}else showGate('')}
 
 // ===== 2페이즈: 서브·집화·대리점 → 곤지암 입고 (2026-11-09) =====
-let PH='out',IB=[],IIT=null,ICUR=null,IF='전체',ICACHE={};
-const IKIND=[['Sub','Sub'],['Hub','Hub'],['MP','MP'],['LM','LM센터'],['집화','집화센터'],['경유C','고객사 경유'],['경유D','집화점·대리점'],['경유','경유지(이름 확인)']];
+let PH='out',IB=[],IIT=null,ICUR=null,IF='전체',ICACHE={},INB=[],ET=[];const PST={in:{iit:null,f:'전체'},etc:{iit:null,f:'전체'}};const isEt=()=>PH==='etc';
+const IKIND=[['Sub','Sub'],['Hub','Hub'],['MP','MP'],['LM','LM센터'],['집화','집화센터'],['경유C','고객사 경유'],['경유D','집화점·대리점'],['경유','경유지(이름 확인)'],['센터','센터·화주'],['TP','TP']];
 const IRG={'수':'수도권','충':'충청권','경':'경상권','호':'호남권','강':'강원권','제':'제주권'};
 const IVK={'고직':'고정간선(직발송)','고':'고정간선','직':'직발송용차','터':'터미널용차','편':'고정편도(H→S)','집':'집배점차량','영':'직영간선'};
 const ivk=s=>String(s||'').split(' ').filter(Boolean).map(t=>{const m=t.match(/^(\D+)(\d+)$/);return m?[IVK[m[1]]||m[1],+m[2]]:[t,'']});
 const inm=r=>String(r[1]).replace(/(Sub|Hub|센터)$/,'');
 function phInit(){
-  try{const v=localStorage.getItem('gj_rv_ph');if(v==='in')PH='in'}catch(e){}
+  try{const v=localStorage.getItem('gj_rv_ph');if(v==='in'||v==='etc')PH=v}catch(e){}if(PH!=='out'){IB=PH==='etc'?ET:INB}
   const ch=$('chips'),rw=document.createElement('div');rw.className='row2';ch.parentNode.insertBefore(rw,ch);
-  rw.innerHTML='<div class="phs" role="tablist" aria-label="출고·입고"><button type="button" data-ph="out">출고</button><button type="button" data-ph="in">입고</button></div>';rw.appendChild(ch);
+  rw.innerHTML='<div class="phs" role="tablist" aria-label="출고·입고·그외"><button type="button" data-ph="out">출고</button><button type="button" data-ph="in">입고</button><button type="button" data-ph="etc">그외</button></div>';rw.appendChild(ch);
   rw.querySelector('.phs').addEventListener('click',e=>{const t=e.target.closest('button');if(t)phSet(t.dataset.ph)});
   phDraw();
-  $('chips').addEventListener('click',e=>{if(PH!=='in')return;const c=e.target.closest('.chip');if(!c)return;IF=(IF===c.dataset.g)?'전체':c.dataset.g;phDraw();applyIn(true)});
-  if(PH==='in'){items.forEach(g=>{g.ov.setMap(null);g.on=false})}
+  $('chips').addEventListener('click',e=>{if(PH==='out')return;const c=e.target.closest('.chip');if(!c)return;IF=(IF===c.dataset.g)?'전체':c.dataset.g;phDraw();applyIn(true)});
+  if(PH!=='out'){items.forEach(g=>{g.ov.setMap(null);g.on=false})}
 }
 function phDraw(){
-  const tg='';document.querySelectorAll('.phs button').forEach(b=>b.classList.toggle('on',b.dataset.ph===PH));document.body.classList.toggle('phin',PH==='in');
+  const tg='';document.querySelectorAll('.phs button').forEach(b=>b.classList.toggle('on',b.dataset.ph===PH));document.body.classList.toggle('phin',PH!=='out');document.body.classList.toggle('phet',PH==='etc');
   const ch=$('chips');ch.scrollLeft=0;
   if(PH==='out'){[...ch.querySelectorAll('.chip.ig')].forEach(x=>x.remove());[...ch.querySelectorAll('.chip:not(.ig)')].forEach(x=>x.hidden=false);$('q').placeholder=innerWidth<400?'점소·노선 검색':'점소·노선·간선사 검색';return}
   [...ch.querySelectorAll('.chip:not(.ig)')].forEach(x=>x.hidden=true);[...ch.querySelectorAll('.chip.ig')].forEach(x=>x.remove());
   const cnt={};IB.forEach(r=>{cnt[r[2]]=(cnt[r[2]]||0)+1;cnt['r'+r[3]]=(cnt['r'+r[3]]||0)+1});
   const gs=IKIND.filter(k=>cnt[k[0]]).map(k=>[k[0],k[1]+' '+cnt[k[0]]]).concat(Object.keys(IRG).filter(k=>cnt['r'+k]).map(k=>['r'+k,IRG[k]+' '+cnt['r'+k]]));
   ch.insertAdjacentHTML('afterbegin',tg+gs.map(g=>'<button class="chip ig'+(IF===g[0]?' on':'')+'" type="button" data-g="'+g[0]+'">'+esc(g[1])+'</button>').join(''));
-  $('q').placeholder='입고 점소·코드 검색';
+  $('q').placeholder=isEt()?'그외 점소·코드 검색':'입고 점소·코드 검색';
 }
-function phSet(v){if(v===PH)return;PH=v;if(IPIN){IPIN.setMap(null);IPIN=null}try{localStorage.setItem('gj_rv_ph',v)}catch(e){}
+function phSet(v){if(v===PH)return;const o=PH;if(IPIN){IPIN.setMap(null);IPIN=null}try{localStorage.setItem('gj_rv_ph',v)}catch(e){}
   closeSheet();clearRoute();clearLines('hub');clearLines('me');$('q').value='';
-  if(PH==='in'){items.forEach(g=>{g.ov.setMap(null);g.on=null});inBuild();if(IIT)IIT.forEach(g=>{g.on=null})}
-  else{if(IIT)IIT.forEach(g=>{g.ov.setMap(null);g.on=null})}
+  if(o!=='out'){inClose();if(IIT)IIT.forEach(g=>{g.ov.setMap(null);g.on=null});PST[o].iit=IIT;PST[o].f=IF}
+  PH=v;
+  if(PH!=='out'){items.forEach(g=>{g.ov.setMap(null);g.on=null});IB=PH==='etc'?ET:INB;IIT=PST[PH].iit;IF=PST[PH].f;inBuild();IIT.forEach(g=>{g.on=null})}
   phDraw();apply(true);
 }
 function inBuild(){if(IIT)return;IIT=[];const gm={};
@@ -1065,7 +1074,7 @@ function inBuild(){if(IIT)return;IIT=[];const gm={};
     el.addEventListener('click',ev=>{ev.stopPropagation();g.vis.length>1?inGroup(g):pickIn(g.vis[0])});
     g.ov=new kakao.maps.CustomOverlay({position:new kakao.maps.LatLng(ps[0][6],ps[0][7]),content:el,yAnchor:.5,xAnchor:.5,zIndex:3});IIT.push(g)});
 }
-function inPaint(g){const v=g.vis,h=g.hit&&g.hit.length;g.el.className='dot in'+(v.every(isCu)?' cu'+(v.every(r=>r[2]==='경유D')?' dl':''):'')+(v.some(r=>r[10]!=='정확')?' ax':'')+(v.length>1?' grp':'')+(ICUR&&v.includes(ICUR)?' sel':'')+(h?' hit':'');g.el.dataset.n=v.length;g.el.innerHTML=(h?'<i class="fl"></i>':'')+'<b>'+esc(v.map(inm).join('·'))+'</b>';g.ov.setZIndex(h?20:(ICUR&&v.includes(ICUR)?10:3))}
+function inPaint(g){const v=g.vis,h=g.hit&&g.hit.length;g.el.className='dot in'+(isEt()?' et':'')+(v.every(isCu)?' cu'+(v.every(r=>r[2]==='경유D')?' dl':''):'')+(v.some(r=>r[10]!=='정확')?' ax':'')+(v.length>1?' grp':'')+(ICUR&&v.includes(ICUR)?' sel':'')+(h?' hit':'');g.el.dataset.n=v.length;g.el.innerHTML=(h?'<i class="fl"></i>':'')+'<b>'+esc(v.map(inm).join('·'))+'</b>';g.ov.setZIndex(h?20:(ICUR&&v.includes(ICUR)?10:3))}
 function inMatch(r){if(IF==='전체')return true;if(IF[0]==='r')return r[3]===IF.slice(1);return r[2]===IF}
 const isCu=r=>String(r[2]).startsWith('경유');
 const ixt=r=>(r[16]&&typeof r[16]==='object')?r[16]:{};
@@ -1075,12 +1084,12 @@ function applyIn(fit){inBuild();
   IIT.forEach(g=>{g.vis=g.ps.filter(inMatch);g.hit=g.vis.filter(r=>inHit(r,q));const ok=g.vis.length>0;if(ok!==g.on){g.ov.setMap(ok?map:null);g.on=ok}if(ok){inPaint(g);vis.push(...g.vis);hits.push(...g.hit)}});
   const tgt=q?hits:vis;
   if(tgt.length&&(fit||q)){const b=new kakao.maps.LatLngBounds();tgt.forEach(r=>b.extend(new kakao.maps.LatLng(r[6],r[7])));b.extend(new kakao.maps.LatLng(HUB.lat,HUB.lon));map.setBounds(b)}
-  if(q&&!hits.length)toast('「'+$('q').value.trim()+'」 찾는 입고 점소가 없어요',1800);
+  if(q&&!hits.length)toast('「'+$('q').value.trim()+'」 찾는 '+(isEt()?'그외':'입고')+' 점소가 없어요',1800);
   if(q&&hits.length===1)pickIn(hits[0]);
 }
 function inClose(){const o=ICUR;ICUR=null;if(o&&IIT)IIT.forEach(g=>{if(g.ps.includes(o))inPaint(g)})}
 function inGroup(g){$('hint').hidden=true;hubOff();
-  $('sb').innerHTML='<h2>같은 곳 '+g.vis.length+'곳</h2><p class="sub">'+esc(g.vis[0][5])+'</p><div class="pk">'+g.vis.map((r,i)=>'<button type="button" data-i="'+i+'">'+esc(r[1])+'<span>'+(isCu(r)?'경유 '+r[11]+'대':esc(r[0])+' · 5일 입고 '+r[11]+'대')+'</span></button>').join('')+'</div>';
+  $('sb').innerHTML='<h2>같은 곳 '+g.vis.length+'곳</h2><p class="sub">'+esc(g.vis[0][5])+'</p><div class="pk">'+g.vis.map((r,i)=>'<button type="button" data-i="'+i+'">'+esc(r[1])+'<span>'+(isCu(r)?'경유 '+r[11]+'대':isEt()?esc(r[0])+(r[8]>0?' · '+(+r[8]).toFixed(0)+'km':''):esc(r[0])+' · 5일 입고 '+r[11]+'대')+'</span></button>').join('')+'</div>';
   $('sb').querySelectorAll('.pk button').forEach(b=>b.addEventListener('click',()=>pickIn(g.vis[+b.dataset.i])));openSheet()}
 function pickIn(r){const o=ICUR;ICUR=r;IIT.forEach(g=>{if(g.ps.includes(r)||(o&&g.ps.includes(o)))inPaint(g)});
   $('hint').hidden=true;hubOff();if(o!==r){use('store',r[0]);clearLines('hub');clearLines('me');fitKey=''}
@@ -1099,31 +1108,32 @@ async function inLive(r){const k=r[0],c=ICACHE[k];
 }
 function inDraw(r){const c=ICACHE[r[0]];if(!c||!c.ready||ICUR!==r)return;drawLines('hub',c.roads,6,.9);inFlow(r,false);
   const key='i'+r[0];if(fitKey!==key){fitKey=key;const b=new kakao.maps.LatLngBounds();c.roads.forEach(x=>{for(let i=0;i+1<x.v.length;i+=2)b.extend(new kakao.maps.LatLng(x.v[i+1],x.v[i]))});fitRoute(b)}}
-function inRender(r){const self=r[8]===0,c=ICACHE[r[0]],L=liveOn&&c&&c.ready?c:null;
+function inRender(r){const et=isEt(),hq=r[8]<0,self=r[8]===0||hq,c=ICACHE[r[0]],L=liveOn&&c&&c.ready?c:null;
   const kind=(IKIND.find(k=>k[0]===r[2])||[,r[2]])[1],E=ixt(r),cuP=isCu(r);
   let lv='';if(liveOn&&!self){lv=c&&c.loading?'<span class="mu">받는 중…</span>':c&&c.err?'<span class="mu">'+esc(c.err)+'</span>':L?'<span class="v">'+hm(L.min)+'</span>'+delta(L.min,r[9]):'<span class="mu">—</span>'}
   const now=Date.now(),eta=self?'':'<div class="eta"><div class="eh">지금 출발하면</div><div class="er"><span>🏁 '+esc(inm(r))+' → 곤지암</span><b>'+tm(now+(L?L.min:r[9])*60000)+'</b><i>'+(+(L?L.km:r[8])).toFixed(1)+'km</i></div><ul class="en"><li>휴식 20분 포함 · '+(L?'지금 교통 기준':'기준 60km/h')+'</li></ul></div>';
   $('sb').innerHTML=
-   '<h2 class="hrt"><span class="hbn">'+(cuP?'경유':'입고')+'</span><span class="hnm">'+esc(r[1])+'</span>'+(cuP?'':'<span class="hcd">'+esc(r[0])+'</span>')+'</h2>'+
-   '<div class="tags"><span class="tag '+(cuP?'cu'+(r[2]==='경유D'?' dl':''):'in')+'">'+esc(kind)+'</span><span class="tag tw">'+esc(IRG[r[3]]||r[3])+'</span>'+(r[4]?'<span class="tag tw">분류 '+esc(r[4])+'</span>':'')+(r[14]?'<span class="tag '+(r[14]==='Y'?'ok':'no')+'">T/R 진입 '+(r[14]==='Y'?'가능':'불가')+'</span>':'')+(r[15]&&!cuP?'<span class="tag tw">출고 '+esc(r[15])+'</span>':'')+(r[10]!=='정확'?'<span class="tag no">위치 '+esc(r[10])+'</span>':'')+'</div>'+
+   '<h2 class="hrt"><span class="hbn'+(et?' et':'')+'">'+(cuP?'경유':et?'그외':'입고')+'</span><span class="hnm">'+esc(r[1])+'</span>'+(cuP?'':'<span class="hcd">'+esc(r[0])+'</span>')+'</h2>'+
+   '<div class="tags"><span class="tag '+(cuP?'cu'+(r[2]==='경유D'?' dl':''):et?'et':'in')+'">'+esc(kind)+'</span><span class="tag tw">'+esc(IRG[r[3]]||r[3])+'</span>'+(r[4]?'<span class="tag tw">분류 '+esc(r[4])+'</span>':'')+(r[14]?'<span class="tag '+(r[14]==='Y'?'ok':'no')+'">T/R 진입 '+(r[14]==='Y'?'가능':'불가')+'</span>':'')+(r[15]&&!cuP?'<span class="tag tw">출고 '+esc(r[15])+'</span>':'')+(r[10]!=='정확'?'<span class="tag no">'+(r[10]==='본사주소'?'주소 = 본사(가상 점소)':'위치 '+esc(r[10]))+'</span>':'')+(ixt(r).lmd?'<span class="tag tw">신LMD</span>':'')+'</div>'+
    '<p class="addr"><span>'+esc(r[5])+'</span><button type="button" class="cpi" id="cpa" aria-label="주소 복사" title="주소 복사">'+CPI+'</button></p>'+
-   (self?'<p class="inote">곤지암 메가허브 같은 건물이에요.</p>':
+   (hq?'<p class="inote">엑셀 주소가 본사(종로5길 7)로 적힌 가상 점소라 실제 위치·거리는 몰라요.</p>':self?'<p class="inote">곤지암 메가허브 같은 건물이에요.</p>':
    '<table class="rt"><tr><th></th><th colspan="2">기준 (60km/h·휴식 20분)</th>'+(liveOn?'<th>지금 교통</th>':'')+'</tr>'+
    '<tr><td class="l">곤지암까지</td><td class="t"><span class="v">'+hm(r[9])+'</span></td><td class="k">'+(+r[8]).toFixed(1)+'km</td>'+(liveOn?'<td class="lv">'+lv+'</td>':'')+'</tr></table>')+eta+
-   (cuP?'<h3 class="h3i">여기를 거쳐 곤지암에 온 차 <b>'+r[11]+'대</b> <small>('+esc(E.days||'')+')</small></h3>':
+   (et?'':(cuP?'<h3 class="h3i">여기를 거쳐 곤지암에 온 차 <b>'+r[11]+'대</b> <small>('+esc(E.days||'')+')</small></h3>':
    '<h3 class="h3i">최근 5일 곤지암 입고 <b>'+r[11]+'대</b> <small>('+r[12]+'일 들어옴 · 10/30·11/2~11/5)</small></h3>')+
-   '<div class="ivk">'+ivk(r[13]).map(([n,c])=>'<span>'+esc(n)+'<b>'+c+'</b></span>').join('')+'</div>'+
+   '<div class="ivk">'+ivk(r[13]).map(([n,c])=>'<span>'+esc(n)+'<b>'+c+'</b></span>').join('')+'</div>')+
    inExt(r,E,cuP)+phHtml(r[0])+
    (liveOn&&L&&L.roads.length?lgdHtml0():'')+
    '<div class="btns g"><button class="btn nav" id="nvK" type="button">🚘 점소로 (카카오)</button><button class="btn nav" id="nvT" type="button">🚘 점소로 (T맵)</button></div>'+
    '<div class="btns g" style="margin-top:6px"><button class="btn nav" id="nvH" type="button">🏁 곤지암으로 (카카오)</button><button class="btn nav" id="nvHT" type="button">🏁 곤지암으로 (T맵)</button></div>'+rvHtml()+
    (cuP?'<p class="inote">경유 = 로이스 입고의 경유 주소예요. 서브 차가 이 고객사·집화점·대리점에 들러 짐을 싣고 곤지암에 와요. 1차 「선」 = 서브 → 곤지암 직행(파랑), 2차 「선」 = 서브 → 경유(보라) → 곤지암(초록). 주소를 누르면 지도에 📍로 찍혀요. 이름은 고객사명·비고에서 따왔어요.</p>':'')+
-   '<p class="inote">입고 = 이 점소에서 출발해 곤지암에 하차하러 오는 차예요. 「실시간」을 켜면 지금 교통으로 곤지암까지 시간과 도로 선이 나와요.</p>';
+   (et?'<p class="inote">그외 = 전체 점소 536곳 중 곤지암 출고·입고에 안 걸리는 272곳이에요. 위치 「근사」 = 엑셀 번지가 가려져 카카오에서 「CJ대한통운 ○○ SUB터미널」로 찾은 자리, 「대략」 = 동네 중심이에요. 「실시간」을 켜면 지금 교통으로 곤지암까지 시간과 도로 선이 나와요.</p>':'<p class="inote">입고 = 이 점소에서 출발해 곤지암에 하차하러 오는 차예요. 「실시간」을 켜면 지금 교통으로 곤지암까지 시간과 도로 선이 나와요.</p>');
   $('nvK').addEventListener('click',()=>{use('nav',r[0]);openNav('kakaomap://route?ep='+r[6]+','+r[7]+'&by=CAR','https://map.kakao.com/link/to/'+encodeURIComponent(r[1])+','+r[6]+','+r[7],'카카오맵')});
   $('nvT').addEventListener('click',()=>{use('nav',r[0]);openNav('tmap://route?goalname='+encodeURIComponent(r[1])+'&goalx='+r[7]+'&goaly='+r[6],'','T맵')});
   $('nvH').addEventListener('click',()=>{use('nav','HUB');openNav('kakaomap://route?sp='+r[6]+','+r[7]+'&ep='+HUB.lat+','+HUB.lon+'&by=CAR','https://map.kakao.com/link/from/'+encodeURIComponent(r[1])+','+r[6]+','+r[7]+'/to/'+encodeURIComponent('곤지암Hub')+','+HUB.lat+','+HUB.lon,'카카오맵')});
   $('nvHT').addEventListener('click',()=>{use('nav','HUB');openNav('tmap://route?startname='+encodeURIComponent(r[1])+'&startx='+r[7]+'&starty='+r[6]+'&goalname='+encodeURIComponent('곤지암Hub')+'&goalx='+HUB.lon+'&goaly='+HUB.lat,'','T맵')});
   const ca=$('cpa');if(ca)ca.addEventListener('click',()=>copyTxt(r[5],ca));phBind(r[0]);rvBind(r[6],r[7],r[1]);
+  if(hq){$('sb').querySelectorAll('.btns.g').forEach(x=>x.style.display='none');const rb=$('nvR');if(rb)rb.style.display='none'}
   const sb=$('sb');sb.querySelectorAll('.fsb,.fcu').forEach(b=>b.addEventListener('click',()=>{const x=iby(b.dataset.c);if(x)pickIn(x)}));
   sb.querySelectorAll('.adp').forEach(b=>b.addEventListener('click',()=>{const x=iby(b.dataset.c);if(x)pinAt(x[6],x[7],x[1])}));
   sb.querySelectorAll('.fl1,.fl2').forEach(b=>b.addEventListener('click',()=>{sb.querySelectorAll('.fl1,.fl2').forEach(y=>y.classList.remove('on'));b.classList.add('on');drawFlow(b.dataset.s,b.dataset.v,b.classList.contains('fl1')?1:2,true)}));
