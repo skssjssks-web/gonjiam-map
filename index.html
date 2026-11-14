@@ -10,8 +10,8 @@
 <title>곤지암 Road View</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Nanum+Gothic:wght@800&display=swap">
 <style>
-:root{--rv1:#0F4C9C;--rv2:#2E9BFF;--rvb:#1E8BF0;--rvi:#fff;--bg:#f3f5f7;--card:#fff;--ink:#14202b;--ink2:#4a5866;--mute:#7a8794;--line:#d8dee4;--acc:#b07a00;--ok:#2f6fb5;--no:#d23b3b;--up:#d23b3b;--down:#1f8a4d;--sh:0 6px 24px rgba(10,20,30,.18)}
-@media (prefers-color-scheme:dark){:root{--rv1:#7CC4FF;--rv2:#D2ECFF;--rvb:#5CB4FF;--rvi:#06213A;--bg:#0f1720;--card:#17222d;--ink:#e8edf2;--ink2:#a9b6c3;--mute:#7d8a97;--line:#2a3745;--acc:#ffc52e;--ok:#5aa2ee;--no:#ff7676;--up:#ff7676;--down:#4cd08a;--sh:0 6px 24px rgba(0,0,0,.5)}}
+:root{--rv1:#0F4C9C;--rv2:#2E9BFF;--rvb:#1E8BF0;--rvi:#fff;--bg:#f3f5f7;--card:#fff;--ink:#14202b;--ink2:#4a5866;--mute:#3a4652;--line:#d8dee4;--acc:#b07a00;--ok:#2f6fb5;--no:#d23b3b;--up:#d23b3b;--down:#1f8a4d;--sh:0 6px 24px rgba(10,20,30,.18)}
+@media (prefers-color-scheme:dark){:root{--rv1:#7CC4FF;--rv2:#D2ECFF;--rvb:#5CB4FF;--rvi:#06213A;--bg:#0f1720;--card:#17222d;--ink:#e8edf2;--ink2:#a9b6c3;--mute:#c3cdd7;--line:#2a3745;--acc:#ffc52e;--ok:#5aa2ee;--no:#ff7676;--up:#ff7676;--down:#4cd08a;--sh:0 6px 24px rgba(0,0,0,.5)}}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,"Apple SD Gothic Neo","Pretendard","Noto Sans KR","Malgun Gothic",sans-serif}
 #map{position:fixed;inset:0}
@@ -351,6 +351,29 @@ body.live .rt td{font-size:13.5px}body.live .rt td.lv{white-space:normal;width:a
 .ivk span{font-size:12px;font-weight:800;border:1px solid var(--line);border-radius:8px;padding:2px 7px;color:var(--ink2);background:var(--bg)}
 .ivk span b{color:var(--ink);margin-left:3px}
 .inote{font-size:12px;color:var(--mute);margin:6px 0 0;line-height:1.5}
+.rbx{margin:12px 0 0;padding:10px 12px;border-radius:14px;border:1.5px solid color-mix(in srgb,#1677ff 45%,var(--line));background:color-mix(in srgb,#1677ff 6%,var(--card))}
+.rbh{font-size:14px;font-weight:900;color:var(--ink);margin:0 0 8px}.rbh small{font-size:12px;font-weight:800;color:var(--ink);margin-left:4px}
+.rbb{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.rbt{height:42px;border-radius:12px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:14.5px;font-weight:900;cursor:pointer;padding:0}
+.rbt.s{border-color:#1f8a4d;color:#14703f}.rbt.d{border-color:#e02828;color:#c41d1d}.rbt.v{border-color:#7b4bd6;color:#6a3cc4}
+.rbt.on.s{background:#1f8a4d;color:#fff}.rbt.on.v{background:#7b4bd6;color:#fff}
+@media (prefers-color-scheme:dark){.rbt.s{color:#4cd08a}.rbt.d{color:#ff7676}.rbt.v{color:#b79bff}}
+.rbpre{display:flex;align-items:baseline;gap:8px;margin:8px 0 0;font-size:13px;font-weight:800;color:var(--ink);flex-wrap:wrap}.rbpre span{flex:1;min-width:0;overflow-wrap:anywhere}.rbpre b{font-size:14px;font-weight:900;font-variant-numeric:tabular-nums}.rbpre i{font-style:normal;font-size:12.5px;margin-left:4px}
+.rbn{font-size:12px;font-weight:700;color:var(--ink);margin:8px 0 0;line-height:1.45;opacity:.85}
+.rbp{align-self:stretch;display:flex;align-items:stretch;min-height:40px;border-radius:12px;background:var(--card);border:1.5px solid #1677ff;box-shadow:var(--sh);overflow:hidden}
+.rbp button{border:0;background:none;color:var(--ink);font:inherit;font-weight:900;cursor:pointer}
+.rbp #rbpO{flex:1;min-width:0;display:flex;flex-wrap:wrap;align-items:center;gap:2px 8px;padding:6px 10px;text-align:left;font-size:13px;line-height:1.35}
+.rbp #rbpO span{overflow-wrap:anywhere}.rbp #rbpO b{color:#1677ff;font-variant-numeric:tabular-nums}
+.rbp #rbpX{flex:0 0 40px;font-size:16px;border-left:1px solid var(--line)}
+.rbm{position:relative;display:flex;flex-direction:column;align-items:center;pointer-events:none}
+.rbm i{font-style:normal;font-size:12px;font-weight:900;color:#fff;padding:2px 7px;border-radius:7px;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.45)}
+.rbm.s i{background:#1f8a4d}.rbm.v i{background:#7b4bd6}.rbm.d i{background:#e02828}
+.rbm b{font-size:12px;font-weight:900;color:#14202b;text-shadow:-1.5px 0 #fff,1.5px 0 #fff,0 -1.5px #fff,0 1.5px #fff;margin-top:1px;white-space:nowrap}
+.rbls{display:flex;flex-direction:column;gap:6px;margin:8px 0 0}.rbl{border:1px solid var(--line);border-radius:12px;padding:8px 10px}.rbl .t{font-size:13.5px;font-weight:900;color:var(--ink);overflow-wrap:anywhere}.rbl .g{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-top:4px}.rbl .g span{display:flex;flex-direction:column}.rbl small{font-size:11.5px;font-weight:800;color:var(--ink);opacity:.8}.rbl b{font-size:15px;font-weight:900;color:var(--ink);font-variant-numeric:tabular-nums}.rbl.tot{border:2px solid #1677ff;background:color-mix(in srgb,#1677ff 7%,var(--card))}.rbl.tot b{color:#1677ff}
+@media (prefers-color-scheme:dark){.rbl.tot b{color:#5CB4FF}}
+.rbex{margin:10px 0 0;padding:8px 12px;border-radius:12px;border:1.5px solid #7b4bd6;font-size:13px;font-weight:800;color:var(--ink)}
+.rbex div{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:3px 0}.rbex .add b{color:#6a3cc4;font-size:14.5px}
+@media (prefers-color-scheme:dark){.rbex .add b{color:#b79bff}}
 </style></head>
 <body>
 <div id="map"></div>
@@ -652,14 +675,14 @@ function render(p){
   $('sb').innerHTML=
    '<h2 class="hrt"><span class="hbn">'+esc(p[0])+'</span>'+(p[1]?'<span class="hln">'+esc(p[1])+'</span>':'')+'<span class="hnm">'+esc(fnm(p))+(sfx(p)?'<span class="hsx">'+sfx(p)+'</span>':'')+'</span><span class="hcd">'+esc(p[5])+'</span></h2>'+
    '<div class="tags"><span class="tag '+(p[6]?'ok':'no')+'">TR '+(p[6]?'가능':'불가')+'</span><span class="tag tw">'+esc(p[7])+'</span><span class="tag tw">'+esc(p[8])+'</span>'+(p[18]!=='정확'?'<span class="tag no">위치 대략</span>':'')+'</div>'+
-   '<p class="addr"><span>'+esc(p[9])+'</span><button type="button" class="cpi" id="cpa" aria-label="주소 복사" title="주소 복사">'+CPI+'</button></p>'+
+   '<p class="addr"><span>'+esc(p[9])+'</span><button type="button" class="cpi" id="cpa" aria-label="주소 복사" title="주소 복사">'+CPI+'</button></p>'+(RB.from||RB.via?rbHtml(ptOut(p)):'')+
    '<table class="rt"><tr><th></th><th colspan="2">기준 (60km/h)</th>'+col+'</tr>'+
    '<tr><td class="l">가는길</td><td class="t"><span class="v">'+hm(p[14])+'</span></td><td class="k">'+p[12].toFixed(1)+'km</td>'+c(lg)+'</tr>'+
    '<tr><td class="l">다회전 왕복</td><td class="t"><span class="v">'+hm(p[17])+'</span></td><td class="k">'+(p[12]+p[13]).toFixed(1)+'km</td>'+c(lt)+'</tr>'+meRow(p)+'</table>'+
    etaHtml(p,live)+lgdHtml(p,live)+
-   nearHtml(p)+
+   (RB.from||RB.via?'':rbHtml(ptOut(p)))+nearHtml(p)+
    '<div class="btns g"><button class="btn nav" id="nvK" type="button">🚘 카카오내비</button><button class="btn nav" id="nvT" type="button">🚘 T맵</button></div>'+rvHtml()+memoHtml(p[5])+phHtml(p[5]);
-  memoBind(p[5]);phBind(p[5]);rvBind(p[10],p[11],fnm(p));
+  memoBind(p[5]);phBind(p[5]);rvBind(p[10],p[11],fnm(p));rbBind();
   $('nvK').addEventListener('click',()=>openNav('kakaomap://route?ep='+p[10]+','+p[11]+'&by=CAR','https://map.kakao.com/link/to/'+encodeURIComponent(p[4])+','+p[10]+','+p[11],'카카오맵'));
   $('nvT').addEventListener('click',()=>openNav('tmap://route?goalname='+encodeURIComponent(p[4])+'&goalx='+p[11]+'&goaly='+p[10],'','T맵'));
   $('nvK').addEventListener('click',()=>use('nav',p[5]));$('nvT').addEventListener('click',()=>use('nav',p[5]));
@@ -767,6 +790,7 @@ function drawLines(k,roads,w,op){clearLines(k);const big=op>.8,cw=liveOn?w+8:w+5
   if(big)(roads||[]).forEach(r=>{const path=[];for(let i=0;i+1<r.v.length;i+=2)path.push(new kakao.maps.LatLng(r.v[i+1],r.v[i]));lines[k].push(new kakao.maps.Polyline({map,path,strokeWeight:cw,strokeColor:'#14213D',strokeOpacity:.95,strokeStyle:'solid',zIndex:3}));if(liveOn)lines[k].push(new kakao.maps.Polyline({map,path,strokeWeight:w+3,strokeColor:'#FFFFFF',strokeOpacity:1,strokeStyle:'solid',zIndex:4}))});
   (roads||[]).forEach(r=>{const path=[];for(let i=0;i+1<r.v.length;i+=2)path.push(new kakao.maps.LatLng(r.v[i+1],r.v[i]));lines[k].push(new kakao.maps.Polyline({map,path,strokeWeight:w,strokeColor:TC[r.s]||TC[0],strokeOpacity:op,strokeStyle:'solid',zIndex:big?5:2}))})}
 function drawFor(p){
+  if(RB.from||RB.res){clearLines('hub');if(!RB.res)clearLines('me');rtpSync();return}
   const H=liveOn&&cache[p[5]]&&cache[p[5]].ready?cache[p[5]].roads:null,M=POS&&mcache[p[5]]&&mcache[p[5]].ready?mcache[p[5]].roads:null;
   if(M){drawLines('me',M,7,.95);if(H)drawLines('hub',H,4,.45);else clearLines('hub')}else{clearLines('me');if(H)drawLines('hub',H,6,.9);else clearLines('hub')}
   const key=p[5]+(M?'m':H?'h':'');if(key!==fitKey&&(M||H)){fitKey=key;const b=new kakao.maps.LatLngBounds();(M||H).forEach(r=>{for(let i=0;i+1<r.v.length;i+=2)b.extend(new kakao.maps.LatLng(r.v[i+1],r.v[i]))});
@@ -1111,7 +1135,7 @@ async function inLive(r){const k=r[0],c=ICACHE[k];
   }catch(e){ICACHE[k]={err:'연결 실패 · 인터넷을 확인해 주세요'}}
   if(ICUR===r){inRender(r);inDraw(r)}
 }
-function inDraw(r){const c=ICACHE[r[0]];if(!c||!c.ready||ICUR!==r)return;drawLines('hub',c.roads,6,.9);inFlow(r,false);
+function inDraw(r){const c=ICACHE[r[0]];if(!c||!c.ready||ICUR!==r)return;if(RB.from||RB.res)return;drawLines('hub',c.roads,6,.9);inFlow(r,false);
   const key='i'+r[0];if(fitKey!==key){fitKey=key;const b=new kakao.maps.LatLngBounds();c.roads.forEach(x=>{for(let i=0;i+1<x.v.length;i+=2)b.extend(new kakao.maps.LatLng(x.v[i+1],x.v[i]))});fitRoute(b)}}
 function inRender(r){const et=isEt(),hq=r[8]<0,self=r[8]===0||hq,c=ICACHE[r[0]],L=liveOn&&c&&c.ready?c:null;
   const kind=(IKIND.find(k=>k[0]===r[2])||[,r[2]])[1],E=ixt(r),cuP=isCu(r);
@@ -1120,14 +1144,14 @@ function inRender(r){const et=isEt(),hq=r[8]<0,self=r[8]===0||hq,c=ICACHE[r[0]],
   $('sb').innerHTML=
    '<h2 class="hrt"><span class="hbn'+(et?' et':'')+'">'+(cuP?'경유':et?'그외':'입고')+'</span><span class="hnm">'+esc(r[1])+'</span>'+(cuP?'':'<span class="hcd">'+esc(r[0])+'</span>')+'</h2>'+
    '<div class="tags"><span class="tag '+(cuP?'cu'+(r[2]==='경유D'?' dl':''):et?'et':'in')+'">'+esc(kind)+'</span><span class="tag tw">'+esc(IRG[r[3]]||r[3])+'</span>'+(r[4]?'<span class="tag tw">분류 '+esc(r[4])+'</span>':'')+(r[14]?'<span class="tag '+(r[14]==='Y'?'ok':'no')+'">T/R 진입 '+(r[14]==='Y'?'가능':'불가')+'</span>':'')+(r[15]&&!cuP?'<span class="tag tw">출고 '+esc(r[15])+'</span>':'')+(r[10]!=='정확'?'<span class="tag no">'+(r[10]==='본사주소'?'주소 = 본사(가상 점소)':'위치 '+esc(r[10]))+'</span>':'')+(ixt(r).lmd?'<span class="tag tw">신LMD</span>':'')+'</div>'+
-   '<p class="addr"><span>'+esc(r[5])+'</span><button type="button" class="cpi" id="cpa" aria-label="주소 복사" title="주소 복사">'+CPI+'</button></p>'+
+   '<p class="addr"><span>'+esc(r[5])+'</span><button type="button" class="cpi" id="cpa" aria-label="주소 복사" title="주소 복사">'+CPI+'</button></p>'+(!hq&&(RB.from||RB.via)?rbHtml(ptIn(r)):'')+
    (hq?'<p class="inote">엑셀 주소가 본사(종로5길 7)로 적힌 가상 점소라 실제 위치·거리는 몰라요.</p>':self?'<p class="inote">곤지암 메가허브 같은 건물이에요.</p>':
    '<table class="rt"><tr><th></th><th colspan="2">기준 (60km/h·휴식 20분)</th>'+(liveOn?'<th>지금 교통</th>':'')+'</tr>'+
    '<tr><td class="l">곤지암까지</td><td class="t"><span class="v">'+hm(r[9])+'</span></td><td class="k">'+(+r[8]).toFixed(1)+'km</td>'+(liveOn?'<td class="lv">'+lv+'</td>':'')+'</tr></table>')+eta+
    (et?'':(cuP?'<h3 class="h3i">여기를 거쳐 곤지암에 온 차 <b>'+r[11]+'대</b> <small>('+esc(E.days||'')+')</small></h3>':
    '<h3 class="h3i">최근 5일 곤지암 입고 <b>'+r[11]+'대</b> <small>('+r[12]+'일 들어옴 · 10/30·11/2~11/5)</small></h3>')+
    '<div class="ivk">'+ivk(r[13]).map(([n,c])=>'<span>'+esc(n)+'<b>'+c+'</b></span>').join('')+'</div>')+
-   inExt(r,E,cuP)+phHtml(r[0])+
+   (hq||RB.from||RB.via?'':rbHtml(ptIn(r)))+inExt(r,E,cuP)+phHtml(r[0])+
    (liveOn&&L&&L.roads.length?lgdHtml0():'')+
    '<div class="btns g"><button class="btn nav" id="nvK" type="button">🚘 점소로 (카카오)</button><button class="btn nav" id="nvT" type="button">🚘 점소로 (T맵)</button></div>'+
    '<div class="btns g" style="margin-top:6px"><button class="btn nav" id="nvH" type="button">🏁 곤지암으로 (카카오)</button><button class="btn nav" id="nvHT" type="button">🏁 곤지암으로 (T맵)</button></div>'+rvHtml()+
@@ -1137,7 +1161,7 @@ function inRender(r){const et=isEt(),hq=r[8]<0,self=r[8]===0||hq,c=ICACHE[r[0]],
   $('nvT').addEventListener('click',()=>{use('nav',r[0]);openNav('tmap://route?goalname='+encodeURIComponent(r[1])+'&goalx='+r[7]+'&goaly='+r[6],'','T맵')});
   $('nvH').addEventListener('click',()=>{use('nav','HUB');openNav('kakaomap://route?sp='+r[6]+','+r[7]+'&ep='+HUB.lat+','+HUB.lon+'&by=CAR','https://map.kakao.com/link/from/'+encodeURIComponent(r[1])+','+r[6]+','+r[7]+'/to/'+encodeURIComponent('곤지암Hub')+','+HUB.lat+','+HUB.lon,'카카오맵')});
   $('nvHT').addEventListener('click',()=>{use('nav','HUB');openNav('tmap://route?startname='+encodeURIComponent(r[1])+'&startx='+r[7]+'&starty='+r[6]+'&goalname='+encodeURIComponent('곤지암Hub')+'&goalx='+HUB.lon+'&goaly='+HUB.lat,'','T맵')});
-  const ca=$('cpa');if(ca)ca.addEventListener('click',()=>copyTxt(r[5],ca));phBind(r[0]);rvBind(r[6],r[7],r[1]);
+  const ca=$('cpa');if(ca)ca.addEventListener('click',()=>copyTxt(r[5],ca));phBind(r[0]);rvBind(r[6],r[7],r[1]);if(!hq)rbBind();
   if(hq){$('sb').querySelectorAll('.btns.g').forEach(x=>x.style.display='none');const rb=$('nvR');if(rb)rb.style.display='none'}
   const sb=$('sb');sb.querySelectorAll('.fsb,.fcu').forEach(b=>b.addEventListener('click',()=>{const x=iby(b.dataset.c);if(x)pickIn(x)}));
   sb.querySelectorAll('.adp').forEach(b=>b.addEventListener('click',()=>{const x=iby(b.dataset.c);if(x)pinAt(x[6],x[7],x[1])}));
@@ -1177,5 +1201,78 @@ function inExt(r,E,cuP){let h='';const li=(a,b)=>'<li><span>'+esc(a)+'</span><b>
     if(E.via&&E.via.length){h+='<h3 class="h3i">이 건물을 거쳐 온 다른 점소 차 <small>('+esc(E.days||'')+')</small></h3><ul class="cul">'+E.via.map(v=>li(v[1],v[0]+'대')).join('')+'</ul>'}
   }return h}
 function lgdHtml0(){return '<div class="lgd"><span>지도 경로 선 =</span><span><i style="background:'+TC[4]+'"></i>원활</span><span><i style="background:'+TC[3]+'"></i>서행</span><span><i style="background:'+TC[2]+'"></i>지체</span><span><i style="background:'+TC[1]+'"></i>정체</span><span><i style="background:'+TC[0]+'"></i>정보 없음</span></div>'}
+// ===== 루트 만들기: 출발·경유·도착 (2026-11-14) =====
+let RB={from:null,via:null,to:null,res:null,busy:false},RBM=[],RBC={},CURPT=null;
+lines.rb=[];
+const ptOut=p=>({k:'o'+p[5],nm:fnm(p),lat:+p[10],lon:+p[11]});
+const ptIn=r=>({k:'i'+r[0],nm:String(r[1]),lat:+r[6],lon:+r[7]});
+const PHUB={k:'HUB',nm:'곤지암',lat:HUB.lat,lon:HUB.lon};
+const rbBase=()=>RB.from||PHUB;
+const same=(a,b)=>!!a&&!!b&&(a.k===b.k||(Math.abs(a.lat-b.lat)<1e-4&&Math.abs(a.lon-b.lon)<1e-4));
+async function rbLeg(a,b,path){const key=a.lat.toFixed(5)+','+a.lon.toFixed(5)+'>'+b.lat.toFixed(5)+','+b.lon.toFixed(5)+(path?'p':'');
+  const c=RBC[key];if(c&&Date.now()-c.t<180000)return c.v;
+  const x=await fetch(FN,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tok:TOK,lat:b.lat,lon:b.lon,from:{lat:a.lat,lon:a.lon},one:true,path:!!path})});
+  if(x.status===401){store.del('gj_rv_tok');showGate(ERR.idle);throw new Error('login')}
+  const j=await x.json();if(!j.go||!j.go.ok)throw new Error((j.go&&j.go.msg)||'길찾기 실패');
+  const v={km:j.go.km,traf:j.go.trafficMin,base:j.go.km*60/SPEED,roads:j.go.roads||[],a,b};
+  const lm=typeof lrnMin==='function'?lrnMin(a,b,v.km):null;if(lm)v.lrn=lm;
+  RBC[key]={t:Date.now(),v};if(path)RBC[key.slice(0,-1)]={t:Date.now(),v};return v}
+const legMin=l=>l.lrn?l.lrn.min:Math.max(l.traf,l.base);
+function rbHtml(pt){if(!pt||same(pt,PHUB))return '';CURPT=pt;
+  const f=RB.from,v=RB.via,base=rbBase(),self=same(pt,base);
+  let pre='';
+  if(!self){pre='<div class="rbpre" id="rbPre"><span>'+(f?'🚩 '+esc(f.nm):'🏭 곤지암')+(v?' → ➕ '+esc(v.nm):'')+' → '+esc(pt.nm)+'</span><b id="rbPreV">…</b></div>'}
+  return '<div class="rbx"><div class="rbh">🧭 루트 만들기 <small>'+(f?'출발 = '+esc(f.nm):'출발 = 곤지암(기본)')+(v?' · 경유 = '+esc(v.nm):'')+'</small></div>'+
+   '<div class="rbb"><button type="button" class="rbt s'+(same(pt,f)?' on':'')+'" data-a="from">🚩 출발</button><button type="button" class="rbt d" data-a="to">🏁 도착</button><button type="button" class="rbt v'+(same(pt,v)?' on':'')+'" data-a="via">➕ 경유</button></div>'+pre+
+   '<p class="rbn">출발 = 이 점소에서 출발(곤지암 기준 지움) · 도착 = 출발 → 이 점소 루트 · 경유 = 출발 → 이 점소 → 다음에 찍는 도착</p></div>'}
+function rbBind(){const pt=CURPT;if(!pt)return;
+  $('sb').querySelectorAll('.rbt').forEach(b=>b.addEventListener('click',()=>rbAct(b.dataset.a,pt)));
+  const pv=$('rbPreV');if(pv){const base=rbBase(),v=RB.via;
+    (async()=>{try{if(v&&!same(v,pt)){const [l1,l2]=await Promise.all([rbLeg(base,v,false),rbLeg(v,pt,false)]);if($('rbPreV')===pv)pv.innerHTML=hm(legMin(l1)+legMin(l2))+' <i>'+(l1.km+l2.km).toFixed(1)+'km</i>'}
+      else{const l=await rbLeg(base,pt,false);if($('rbPreV')===pv)pv.innerHTML=hm(legMin(l))+' <i>'+l.km.toFixed(1)+'km</i>'}}catch(e){if($('rbPreV')===pv)pv.textContent='—'}})()}}
+function rbAct(a,pt){
+  if(a==='from'){RB={from:pt,via:null,to:null,res:null};clearLines('hub');clearLines('me');clearLines('rb');RP=null;rtpSync();rbMarks();rbBar();toast('🚩 출발 = '+pt.nm+' · 이제 도착(또는 경유) 점소를 찍어 주세요',2600);rbRe();return}
+  if(a==='via'){if(same(pt,rbBase())){toast('출발과 같은 곳은 경유로 못 넣어요',1800);return}RB.via=pt;RB.to=null;RB.res=null;clearLines('rb');rbMarks();rbBar();toast('➕ 경유 = '+pt.nm+' · 이제 도착 점소를 찍어 주세요',2600);rbRe();return}
+  if(a==='to'){if(same(pt,rbBase())){toast('출발과 도착이 같아요',1800);return}if(same(pt,RB.via)){toast('경유와 도착이 같아요',1800);return}RB.to=pt;rbRun()}}
+function rbRe(){if(cur)render(cur);else if(ICUR)inRender(ICUR)}
+async function rbRun(){const base=rbBase(),v=RB.via,t=RB.to;RB.busy=true;RB.res=null;rbBar();rbShow();
+  try{let legs,direct=null;
+    if(v){const r=await Promise.all([rbLeg(base,v,true),rbLeg(v,t,true),rbLeg(base,t,false)]);legs=[r[0],r[1]];direct=r[2]}
+    else legs=[await rbLeg(base,t,true)];
+    RB.res={legs,direct,at:Date.now()};
+  }catch(e){RB.res={err:e.message==='login'?'로그인이 풀렸어요':'길찾기 실패 · 다시 눌러 주세요'}}
+  RB.busy=false;rbDraw(true);rbMarks();rbBar();rbShow()}
+function rbDraw(fit){clearLines('rb');clearLines('hub');clearLines('me');const R=RB.res;if(!R||!R.legs)return;const b=new kakao.maps.LatLngBounds();
+  const col=['#1677ff','#7b4bd6'];
+  R.legs.forEach((l,i)=>(l.roads||[]).forEach(r=>{const path=[];for(let k=0;k+1<r.v.length;k+=2){const p=new kakao.maps.LatLng(r.v[k+1],r.v[k]);path.push(p);b.extend(p)}
+    lines.rb.push(new kakao.maps.Polyline({map,path,strokeWeight:10,strokeColor:'#14213D',strokeOpacity:.9,zIndex:6}));
+    lines.rb.push(new kakao.maps.Polyline({map,path,strokeWeight:6,strokeColor:col[i]||col[0],strokeOpacity:1,zIndex:7}))}));
+  if(fit&&R.legs.some(l=>(l.roads||[]).length))fitRoute(b)}
+function rbMarks(){RBM.forEach(o=>o.setMap(null));RBM=[];
+  const mk=(pt,t,c)=>{if(!pt||pt.k==='HUB')return;const el=document.createElement('div');el.className='rbm '+c;el.innerHTML='<i>'+t+'</i><b>'+esc(pt.nm)+'</b>';RBM.push(new kakao.maps.CustomOverlay({map,position:new kakao.maps.LatLng(pt.lat,pt.lon),content:el,yAnchor:1.15,zIndex:28}))};
+  mk(RB.from,'출발','s');mk(RB.via,'경유','v');mk(RB.to,'도착','d')}
+function rbClear(){RB={from:null,via:null,to:null,res:null};clearLines('rb');rbMarks();rbBar();rbRe();toast('루트를 지웠어요 · 다시 곤지암 기준',1600)}
+function rbBar(){let x=$('rbp');if(!x){x=document.createElement('div');x.id='rbp';x.className='rbp';x.innerHTML='<button type="button" id="rbpO"></button><button type="button" id="rbpX" aria-label="루트 지우기">✕</button>';$('top').appendChild(x);$('rbpO').addEventListener('click',rbShow);$('rbpX').addEventListener('click',rbClear)}
+  const on=!!(RB.from||RB.via||RB.to);x.hidden=!on;if(!on)return;
+  const R=RB.res,seq=[(RB.from?'🚩 '+RB.from.nm:'🏭 곤지암')].concat(RB.via?['➕ '+RB.via.nm]:[]).concat([RB.to?'🏁 '+RB.to.nm:'🏁 ?']).join(' › ');
+  $('rbpO').innerHTML='<span>'+esc(seq)+'</span>'+(RB.busy?'<b>계산 중…</b>':R&&R.legs?'<b>'+hm(R.legs.reduce((a,l)=>a+legMin(l),0))+' · '+R.legs.reduce((a,l)=>a+l.km,0).toFixed(1)+'km</b>':'<b>'+(RB.to?'':'도착을 찍어 주세요')+'</b>')}
+function rbShow(){if(!RB.to)return;cur=null;ICUR=null;hubOff();const R=RB.res,base=rbBase(),v=RB.via,t=RB.to;
+  const row=(lab,l,cls)=>'<div class="rbl'+(cls?' '+cls:'')+'"><div class="t">'+lab+'</div><div class="g"><span><small>거리</small><b>'+l.km.toFixed(1)+'km</b></span><span><small>지금 교통'+(l.lrn?' · 학습':'')+'</small><b>'+hm(legMin(l))+'</b></span><span><small>기준 60km/h</small><b>'+hm(l.base)+'</b></span></div></div>';
+  let h='<h2 class="hrt"><span class="hbn">루트</span><span class="hnm">'+esc(base.nm)+(v?' › '+esc(v.nm):'')+' › '+esc(t.nm)+'</span></h2>';
+  if(RB.busy||!R)h+='<p class="inote">길찾기 계산 중…</p>';
+  else if(R.err)h+='<p class="inote">🔴 '+esc(R.err)+'</p>';
+  else{const L=R.legs,tk=L.reduce((a,l)=>a+l.km,0),tm2=L.reduce((a,l)=>a+legMin(l),0),tb=L.reduce((a,l)=>a+l.base,0);
+    h+='<div class="rbls">';
+    if(v){h+=row('① '+esc(base.nm)+' → '+esc(v.nm),L[0])+row('② '+esc(v.nm)+' → '+esc(t.nm),L[1])}
+    else h+=row(esc(base.nm)+' → '+esc(t.nm),L[0]);
+    h+=row('총 루트',{km:tk,traf:tm2,base:tb},'tot')+'</div>';
+    if(v&&R.direct){const dk=tk-R.direct.km,dm=tm2-legMin(R.direct);
+      h+='<div class="rbex"><div><span>경유 없이 '+esc(base.nm)+' → '+esc(t.nm)+'</span><b>'+R.direct.km.toFixed(1)+'km · '+hm(legMin(R.direct))+'</b></div><div class="add"><span>➕ 경유로 늘어난 것</span><b>'+(dk>=0?'+':'−')+Math.abs(dk).toFixed(1)+'km · '+(dm>=0?'+':'−')+hm(Math.abs(dm))+'</b></div></div>'}
+    h+='<div class="eta"><div class="eh">지금 출발하면</div>'+(v?'<div class="er"><span>➕ '+esc(v.nm)+' 도착</span><b>'+tm(Date.now()+legMin(L[0])*60000)+'</b><i>'+L[0].km.toFixed(1)+'km</i></div>':'')+'<div class="er"><span>🏁 '+esc(t.nm)+' 도착</span><b>'+tm(Date.now()+tm2*60000)+'</b><i>'+tk.toFixed(1)+'km</i></div><ul class="en"><li>휴식·상하차 시간 빼고 운행만 · 지금 교통 = 카카오 '+tm(R.at)+' 기준</li><li>지도 선: 파랑 = ①'+(v?' · 보라 = ②':'')+'</li></ul></div>'}
+  h+='<div class="btns"><button class="btn" type="button" id="rbR">🔄 다시 계산</button><button class="btn" type="button" id="rbC">✕ 루트 지우기</button></div>'+
+   '<div class="btns g" style="margin-top:6px"><button class="btn nav" id="rbK" type="button">🚘 카카오내비'+(v?' (경유 포함)':'')+'</button></div>';
+  $('sb').innerHTML=h;openSheet();
+  $('rbR').addEventListener('click',()=>{Object.keys(RBC).forEach(k=>delete RBC[k]);rbRun()});$('rbC').addEventListener('click',()=>{closeSheet();rbClear()});
+  $('rbK').addEventListener('click',()=>{let u='kakaomap://route?sp='+base.lat+','+base.lon+'&ep='+t.lat+','+t.lon+'&by=CAR';const w='https://map.kakao.com/link/by/car/'+encodeURIComponent(base.nm)+','+base.lat+','+base.lon+(v?'/'+encodeURIComponent(v.nm)+','+v.lat+','+v.lon:'')+'/'+encodeURIComponent(t.nm)+','+t.lat+','+t.lon;if(v)u=w;openNav(u,w,'카카오맵')})}
 </script>
 </body></html>
