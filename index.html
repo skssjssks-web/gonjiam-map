@@ -31,7 +31,11 @@ html,body{height:100%;margin:0;background:var(--bg);color:var(--ink);font-family
 .hint{align-self:flex-start;background:var(--card);border:1px solid var(--acc);color:var(--ink);border-radius:10px;padding:6px 10px;font-size:12.5px;font-weight:700;box-shadow:var(--sh)}
 .dot{position:relative;width:14px;height:14px;border-radius:50%;border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.45);cursor:pointer}
 .dot.grp::before{content:attr(data-n);position:absolute;right:-7px;top:-8px;min-width:13px;height:13px;border-radius:7px;background:#14202b;color:#fff;font-size:9px;font-weight:900;line-height:13px;text-align:center;padding:0 2px}
-.dot.ok{background:#2f6fb5}.dot.no{background:#d23b3b}
+.dot.ok{background:#1677ff}.dot.no{background:#e02828}
+body:not(.phin) .dot{width:17px;height:17px;border-width:2.5px;box-shadow:0 0 0 1.5px rgba(10,40,90,.55),0 2px 5px rgba(0,0,0,.45)}
+body:not(.phin) .dot.sel{width:22px;height:22px;box-shadow:0 0 0 4px rgba(22,119,255,.5),0 1px 4px rgba(0,0,0,.5)}
+body:not(.phin) .dot b{left:18px}
+body:not(.phin) .dot.hit{width:20px;height:20px}
 .dot.sel{width:20px;height:20px;box-shadow:0 0 0 4px rgba(255,197,46,.75),0 1px 4px rgba(0,0,0,.5)}
 .dot b{position:absolute;left:15px;top:50%;transform:translateY(-50%);white-space:nowrap;font-size:12px;font-weight:900;color:#14202b;letter-spacing:-.02em;text-shadow:-1.5px 0 #fff,1.5px 0 #fff,0 -1.5px #fff,0 1.5px #fff,-1px -1px #fff,1px 1px #fff,-1px 1px #fff,1px -1px #fff;display:none;pointer-events:auto}
 body.lbl .dot b,.dot.sel b{display:block}
@@ -295,6 +299,7 @@ body.live .rt td{font-size:13.5px}body.live .rt td.lv{white-space:normal;width:a
 .phs{flex:0 0 auto;margin-top:2px;display:flex;height:30px;border-radius:99px;border:1px solid var(--ink);background:var(--card);box-shadow:0 2px 8px rgba(10,20,30,.12);overflow:hidden}
 .phs button{border:0;background:transparent;color:var(--ink2);font:inherit;font-size:12.5px;font-weight:900;padding:0 12px;cursor:pointer}
 .phs button.on{background:var(--ink);color:var(--card)}
+.phs button[data-ph=out].on{background:#1677ff;color:#fff}
 .phs button[data-ph=in].on{background:#ff6a00;color:#fff}
 .dot.in{background:#ff6a00;border-radius:4px;transform:rotate(45deg)}
 .dot.in b{transform:translateY(-50%) rotate(-45deg);transform-origin:left center;left:13px}
