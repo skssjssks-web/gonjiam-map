@@ -374,6 +374,27 @@ body.live .rt td{font-size:13.5px}body.live .rt td.lv{white-space:normal;width:a
 .rbex{margin:10px 0 0;padding:8px 12px;border-radius:12px;border:1.5px solid #7b4bd6;font-size:13px;font-weight:800;color:var(--ink)}
 .rbex div{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:3px 0}.rbex .add b{color:#6a3cc4;font-size:14.5px}
 @media (prefers-color-scheme:dark){.rbex .add b{color:#b79bff}}
+.lvc{padding-top:0}.lvc .chip{height:30px;font-size:12.5px;color:var(--ink);font-weight:800}.lvc .chip b{font-weight:900;margin-left:2px}
+.lvc .chip.lvt{border-color:#1677ff;color:#1677ff;font-weight:900}.lvc .chip.lvt.old{border-color:#e02828;color:#e02828}.lvc .chip.on{background:#1677ff;color:#fff;border-color:#1677ff}
+body.phin .lvc .chip.on{background:#ff6a00;border-color:#ff6a00}
+.vq{background:var(--card);border:1.5px solid #1677ff;border-radius:12px;box-shadow:var(--sh);max-height:52vh;overflow:auto;display:flex;flex-direction:column}
+body.phin .vq{border-color:#ff6a00}
+.vq button{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-height:44px;border:0;border-bottom:1px solid var(--line);background:none;color:var(--ink);font:inherit;text-align:left;padding:8px 12px;cursor:pointer}
+.vq button b{font-size:15.5px;font-weight:900;font-variant-numeric:tabular-nums}.vq button span{font-size:13px;font-weight:800;flex:1;min-width:0;overflow-wrap:anywhere}.vq button em{font-style:normal;font-size:11.5px;font-weight:900;color:#fff;background:#7a4bd6;border-radius:6px;padding:1px 5px}
+.vq button.k{font-size:14px;font-weight:900;color:#1677ff}body.phin .vq button.k{color:#d45500}
+.vq p{margin:0;padding:6px 12px;font-size:11.5px;font-weight:800;color:var(--ink)}
+.vb{flex:0 0 auto;font-size:12px;font-weight:900;padding:2px 8px;border-radius:99px;border:1.5px solid;white-space:nowrap}
+.vb.ok{color:#14703f;border-color:#1f8a4d}.vb.no{color:#c41d1d;border-color:#e02828}.vb.mid{color:#1659c7;border-color:#1677ff}
+@media (prefers-color-scheme:dark){.vb.ok{color:#4cd08a}.vb.no{color:#ff7676}.vb.mid{color:#7cb8ff}}
+.hrt .vb{margin-left:auto;align-self:center}
+.vr{display:grid;grid-template-columns:auto 1fr auto;grid-template-areas:"n d b" "t t t";gap:3px 8px;align-items:center;width:100%;border:0;border-top:1px solid var(--line);background:none;color:var(--ink);font:inherit;text-align:left;padding:9px 2px;cursor:pointer}
+.vr .vn{grid-area:n;font-size:15px;font-weight:900;font-variant-numeric:tabular-nums}.vr .vd{grid-area:d;font-size:13px;font-weight:800;min-width:0;overflow-wrap:anywhere}.vr .vb{grid-area:b}.vr .vt{grid-area:t;font-size:12.5px;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums}.vr .vt em{font-style:normal;color:#c41d1d;font-weight:900}
+.lvf{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 8px}.lvf button{height:32px;border-radius:99px;border:1.5px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-size:13px;font-weight:800;padding:0 11px;cursor:pointer}.lvf button.on{background:var(--ink);color:var(--card);border-color:var(--ink)}
+.lvst{margin:12px 0 0}.lvst .h3i b{color:#1677ff}body.phin .lvst .h3i b{color:#d45500}
+.lvs{font-size:12px;font-weight:800;color:var(--ink);margin:0 0 6px;line-height:1.45}.lvs .r{color:#c41d1d}
+.vbox{border:1.5px solid var(--line);border-radius:12px;padding:9px 11px;margin:6px 0 0}.vh2{display:flex;align-items:center;gap:8px;justify-content:space-between;margin:0 0 6px}.vh2 b{font-size:14px;font-weight:900;overflow-wrap:anywhere;min-width:0}
+.vgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px 10px}.vi{display:flex;flex-direction:column;min-width:0}.vi span{font-size:11.5px;font-weight:800;color:var(--ink);opacity:.8}.vi b{font-size:14.5px;font-weight:900;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}.vi b.r{color:#c41d1d}.vi small{font-size:11px;font-weight:800;opacity:.85}
+@media (prefers-color-scheme:dark){.vi b.r,.vr .vt em,.lvs .r{color:#ff7676}}
 </style></head>
 <body>
 <div id="map"></div>
@@ -591,7 +612,9 @@ function init(){
   $('chips').addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c||PH!=='out')return;if(c.id==='mnB'){openMenu();return}
     if(filt===c.dataset.f&&!mf){filt='전체'}else{filt=c.dataset.f}mf=null;chipSync();apply(true)});
   menuInit();chipSync();if(ME&&ME.admin){sxInit();seInit()}
-  $('q').addEventListener('input',()=>apply(false));
+  $('q').addEventListener('input',()=>{vqDraw();apply(false)});
+  $('q').addEventListener('focus',()=>{lvLoad(false);vqDraw()});
+  if(ME&&ME.admin){lvChips();lvLoad(true);setInterval(()=>{if(!document.hidden)lvLoad(false)},120000)}
   $('live').addEventListener('click',toggleLive);
   phInit();
   apply(false);
@@ -615,7 +638,7 @@ function apply(fit){
   items.forEach(g=>{g.vis=g.ps.filter(p=>match(p,q));g.hit=g.vis.filter(p=>hitQ(p,q));const ok=g.vis.length>0;if(ok!==g.on){g.ov.setMap(ok?map:null);g.on=ok}if(ok){paint(g);vis.push(...g.vis);hits.push(...g.hit)}});
   const tgt=q?hits:vis;
   if(tgt.length&&(fit||q)){const b=new kakao.maps.LatLngBounds();tgt.forEach(p=>b.extend(new kakao.maps.LatLng(p[10],p[11])));b.extend(new kakao.maps.LatLng(HUB.lat,HUB.lon));map.setBounds(b)}
-  if(q&&!hits.length)toast('「'+$('q').value.trim()+'」 찾는 점소가 없어요',1800);
+  if(q&&!hits.length&&!vqHas())toast('「'+$('q').value.trim()+'」 찾는 점소가 없어요',1800);
   if(q&&hits.length===1)pick(hits[0]);
 }
 function toggleLive(){
@@ -680,9 +703,9 @@ function render(p){
    '<tr><td class="l">가는길</td><td class="t"><span class="v">'+hm(p[14])+'</span></td><td class="k">'+p[12].toFixed(1)+'km</td>'+c(lg)+'</tr>'+
    '<tr><td class="l">다회전 왕복</td><td class="t"><span class="v">'+hm(p[17])+'</span></td><td class="k">'+(p[12]+p[13]).toFixed(1)+'km</td>'+c(lt)+'</tr>'+meRow(p)+'</table>'+
    etaHtml(p,live)+lgdHtml(p,live)+
-   (RB.from||RB.via?'':rbHtml(ptOut(p)))+nearHtml(p)+
+   (RB.from||RB.via?'':rbHtml(ptOut(p)))+lvStoreHtml('out',p)+nearHtml(p)+
    '<div class="btns g"><button class="btn nav" id="nvK" type="button">🚘 카카오내비</button><button class="btn nav" id="nvT" type="button">🚘 T맵</button></div>'+rvHtml()+memoHtml(p[5])+phHtml(p[5]);
-  memoBind(p[5]);phBind(p[5]);rvBind(p[10],p[11],fnm(p));rbBind();
+  memoBind(p[5]);phBind(p[5]);rvBind(p[10],p[11],fnm(p));rbBind();lvStoreBind();
   $('nvK').addEventListener('click',()=>openNav('kakaomap://route?ep='+p[10]+','+p[11]+'&by=CAR','https://map.kakao.com/link/to/'+encodeURIComponent(p[4])+','+p[10]+','+p[11],'카카오맵'));
   $('nvT').addEventListener('click',()=>openNav('tmap://route?goalname='+encodeURIComponent(p[4])+'&goalx='+p[11]+'&goaly='+p[10],'','T맵'));
   $('nvK').addEventListener('click',()=>use('nav',p[5]));$('nvT').addEventListener('click',()=>use('nav',p[5]));
@@ -1095,7 +1118,7 @@ function phSet(v){if(v===PH)return;const o=PH;if(IPIN){IPIN.setMap(null);IPIN=nu
   if(o!=='out'){inClose();if(IIT)IIT.forEach(g=>{g.ov.setMap(null);g.on=null});PST[o].iit=IIT;PST[o].f=IF}
   PH=v;
   if(PH!=='out'){items.forEach(g=>{g.ov.setMap(null);g.on=null});IB=PH==='etc'?ET:INB;IIT=PST[PH].iit;IF=PST[PH].f;inBuild();IIT.forEach(g=>{g.on=null})}
-  phDraw();apply(true);
+  phDraw();apply(true);LVK=null;lvChips();vqDraw();if(RB.from||RB.via||RB.to){RB={from:null,via:null,to:null,res:null};clearLines('rb');rbMarks();rbBar()}
 }
 function inBuild(){if(IIT)return;IIT=[];const gm={};
   IB.forEach(r=>{const k=(+r[6]).toFixed(4)+','+(+r[7]).toFixed(4);(gm[k]=gm[k]||[]).push(r)});
@@ -1113,7 +1136,7 @@ function applyIn(fit){inBuild();
   IIT.forEach(g=>{g.vis=g.ps.filter(inMatch);g.hit=g.vis.filter(r=>inHit(r,q));const ok=g.vis.length>0;if(ok!==g.on){g.ov.setMap(ok?map:null);g.on=ok}if(ok){inPaint(g);vis.push(...g.vis);hits.push(...g.hit)}});
   const tgt=q?hits:vis;
   if(tgt.length&&(fit||q)){const b=new kakao.maps.LatLngBounds();tgt.forEach(r=>b.extend(new kakao.maps.LatLng(r[6],r[7])));b.extend(new kakao.maps.LatLng(HUB.lat,HUB.lon));map.setBounds(b)}
-  if(q&&!hits.length)toast('「'+$('q').value.trim()+'」 찾는 '+(isEt()?'그외':'입고')+' 점소가 없어요',1800);
+  if(q&&!hits.length&&!vqHas())toast('「'+$('q').value.trim()+'」 찾는 '+(isEt()?'그외':'입고')+' 점소가 없어요',1800);
   if(q&&hits.length===1)pickIn(hits[0]);
 }
 function inClose(){const o=ICUR;ICUR=null;if(o&&IIT)IIT.forEach(g=>{if(g.ps.includes(o))inPaint(g)})}
@@ -1151,7 +1174,7 @@ function inRender(r){const et=isEt(),hq=r[8]<0,self=r[8]===0||hq,c=ICACHE[r[0]],
    (et?'':(cuP?'<h3 class="h3i">여기를 거쳐 곤지암에 온 차 <b>'+r[11]+'대</b> <small>('+esc(E.days||'')+')</small></h3>':
    '<h3 class="h3i">최근 5일 곤지암 입고 <b>'+r[11]+'대</b> <small>('+r[12]+'일 들어옴 · 10/30·11/2~11/5)</small></h3>')+
    '<div class="ivk">'+ivk(r[13]).map(([n,c])=>'<span>'+esc(n)+'<b>'+c+'</b></span>').join('')+'</div>')+
-   (hq||RB.from||RB.via?'':rbHtml(ptIn(r)))+inExt(r,E,cuP)+phHtml(r[0])+
+   (hq||RB.from||RB.via?'':rbHtml(ptIn(r)))+(isEt()?'':lvStoreHtml('in',r))+inExt(r,E,cuP)+phHtml(r[0])+
    (liveOn&&L&&L.roads.length?lgdHtml0():'')+
    '<div class="btns g"><button class="btn nav" id="nvK" type="button">🚘 점소로 (카카오)</button><button class="btn nav" id="nvT" type="button">🚘 점소로 (T맵)</button></div>'+
    '<div class="btns g" style="margin-top:6px"><button class="btn nav" id="nvH" type="button">🏁 곤지암으로 (카카오)</button><button class="btn nav" id="nvHT" type="button">🏁 곤지암으로 (T맵)</button></div>'+rvHtml()+
@@ -1161,7 +1184,7 @@ function inRender(r){const et=isEt(),hq=r[8]<0,self=r[8]===0||hq,c=ICACHE[r[0]],
   $('nvT').addEventListener('click',()=>{use('nav',r[0]);openNav('tmap://route?goalname='+encodeURIComponent(r[1])+'&goalx='+r[7]+'&goaly='+r[6],'','T맵')});
   $('nvH').addEventListener('click',()=>{use('nav','HUB');openNav('kakaomap://route?sp='+r[6]+','+r[7]+'&ep='+HUB.lat+','+HUB.lon+'&by=CAR','https://map.kakao.com/link/from/'+encodeURIComponent(r[1])+','+r[6]+','+r[7]+'/to/'+encodeURIComponent('곤지암Hub')+','+HUB.lat+','+HUB.lon,'카카오맵')});
   $('nvHT').addEventListener('click',()=>{use('nav','HUB');openNav('tmap://route?startname='+encodeURIComponent(r[1])+'&startx='+r[7]+'&starty='+r[6]+'&goalname='+encodeURIComponent('곤지암Hub')+'&goalx='+HUB.lon+'&goaly='+HUB.lat,'','T맵')});
-  const ca=$('cpa');if(ca)ca.addEventListener('click',()=>copyTxt(r[5],ca));phBind(r[0]);rvBind(r[6],r[7],r[1]);if(!hq)rbBind();
+  const ca=$('cpa');if(ca)ca.addEventListener('click',()=>copyTxt(r[5],ca));phBind(r[0]);rvBind(r[6],r[7],r[1]);if(!hq)rbBind();lvStoreBind();
   if(hq){$('sb').querySelectorAll('.btns.g').forEach(x=>x.style.display='none');const rb=$('nvR');if(rb)rb.style.display='none'}
   const sb=$('sb');sb.querySelectorAll('.fsb,.fcu').forEach(b=>b.addEventListener('click',()=>{const x=iby(b.dataset.c);if(x)pickIn(x)}));
   sb.querySelectorAll('.adp').forEach(b=>b.addEventListener('click',()=>{const x=iby(b.dataset.c);if(x)pinAt(x[6],x[7],x[1])}));
@@ -1274,5 +1297,152 @@ function rbShow(){if(!RB.to)return;cur=null;ICUR=null;hubOff();const R=RB.res,ba
   $('sb').innerHTML=h;openSheet();
   $('rbR').addEventListener('click',()=>{Object.keys(RBC).forEach(k=>delete RBC[k]);rbRun()});$('rbC').addEventListener('click',()=>{closeSheet();rbClear()});
   $('rbK').addEventListener('click',()=>{let u='kakaomap://route?sp='+base.lat+','+base.lon+'&ep='+t.lat+','+t.lon+'&by=CAR';const w='https://map.kakao.com/link/by/car/'+encodeURIComponent(base.nm)+','+base.lat+','+base.lon+(v?'/'+encodeURIComponent(v.nm)+','+v.lat+','+v.lon:'')+'/'+encodeURIComponent(t.nm)+','+t.lat+','+t.lon;if(v)u=w;openNav(u,w,'카카오맵')})}
+// ===== 실시간 차량(모니터링 연동) 2026-11-14 =====
+// 서버 rv_live_get(관리자만) = 실시간 모니터링 스크립트가 3분마다 보내는 로이스 입고·출고 차량별 목록 + 타허브 경유(hubx)
+let LV=null,LVT=0,LVBUSY=false,LVK=null;
+const OCAT={none:'미입문',vin:'차량입고',up:'상차중',upd:'상차완료',done:'출발'},ICAT={none:'서브 미출발',dep:'이동 중',arv:'곤지암 도착',dwn:'하차중',done:'하차완료'};
+const CLN={'2':'일반무분류','20':'콘솔무분류','21':'콘솔무분류(후미·환적)','23':'무분류','19':'환적PLT'};
+const EXH=['이천MP','안성MP','용인Hub','옥천Hub','군포Hub','군포BHub','대전Hub'];
+const t5=t=>{const d=String(t||'').replace(/\D/g,'');if(d.length>=12)return d.substr(8,2)+':'+d.substr(10,2);if(d.length===6||d.length===4)return d.substr(0,2)+':'+d.substr(2,2);if(d.length===3)return '0'+d[0]+':'+d.substr(1,2);return ''};
+const tMin=t=>{const s=t5(t);if(!s)return null;return +s.slice(0,2)*60+ +s.slice(3)};
+function tAbs(t){const s=t5(t);if(!s||!LV)return null;const d=String(t).replace(/\D/g,'');let y,m,dd;
+  if(d.length>=12){y=+d.substr(0,4);m=+d.substr(4,2);dd=+d.substr(6,2)}else{y=+LV.day.substr(0,4);m=+LV.day.substr(4,2);dd=+LV.day.substr(6,2);if(+s.slice(0,2)<12)dd+=1}
+  return new Date(y,m-1,dd,+s.slice(0,2),+s.slice(3)).getTime()}
+const pnum=v=>String(v||'').replace(/\s/g,'');
+function lvParse(j){const D=j.data||{},f=D.f||[],ix={};f.forEach((k,i)=>ix[k]=i);
+  const row=(a,d)=>{const g=k=>ix[k]==null?'':(a[ix[k]]==null?'':String(a[ix[k]]));const o={d,ln:g('lnnum'),vh:pnum(g('vhcnum')),tr:pnum(g('trnum')),ton:g('tonnm'),prtn:g('prtnnm'),div:g('vhcdivcd'),cl:g('clsfyn'),rem:g('rem'),core:g('core'),qty:+g('qty')||0,rat:+g('rat')||0,
+      vin:g('vhcin'),upS:g('upS'),upE:g('upE'),dprt:g('dprt'),arv:g('arv'),dwnS:g('dwnS'),dwnE:g('dwnE'),code:d==='out'?g('fcngbrancd'):g('branCd'),nm:d==='out'?g('fcngbrannm'):g('branNm')};
+    o.cat=d==='out'?(o.dprt?'done':o.upE?'upd':o.upS?'up':o.vin?'vin':'none'):(o.dwnE?'done':o.dwnS?'dwn':o.arv?'arv':o.dprt?'dep':'none');return o};
+  const hx=((D.hubx||{}).rows||[]).map(r=>({from:r[0],hub:r[1],rot:+r[2]||1,vh:pnum(r[3]),ton:r[4],st:r[5],to:r[7],cl:r[8]}));
+  LV={day:j.day,at:j.at?Date.parse(j.at):0,sat:D.at||0,out:(D.out||[]).map(a=>row(a,'out')),in:(D.in||[]).map(a=>row(a,'in')),hx,learn:j.learn||{}}}
+async function lvLoad(force){if(!ME||!ME.admin||LVBUSY)return;if(!force&&LV&&Date.now()-LVT<120000)return;LVBUSY=true;
+  try{const j=await rpc('rv_live_get',{p_token:TOK});if(j&&j.ok&&j.data){lvParse(j);LVT=Date.now()}else if(j&&j.ok){LV=null;LVT=Date.now()}}catch(e){}
+  LVBUSY=false;lvChips();if(LVK)lvList(LVK.k,LVK.a,true)}
+// 학습: 서버에 쌓인 실제 걸린 분(출발→도착) → 도로 거리로 말 안 되는 값은 빼고 가운데 값
+function lrnOf(dir,code,km){const a=LV&&LV.learn&&LV.learn[dir+':'+code];if(!a||!a.length||!km)return null;
+  const lo=km/100*60,hi=km/30*60+180,ok=a.filter(m=>m>=lo&&m<=hi).sort((x,y)=>x-y);if(ok.length<3)return null;
+  return {min:ok[Math.floor(ok.length/2)],n:ok.length}}
+function lrnMin(a,b,km){if(b.k==='HUB'&&a.k[0]==='i')return lrnOf('in',a.k.slice(1),km);if(a.k==='HUB'&&b.k[0]==='o')return lrnOf('out',b.k.slice(1),km);return null}
+const stOf=v=>{const L=ST.filter(p=>p[5]===v.code);if(L.length<2)return L[0]||ST.find(p=>p[4]===v.nm)||null;return L.find(p=>/반석/.test(v.prtn)?/쿠팡/.test(p[4]):!/쿠팡/.test(p[4]))||L[0]};
+const inOf=v=>INB.find(r=>r[0]===v.code)||INB.find(r=>r[1]===v.nm)||null;
+const inByNm=n=>{const k=String(n||'').toLowerCase().replace(/\s/g,'');return INB.find(r=>String(r[1]).toLowerCase().replace(/\s/g,'')===k)||INB.find(r=>String(r[1]).toLowerCase().replace(/\s/g,'').startsWith(k))||null};
+function expOut(v){const p=stOf(v);if(!p)return null;const L=lrnOf('out',p[5],p[12]);return L?{min:L.min,src:'학습 '+L.n+'건',km:p[12]}:{min:p[14],src:'기준',km:p[12]}}
+function expIn(code,nm){const r=code?INB.find(x=>x[0]===code):inByNm(nm);if(!r||!(r[8]>0))return null;const L=lrnOf('in',r[0],r[8]);return L?{min:L.min,src:'학습 '+L.n+'건',km:+r[8]}:{min:+r[9],src:'기준',km:+r[8]}}
+const isShut=v=>{const p=stOf(v);return !!p&&p[3]==='셔틀'};
+const isMu=v=>/^(2|23)$/.test(v.cl),isKon=v=>/^(20|21)$/.test(v.cl),isPlt=v=>v.cl==='19';
+const hubNm=h=>String(h||'').replace(/Hub$/,'hub');
+function lvSets(){if(!LV)return {};const O=LV.out,I=LV.in;return PH==='out'?{
+   oall:['🚚 출고 차량',O],ono:['미출발',O.filter(v=>v.cat!=='done')],oshut:['셔틀',O.filter(isShut)],oext:['외부하차',LV.hx]}:{
+   iall:['🚚 입고 차량',I],ino:['미입고',I.filter(v=>v.cat==='none'||v.cat==='dep')],imu:['일반무분류',I.filter(isMu)],ikon:['콘솔무분류',I.filter(isKon)],iplt:['환적PLT',I.filter(isPlt)]}}
+function lvChips(){let x=$('lvc');const on=!!(ME&&ME.admin)&&PH!=='etc';
+  if(!x){x=document.createElement('div');x.id='lvc';x.className='chips lvc';$('top').insertBefore(x,$('hint'));
+    x.addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;if(c.dataset.k==='re'){lvLoad(true);toast('실시간 차량 다시 받는 중…',1200);return}lvList(c.dataset.k)})}
+  x.hidden=!on;if(!on)return;
+  if(!LV){x.innerHTML='<button class="chip lv0" type="button" data-k="re">📡 실시간 차량 '+(LVT?'자료 없음 · 다시':'받는 중…')+'</button>';return}
+  const S=lvSets(),old=Date.now()-LV.at>15*60000;
+  x.innerHTML='<button class="chip lvt'+(old?' old':'')+'" type="button" data-k="re">📡 '+tm(LV.at)+(old?' 멈춤':'')+'</button>'+Object.keys(S).map(k=>'<button class="chip lvk'+(LVK&&LVK.k===k?' on':'')+'" type="button" data-k="'+k+'">'+S[k][0]+' <b>'+S[k][1].length+'</b></button>').join('')}
+// ---- 목록 ----
+const vBadge=(v)=>{const L=v.d==='out'?OCAT:ICAT,c=v.d==='out'?(v.cat==='done'?'ok':v.cat==='none'?'no':'mid'):(v.cat==='done'?'ok':v.cat==='none'?'no':'mid');return '<span class="vb '+c+'">'+L[v.cat]+'</span>'};
+function vRowH(v,i){const p=v.d==='out'?stOf(v):null,nm=v.d==='out'?(p?fnm(p):v.nm):String(v.nm).replace(/Sub$/,'');
+  const tt=v.d==='out'?(v.dprt?'출발 '+t5(v.dprt):v.upE?'상차완료 '+t5(v.upE):v.upS?'상차 '+t5(v.upS):v.vin?'입문 '+t5(v.vin):''):(v.dwnE?'하차완료 '+t5(v.dwnE):v.arv?'도착 '+t5(v.arv):v.dprt?'서브출발 '+t5(v.dprt):'');
+  return '<button type="button" class="vr" data-i="'+i+'"><b class="vn">'+esc(v.vh)+'</b><span class="vd">'+esc((p?p[0]+' '+p[1]+' ':'')+nm)+(CLN[v.cl]&&v.d==='in'?' · '+CLN[v.cl]:'')+'</span>'+vBadge(v)+'<span class="vt">'+esc(tt)+'</span></button>'}
+function hxRowH(h,i){const iv=lvInFor(h.vh,h.hub),dep=iv&&iv.dprt,e=expIn('',h.hub),eta=dep&&e?tAbs(iv.dprt)+e.min*60000:null;
+  return '<button type="button" class="vr" data-h="'+i+'"><b class="vn">'+esc(h.vh)+'</b><span class="vd">'+esc(h.hub)+' '+h.rot+'회전 → 곤지암 → '+esc(String(h.to).replace(/Sub$/,''))+'</span><span class="vb '+(/완료|도착/.test(h.st)?'ok':/미출발|대기/.test(h.st)?'no':'mid')+'">'+esc(h.st||'—')+'</span><span class="vt">'+(dep?'출발 '+t5(dep)+(eta?' · 도착예정 '+tm(eta):''):'곤지암 미출발')+(e?' · '+e.km.toFixed(0)+'km':'')+'</span></button>'}
+const lvInFor=(vh,hub)=>LV.in.find(v=>v.vh===vh&&(!hub||inByNm(hub)&&v.code===inByNm(hub)[0]))||null;
+let LVL=[];
+function lvList(k,a,keep){if(!LV){lvLoad(true);toast('실시간 차량 자료를 받는 중이에요',1500);return}
+  const S=lvSets();if(!S[k]){LVK=null;lvChips();return}LVK={k,a:a||''};lvChips();
+  cur=null;ICUR=null;hubOff();let L=S[k][1],h='';const sub=a||'';
+  if(k==='oext'){const hubs=[...new Set(LV.hx.map(x=>x.hub))].sort();L=sub?L.filter(x=>x.hub===sub):L;LVL=L;
+    h='<div class="lvf"><button type="button" class="'+(sub?'':'on')+'" data-a="">전체 '+LV.hx.length+'</button>'+hubs.map(n=>'<button type="button" class="'+(sub===n?'on':'')+'" data-a="'+esc(n)+'">'+esc(hubNm(n))+' '+LV.hx.filter(x=>x.hub===n).length+'</button>').join('')+'</div>'+
+      (L.length?L.map(hxRowH).join(''):'<p class="inote">외부하차 차량이 없어요.</p>')+'<p class="inote">외부하차 = 곤지암 출고가 잡혀 있는데 다른 허브·MP에서 먼저 하차하고 곤지암으로 들어오는 차예요. 출발·도착예정은 로이스 입고(타허브 → 곤지암) 출발 시각 + 예상 시간이에요.</p>'}
+  else{
+    if(k==='oshut'){const g=[...new Set(L.map(v=>fnm(stOf(v))))];L=sub?L.filter(v=>fnm(stOf(v))===sub):L;
+      h='<div class="lvf"><button type="button" class="'+(sub?'':'on')+'" data-a="">전체 '+S[k][1].length+'</button>'+g.map(n=>'<button type="button" class="'+(sub===n?'on':'')+'" data-a="'+esc(n)+'">'+esc(n)+' '+S[k][1].filter(v=>fnm(stOf(v))===n).length+'</button>').join('')+'</div>'}
+    if(k==='ino'||k==='imu'||k==='ikon'||k==='iplt'){const g={};S[k][1].forEach(v=>{g[v.nm]=(g[v.nm]||0)+1});L=sub?L.filter(v=>v.nm===sub):L;
+      h='<div class="lvf"><button type="button" class="'+(sub?'':'on')+'" data-a="">전체 '+S[k][1].length+'</button>'+Object.keys(g).sort((x,y)=>g[y]-g[x]).map(n=>'<button type="button" class="'+(sub===n?'on':'')+'" data-a="'+esc(n)+'">'+esc(String(n).replace(/Sub$/,''))+' '+g[n]+'</button>').join('')+'</div>'}
+    const ord=k[0]==='o'?['none','vin','up','upd','done']:['none','dep','arv','dwn','done'];
+    L=L.slice().sort((x,y)=>ord.indexOf(x.cat)-ord.indexOf(y.cat)||String(x.nm).localeCompare(String(y.nm)));LVL=L;
+    if(k==='oshut')h+=L.length?'<div class="shg">'+L.map((v,i)=>{const p=stOf(v);return '<button type="button" class="vr" data-i="'+i+'"><b class="vn">'+esc(v.vh)+'</b><span class="vd">'+esc(p?fnm(p)+' 셔틀':v.nm)+' · '+esc(v.ln)+'</span>'+vBadge(v)+'<span class="vt">로이스 상차완료 '+(t5(v.upE)||'—')+' · 곤지암 출발 '+(t5(v.dprt)||'<em>미출발</em>')+'</span></button>'}).join('')+'</div>':'<p class="inote">셔틀 차량이 없어요.</p>';
+    else h+=L.length?L.slice(0,300).map(vRowH).join('')+(L.length>300?'<p class="inote">300대까지만 보여요. 검색으로 좁혀 주세요.</p>':''):'<p class="inote">해당 차량이 없어요.</p>'}
+  $('sb').innerHTML='<h2 class="hrt"><span class="hbn">'+(k[0]==='o'?'출고':'입고')+'</span><span class="hnm">'+S[k][0].replace('🚚 ','')+' '+(k==='oext'?LVL.length:L.length)+'대</span></h2><p class="lvs">'+lvStamp()+'</p>'+h;
+  if(!keep)openSheet();const sb=$('sb');sb.scrollTop=0;
+  sb.querySelectorAll('.lvf button').forEach(b=>b.addEventListener('click',()=>lvList(k,b.dataset.a)));
+  sb.querySelectorAll('.vr[data-i]').forEach(b=>b.addEventListener('click',()=>lvCar(LVL[+b.dataset.i])));
+  sb.querySelectorAll('.vr[data-h]').forEach(b=>b.addEventListener('click',()=>lvHx(LVL[+b.dataset.h])))}
+function lvStamp(){if(!LV)return '';const d=LV.day;return '중계일 '+d.substr(4,2)+'/'+d.substr(6,2)+' · 로이스 '+tm(LV.at)+' 받음'+(Date.now()-LV.at>15*60000?' · <b class="r">🔴 15분 넘게 새 자료 없음(모니터링 PC 확인)</b>':'')+' · 그날 모니터링된 차만, 다음 중계일 자료가 오면 초기화'}
+// ---- 차량 상세 ----
+const li2=(a,b,c)=>'<div class="vi"><span>'+a+'</span><b'+(c?' class="'+c+'"':'')+'>'+b+'</b></div>';
+function lvCar(v){if(!v)return;cur=null;ICUR=null;hubOff();const same=LV[v.d].filter(x=>x.vh===v.vh);let h='';
+  const ins=LV.in.filter(x=>x.vh===v.vh||(v.tr&&x.vh===v.tr)),outs=LV.out.filter(x=>x.vh===v.vh||(v.tr&&x.tr===v.tr&&x.tr)),hx=LV.hx.filter(x=>x.vh===v.vh);
+  h+='<h2 class="hrt"><span class="hbn">'+(v.d==='out'?'출고':'입고')+'</span><span class="hnm">'+esc(v.vh)+'</span></h2>';
+  h+='<div class="tags">'+vBadge(v)+(v.ton?'<span class="tag tw">'+esc(v.ton)+'</span>':'')+(v.prtn?'<span class="tag tw">'+esc(v.prtn)+'</span>':'')+(v.tr&&v.tr!==v.vh?'<span class="tag tw">샤시 '+esc(v.tr)+'</span>':'')+(CLN[v.cl]&&v.d==='in'?'<span class="tag in">'+CLN[v.cl]+'</span>':'')+'</div>';
+  if(outs.length){h+='<h3 class="h3i">🚚 오늘 곤지암 출고 '+outs.length+'건</h3>';
+    outs.forEach(o=>{const p=stOf(o),e=o.dprt?expOut(o):null,eta=e&&tAbs(o.dprt)?tAbs(o.dprt)+e.min*60000:null;
+      h+='<div class="vbox"><div class="vh2"><b>'+esc(p?p[0]+' '+p[1]+' '+fnm(p):o.nm)+'</b>'+vBadge(o)+'</div><div class="vgrid">'+
+       li2('로이스 노선',esc(o.ln||'—'))+li2('차량입고(입문)',t5(o.vin)||'—')+li2('상차 시작',t5(o.upS)||'—')+li2('상차완료',t5(o.upE)||'—')+
+       li2('곤지암 출발',o.dprt?t5(o.dprt):'미출발',o.dprt?'':'r')+li2('도착예정',eta?tm(eta)+' <small>'+e.src+'</small>':'—')+li2('거리',p?(+p[12]).toFixed(1)+'km':'—')+(o.rat?li2('적재율',o.rat+'%'):'')+'</div></div>'})}
+  if(ins.length){h+='<h3 class="h3i">🏁 오늘 곤지암 입고 '+ins.length+'건 <small>(어느 서브에서 왔는지)</small></h3>';
+    ins.forEach(o=>{const e=o.dprt&&!o.arv?expIn(o.code,o.nm):null,eta=e&&tAbs(o.dprt)?tAbs(o.dprt)+e.min*60000:null,r=inOf(o);
+      h+='<div class="vbox"><div class="vh2"><b>'+esc(o.nm)+' → 곤지암</b>'+vBadge(o)+'</div><div class="vgrid">'+
+       li2('서브 출발',o.dprt?t5(o.dprt):'미출발',o.dprt?'':'r')+li2(o.arv?'곤지암 도착(입문)':'도착예정',o.arv?t5(o.arv):eta?tm(eta)+' <small>'+e.src+'</small>':'—')+li2('하차 시작',t5(o.dwnS)||'—')+li2('하차완료',t5(o.dwnE)||'—')+
+       li2('거리',r&&r[8]>0?(+r[8]).toFixed(1)+'km':'—')+(CLN[o.cl]?li2('분류',CLN[o.cl]):'')+'</div></div>'})}
+  if(hx.length){h+='<h3 class="h3i">🔁 외부하차(타허브 경유)</h3>'+hx.map(x=>{const iv=lvInFor(x.vh,x.hub),e=expIn('',x.hub),eta=iv&&iv.dprt&&e?tAbs(iv.dprt)+e.min*60000:null;
+    return '<div class="vbox"><div class="vh2"><b>'+esc(x.from)+' → '+esc(x.hub)+' '+x.rot+'회전</b><span class="vb mid">'+esc(x.st||'—')+'</span></div><div class="vgrid">'+li2('타허브 → 곤지암 출발',iv&&iv.dprt?t5(iv.dprt):'미출발',iv&&iv.dprt?'':'r')+li2('곤지암 도착예정',eta?tm(eta):'—')+li2('거리',e?e.km.toFixed(1)+'km':'—')+li2('곤지암 출고 도착점소',esc(x.to||'—'))+'</div></div>'}).join('')}
+  if(!outs.length&&!ins.length&&!hx.length)h+='<p class="inote">오늘 모니터링된 기록이 없어요.</p>';
+  h+='<div class="btns"><button class="btn" type="button" id="lvR">🧭 루트 보기</button><button class="btn" type="button" id="lvB">← 목록</button></div><p class="lvs">'+lvStamp()+'</p>';
+  $('sb').innerHTML=h;openSheet();$('sb').scrollTop=0;
+  $('lvB').addEventListener('click',()=>LVK?lvList(LVK.k,LVK.a):closeSheet());
+  $('lvR').addEventListener('click',()=>lvRoute(v,outs,ins));
+  if(v.d==='out'?outs.length:ins.length)lvRoute(v,outs,ins,true)}
+function lvHx(x){const iv=lvInFor(x.vh,x.hub);const v=LV.out.find(o=>o.vh===x.vh)||iv;if(v)lvCar(v);else toast('차량 기록을 못 찾았어요',1500)}
+// 차량 루트: 출고 = 곤지암 → (경유) → 도착점소 / 입고 = 서브 → 곤지암
+function lvRoute(v,outs,ins,quiet){let from=null,via=null,to=null;
+  if(v.d==='out'){const ps=[];outs.forEach(o=>{const p=stOf(o);if(p&&!ps.includes(p))ps.push(p)});if(!ps.length){if(!quiet)toast('도착 점소 위치를 못 찾았어요',1500);return}
+    to=ptOut(ps[ps.length-1]);if(ps.length>1)via=ptOut(ps[0])}
+  else{const o=ins[0]||v,r=inOf(o);if(!r||!(r[8]>0)){if(!quiet)toast('출발 서브 위치를 못 찾았어요',1500);return}from=ptIn(r);to=PHUB}
+  RB={from,via,to,res:null,busy:false};rbMarks();rbBar();
+  if(quiet){rbRunQ()}else rbRun()}
+async function rbRunQ(){const base=rbBase(),v=RB.via,t=RB.to;RB.busy=true;rbBar();
+  try{let legs,direct=null;if(v){const r=await Promise.all([rbLeg(base,v,true),rbLeg(v,t,true),rbLeg(base,t,false)]);legs=[r[0],r[1]];direct=r[2]}else legs=[await rbLeg(base,t,true)];RB.res={legs,direct,at:Date.now()}}catch(e){RB.res={err:'길찾기 실패'}}
+  RB.busy=false;rbDraw(true);rbMarks();rbBar()}
+// ---- 검색 미리보기 (번호 4자리 → 같은 번호 차 풀넘버 목록) ----
+function vqFind(q){const out=[];if(!LV||!q)return out;const qs=q.replace(/\s/g,'').toLowerCase(),dig=/^\d{3,4}$/.test(qs);
+  const pool=PH==='out'?LV.out:LV.in,other=PH==='out'?LV.in:LV.out,seen={};
+  const add=(v,o)=>{const k=v.d+v.vh;if(seen[k])return;seen[k]=1;out.push({t:'v',v,o})};
+  const hitV=v=>dig?v.vh.slice(-4).includes(qs)||v.tr.slice(-4).includes(qs):(v.vh.toLowerCase().includes(qs)||(v.tr&&v.tr.toLowerCase().includes(qs))||(qs.length>=3&&String(v.ln).toLowerCase()===qs));
+  pool.forEach(v=>{if(hitV(v))add(v,0)});if(!out.length)other.forEach(v=>{if(hitV(v))add(v,1)});
+  // 노선(N61 등) → 그 노선 도착점소 차들
+  if(PH==='out'&&!dig){const ps=ST.filter(p=>String(p[1]).toLowerCase()===qs||(qs.length>=2&&fnm(p).toLowerCase()===qs));ps.forEach(p=>LV.out.filter(v=>stOf(v)===p).forEach(v=>add(v,0)))}
+  // 키워드
+  const K=[];const S=lvSets();
+  if(PH==='out'){if(/셔틀|대전|옥천|청원|이천/.test(qs)&&!/mp|hub|hud/.test(qs))K.push(['oshut','셔틀 차량 '+S.oshut[1].length+'대',/대전|옥천|청원|이천/.test(qs)?(S.oshut[1].map(v=>fnm(stOf(v))).find(n=>qs.includes(n.toLowerCase().slice(0,2)))||''):'']);
+    if(/외부|하차|mp|hub|hud|허브|군포/.test(qs)){const hs=[...new Set(LV.hx.map(x=>x.hub))];const m=hs.filter(n=>{const a=n.toLowerCase().replace(/hub$/,''),b=qs.replace(/hu[bd]$/,'').replace(/허브$/,'');return b.length>=2&&(a.includes(b)||b.includes(a))});
+      if(m.length)m.forEach(n=>K.push(['oext','외부하차 · '+n+' '+LV.hx.filter(x=>x.hub===n).length+'대',n]));else K.push(['oext','외부하차 차량 '+LV.hx.length+'대',''])}
+    if(/미출발/.test(qs))K.push(['ono','미출발 '+S.ono[1].length+'대',''])}
+  else{if(/콘솔/.test(qs))K.push(['ikon','콘솔무분류 '+S.ikon[1].length+'대','']);else if(/무분류/.test(qs))K.push(['imu','일반무분류 '+S.imu[1].length+'대','']);
+    if(/환적|plt/.test(qs))K.push(['iplt','환적PLT '+S.iplt[1].length+'대','']);if(/미입고|미출발/.test(qs))K.push(['ino','미입고 '+S.ino[1].length+'대',''])}
+  return K.map(k=>({t:'k',k})).concat(out.slice(0,30))}
+let VQ=[];
+function vqDraw(){let x=$('vq');if(!x){x=document.createElement('div');x.id='vq';x.className='vq';$('top').insertBefore(x,$('top').children[1]);
+    x.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const it=VQ[+b.dataset.i];if(!it)return;x.hidden=true;$('q').blur();
+      if(it.t==='k')lvList(it.k[0],it.k[2]);else lvCar(it.v)})}
+  const q=$('q').value.trim();if(!ME||!ME.admin||PH==='etc'||!q){x.hidden=true;VQ=[];return}
+  if(!LV){x.hidden=true;return}VQ=vqFind(q);if(!VQ.length){x.hidden=true;return}
+  x.innerHTML=VQ.map((it,i)=>{if(it.t==='k')return '<button type="button" data-i="'+i+'" class="k">🔎 '+esc(it.k[1])+'</button>';const v=it.v,p=v.d==='out'?stOf(v):null;
+    return '<button type="button" data-i="'+i+'"><b>'+esc(v.vh)+'</b><span>'+(it.o?'<em>'+(v.d==='out'?'출고':'입고')+'</em> ':'')+esc(v.d==='out'?(p?p[0]+' '+p[1]+' '+fnm(p):v.nm):String(v.nm).replace(/Sub$/,''))+'</span>'+vBadge(v)+'</button>'}).join('')+'<p>번호를 눌러 차량을 고르세요 · '+esc(lvStamp().split(' · ')[1]||'')+'</p>';x.hidden=false}
+const vqHas=()=>!!VQ.length;
+
+// 점소 상세: 오늘 그 점소 곤지암 차량만 상태
+let LVS=[];
+function lvStoreHtml(d,x){if(!LV||!ME||!ME.admin)return '';let L,hx=[];
+  if(d==='out'){L=LV.out.filter(v=>stOf(v)===x)}else{L=LV.in.filter(v=>v.code===x[0]);hx=LV.hx.filter(h=>{const r=inByNm(h.hub);return r&&r[0]===x[0]})}
+  LVS=L;if(!L.length&&!hx.length)return '<div class="lvst"><h3 class="h3i">📡 오늘 '+(d==='out'?'곤지암 → 이 점소 출고':'이 점소 → 곤지암 입고')+' 차량 <b>0대</b></h3></div>';
+  const ord=d==='out'?['none','vin','up','upd','done']:['none','dep','arv','dwn','done'];L=L.slice().sort((a,b)=>ord.indexOf(a.cat)-ord.indexOf(b.cat));LVS=L;
+  const cnt={};L.forEach(v=>cnt[v.cat]=(cnt[v.cat]||0)+1);const CN=d==='out'?OCAT:ICAT;
+  return '<div class="lvst"><h3 class="h3i">📡 오늘 '+(d==='out'?'곤지암 → 이 점소 출고':'이 점소 → 곤지암 입고')+' 차량 <b>'+L.length+'대</b> <small>'+ord.filter(k=>cnt[k]).map(k=>CN[k]+' '+cnt[k]).join(' · ')+'</small></h3>'+
+   L.map((v,i)=>{const r=vRowH(v,i);return r.replace('class="vr"','class="vr" data-s="'+i+'"').replace(' data-i="'+i+'"','')}).join('')+
+   (hx.length?'<h3 class="h3i">🔁 이 허브에서 하차하고 곤지암으로 올 차 <b>'+hx.length+'대</b></h3>'+hx.map(h=>'<div class="vr"><b class="vn">'+esc(h.vh)+'</b><span class="vd">'+esc(h.from)+' → '+h.rot+'회전 → 곤지암 → '+esc(h.to)+'</span><span class="vb mid">'+esc(h.st||'—')+'</span></div>').join(''):'')+'</div>'}
+function lvStoreBind(){$('sb').querySelectorAll('.vr[data-s]').forEach(b=>b.addEventListener('click',()=>lvCar(LVS[+b.dataset.s])))}
 </script>
 </body></html>
