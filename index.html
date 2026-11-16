@@ -374,8 +374,9 @@ body.live .rt td{font-size:13.5px}body.live .rt td.lv{white-space:normal;width:a
 .rbex{margin:10px 0 0;padding:8px 12px;border-radius:12px;border:1.5px solid #7b4bd6;font-size:13px;font-weight:800;color:var(--ink)}
 .rbex div{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:3px 0}.rbex .add b{color:#6a3cc4;font-size:14.5px}
 @media (prefers-color-scheme:dark){.rbex .add b{color:#b79bff}}
-.lvc{padding-top:0}.lvc .chip{height:30px;font-size:12.5px;color:var(--ink);font-weight:800}.lvc .chip b{font-weight:900;margin-left:2px}
+.lvc{padding-top:0;flex-wrap:wrap;overflow-x:visible;row-gap:5px}.lvc .chip{height:30px;font-size:12.5px;color:var(--ink);font-weight:800}.lvc .chip b{font-weight:900;margin-left:2px}
 .lvc .chip.lvt{border-color:#1677ff;color:#1677ff;font-weight:900}.lvc .chip.lvt.old{border-color:#e02828;color:#e02828}.lvc .chip.on{background:#1677ff;color:#fff;border-color:#1677ff}
+@media (min-width:900px) and (hover:hover){#chips,.lvc{flex-wrap:wrap;overflow-x:visible}}
 body.phin .lvc .chip.on{background:#ff6a00;border-color:#ff6a00}
 .vq{background:var(--card);border:1.5px solid #1677ff;border-radius:12px;box-shadow:var(--sh);max-height:52vh;overflow:auto;display:flex;flex-direction:column}
 body.phin .vq{border-color:#ff6a00}
@@ -620,7 +621,7 @@ function init(){
   menuInit();chipSync();if(ME&&ME.admin){sxInit();seInit()}
   $('q').addEventListener('input',()=>{vqDraw();apply(false)});
   $('q').addEventListener('focus',()=>{lvLoad(false);vqDraw()});
-  if(ME&&ME.admin){lvChips();lvLoad(true);setInterval(()=>{if(!document.hidden)lvLoad(false)},120000)}
+  if(ME){lvChips();lvLoad(true);setInterval(()=>{if(!document.hidden)lvLoad(false)},120000)}
   $('live').addEventListener('click',toggleLive);
   phInit();
   apply(false);
@@ -1363,7 +1364,7 @@ function lvParse(j){const D=j.data||{},f=D.f||[],ix={};f.forEach((k,i)=>ix[k]=i)
   LV={dmsAt:dmsOk?dmsAt:0,dmsHas:!!(X&&X.m),day:j.day,at:j.at?Date.parse(j.at):0,sat:D.at||0,out:(D.out||[]).map(a=>row(a,'out')),in:in0.filter(v=>!v.cz),cz:in0.filter(v=>v.cz).length,hx,hxHd:hx0.length-hx.length,learn:j.learn||{}};
   // 같은 차의 다른 줄에 샤시·공유샤시구분이 있으면 채움(입고는 입고끼리, 출고는 출고끼리)
   ['in','out'].forEach(d=>{const M={};LV[d].forEach(v=>{if(!plOk(v.vh))return;const o=M[v.vh]||(M[v.vh]={tr:'',dv:''});if(!o.tr&&vChOf(v))o.tr=v.tr;if(!o.dv&&v.dv)o.dv=v.dv});LV[d].forEach(v=>{const o=M[v.vh];if(!o)return;if(!vChOf(v)&&o.tr)v.tr=o.tr;if(!v.dv&&o.dv)v.dv=o.dv})})}
-async function lvLoad(force){if(!ME||!ME.admin||LVBUSY)return;if(!force&&LV&&Date.now()-LVT<120000)return;LVBUSY=true;
+async function lvLoad(force){if(!ME||LVBUSY)return;if(!force&&LV&&Date.now()-LVT<120000)return;LVBUSY=true;
   try{const j=await rpc('rv_live_get',{p_token:TOK});if(j&&j.ok&&j.data){lvParse(j);LVT=Date.now()}else if(j&&j.ok){LV=null;LVT=Date.now()}}catch(e){}
   LVBUSY=false;lvChips();if(LVK)lvList(LVK.k,LVK.a,true)}
 // 학습: 서버에 쌓인 실제 걸린 분(출발→도착) → 도로 거리로 말 안 되는 값은 빼고 가운데 값
@@ -1383,7 +1384,7 @@ const hubNm=h=>String(h||'').replace(/Hub$/,'hub');
 function lvSets(){if(!LV)return {};const O=LV.out,I=LV.in;return PH==='out'?{
    oall:['🚚 출고 차량',O],ono:['미출발',O.filter(v=>v.cat!=='done')],oshut:['셔틀',O.filter(isShut)],oplt:['무분류PLT',O.filter(isOplt)],oext:['외부하차',LV.hx]}:{
    iall:['🚚 입고 차량',I],ino:['미입고',I.filter(v=>v.cat==='none'||v.cat==='dep')],imu:['일반무분류',I.filter(isMu)],ikon:['콘솔무분류',I.filter(isKon)],iplt:['환적PLT',I.filter(isPlt)]}}
-function lvChips(){let x=$('lvc');const on=!!(ME&&ME.admin)&&PH!=='etc';
+function lvChips(){let x=$('lvc');const on=!!ME&&PH!=='etc';
   if(!x){x=document.createElement('div');x.id='lvc';x.className='chips lvc';$('top').insertBefore(x,$('hint'));
     x.addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;if(c.dataset.k==='re'){lvLoad(true);toast('실시간 차량 다시 받는 중…',1200);return}lvList(c.dataset.k)})}
   x.hidden=!on;if(!on)return;
@@ -1483,7 +1484,7 @@ let VQ=[];
 function vqDraw(){let x=$('vq');if(!x){x=document.createElement('div');x.id='vq';x.className='vq';$('top').insertBefore(x,$('top').children[1]);
     x.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const it=VQ[+b.dataset.i];if(!it)return;x.hidden=true;$('q').blur();
       if(it.t==='k')lvList(it.k[0],it.k[2]);else lvCar(it.v)})}
-  const q=$('q').value.trim();if(!ME||!ME.admin||PH==='etc'||!q){x.hidden=true;VQ=[];return}
+  const q=$('q').value.trim();if(!ME||PH==='etc'||!q){x.hidden=true;VQ=[];return}
   if(!LV){x.hidden=true;return}VQ=vqFind(q);if(!VQ.length){x.hidden=true;return}
   x.innerHTML=VQ.map((it,i)=>{if(it.t==='k')return '<button type="button" data-i="'+i+'" class="k">🔎 '+esc(it.k[1])+'</button>';const v=it.v,p=v.d==='out'?stOf(v):null;
     return '<button type="button" data-i="'+i+'"><b>'+vnH(v)+'</b><span>'+(it.o?'<em>'+(v.d==='out'?'출고':'입고')+'</em> ':'')+esc(v.d==='out'?(p?p[0]+' '+p[1]+' '+fnm(p):v.nm):String(v.nm).replace(/Sub$/,''))+' '+vkTag(v,1)+'</span>'+vBadge(v)+'</button>'}).join('')+'<p>번호를 눌러 차량을 고르세요 · '+esc(lvStamp().split(' · ')[1]||'')+'</p>';x.hidden=false}
@@ -1491,7 +1492,7 @@ const vqHas=()=>!!VQ.length;
 
 // 점소 상세: 오늘 그 점소 곤지암 차량만 상태
 let LVS=[];
-function lvStoreHtml(d,x){if(!LV||!ME||!ME.admin)return '';let L,hx=[];
+function lvStoreHtml(d,x){if(!LV||!ME)return '';let L,hx=[];
   if(d==='out'){L=LV.out.filter(v=>stOf(v)===x)}else{L=LV.in.filter(v=>v.code===x[0]);hx=LV.hx.filter(h=>{const r=inByNm(h.hub);return r&&r[0]===x[0]})}
   LVS=L;if(!L.length&&!hx.length)return '<div class="lvst"><h3 class="h3i">📡 오늘 '+(d==='out'?'곤지암 → 이 점소 출고':'이 점소 → 곤지암 입고')+' 차량 <b>0대</b></h3></div>';
   const ord=d==='out'?['none','vin','up','upd','done']:['none','dep','arv','dwn','done'];L=L.slice().sort((a,b)=>ord.indexOf(a.cat)-ord.indexOf(b.cat));LVS=L;
