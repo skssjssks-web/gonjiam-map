@@ -1313,7 +1313,8 @@ function tP(t){const x=String(t||'');let m=/(\d{1,2})\s*일\s*(\d{1,2}):(\d{2})/
   const d=x.replace(/\D/g,'');if(d.length>=12)return{y:+d.substr(0,4),mo:+d.substr(4,2),d:+d.substr(6,2),h:+d.substr(8,2),m:+d.substr(10,2)};
   m=/(\d{1,2}):(\d{2})/.exec(x);if(m)return{h:+m[1],m:+m[2]};if(d.length===4)return{h:+d.substr(0,2),m:+d.substr(2,2)};if(d.length===3)return{h:+d[0],m:+d.substr(1,2)};return null}
 const p2=n=>String(n).padStart(2,'0');
-const t5=t=>{const a=tP(t);return a&&a.h<24&&a.m<60?p2(a.h)+':'+p2(a.m):''};
+// 로이스에 날짜만(「16일」) 있고 시각이 빈 칸 → 🔴 시각 없음(추측하지 않음)
+const t5=t=>{const a=tP(t);return a&&a.h<24&&a.m<60?p2(a.h)+':'+p2(a.m):String(t||'').trim()?'🔴시각없음':''};
 const tMin=t=>{const a=tP(t);return a?a.h*60+a.m:null};
 function tAbs(t){const a=tP(t);if(!a||!LV)return null;const Y=+LV.day.substr(0,4),M=+LV.day.substr(4,2),D=+LV.day.substr(6,2);let y=a.y||Y,mo=a.mo||M,dd=a.d;
   if(dd==null){dd=D;if(a.h<12)dd+=1}else if(!a.y&&dd<D-15)mo+=1;
