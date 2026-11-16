@@ -1349,7 +1349,9 @@ function lvParse(j){const D=j.data||{},f=D.f||[],ix={};f.forEach((k,i)=>ix[k]=i)
       const ref=o.dprt||o.upE,ra=ref?tAbs(ref,j.day):null,aa=o.arv?tAbs(o.arv,j.day):null;
       if(ra!=null&&aa!=null&&aa<ra){if(o.dwnS||o.dwnE){o.depBad=true}else{o.arvBad=o.arv;o.arv=''}}
       o.cz=/층간/.test(o.rem)||/^층간/.test(o.tr)}
-    else{o.cp=/쿠팡/.test(o.rem)||/쿠팡/.test(o.tr);o.plt=/PLT|무분류/i.test(o.rem)}
+    else{o.cp=/쿠팡/.test(o.rem)||/쿠팡/.test(o.tr);o.plt=/PLT|무분류/i.test(o.rem);
+      // 출고: 곤지암 출발이 상차완료보다 빠르면 출발 기록 이상 → 출발로 안 봄(상차완료 기준)
+      const ue=o.upE?tAbs(o.upE,j.day):null,dp=o.dprt?tAbs(o.dprt,j.day):null;if(ue!=null&&dp!=null&&dp<ue-600000){o.depBad=true;o.dpBad=o.dprt;o.dprt=''}}
     o.cat=d==='out'?(o.dprt?'done':o.upE?'upd':o.upS?'up':o.vin?'vin':'none'):(o.dwnE?'done':o.dwnS?'dwn':o.arv?'arv':o.dprt?'dep':'none');return o};
   const hx0=((D.hubx||{}).rows||[]).map(r=>({from:r[0],hub:r[1],rot:+r[2]||1,vh:pnum(r[3]),ton:r[4],st:r[5],to:r[7],cl:r[8]}));
   // 외부하차는 11톤만(마스터 지정 11/16): 헤드(98·99)·TR 차는 목록·숫자에서 뺌
@@ -1376,7 +1378,7 @@ const stOf=v=>{const L=ST.filter(p=>p[5]===v.code);if(L.length<2)return L[0]||ST
 const inOf=v=>INB.find(r=>r[0]===v.code)||INB.find(r=>r[1]===v.nm)||null;
 const inByNm=n=>{const k=String(n||'').toLowerCase().replace(/\s/g,'');return INB.find(r=>String(r[1]).toLowerCase().replace(/\s/g,'')===k)||INB.find(r=>String(r[1]).toLowerCase().replace(/\s/g,'').startsWith(k))||null};
 function expOut(v){const p=stOf(v);if(!p)return null;const L=lrnOf('out',p[5],p[12]);return L?{min:L.min,src:'학습 '+L.n+'건',km:p[12]}:{min:p[14],src:'기준',km:p[12]}}
-function expIn(code,nm){const r=code?INB.find(x=>x[0]===code):inByNm(nm);if(!r||!(r[8]>0))return null;const L=lrnOf('in',r[0],r[8]);return L?{min:L.min,src:'학습 '+L.n+'건',km:+r[8]}:{min:+r[9],src:'기준',km:+r[8]}}
+function expIn(code,nm){const r=code?INB.find(x=>x[0]===code):inByNm(nm);if(!r||!(r[8]>0)){/* 입고 목록에 없는 허브(대전·청원·옥천 등) → 출고 셔틀 점소 거리로 */const k=String(nm||'').replace(/\s/g,''),p=!code&&ST.find(q=>String(q[4]).replace(/\s/g,'')===k);return p&&p[12]>0?{min:p[14],src:'기준(셔틀 거리)',km:+p[12]}:null}const L=lrnOf('in',r[0],r[8]);return L?{min:L.min,src:'학습 '+L.n+'건',km:+r[8]}:{min:+r[9],src:'기준',km:+r[8]}}
 const isShut0=v=>{const p=stOf(v);return !!p&&p[3]==='셔틀'};
 const isShut=v=>isShut0(v)&&!v.plt,isOplt=v=>isShut0(v)&&v.plt;
 const isMu=v=>/^(2|23)$/.test(v.cl),isKon=v=>/^(20|21)$/.test(v.cl),isPlt=v=>v.cl==='19';
@@ -1426,7 +1428,7 @@ function lvList(k,a,keep){if(!LV){lvLoad(true);toast('실시간 차량 자료를
   sb.querySelectorAll('.vr[data-h]').forEach(b=>b.addEventListener('click',()=>lvHx(LVL[+b.dataset.h])))}
 function lvStamp(){if(!LV)return '';const d=LV.day;return '중계일 '+d.substr(4,2)+'/'+d.substr(6,2)+' · 로이스 '+tm(LV.at)+' 받음'+(LV.dmsAt?' · DMS '+tm(LV.dmsAt):LV.dmsHas?' · <b class="r">🔴 DMS 10분 넘음(로이스만)</b>':'')+(Date.now()-LV.at>15*60000?' · <b class="r">🔴 15분 넘게 새 자료 없음(모니터링 PC 확인)</b>':'')+' · 그날 모니터링된 차만, 다음 중계일 자료가 오면 초기화'}
 // ---- 차량 상세 ----
-const vNote=o=>{const a=[];if(o.fut&&o.fut.length)a.push('🔴 아직 오지 않은 시각이 찍혀 있어 계획값으로 보고 안 씀: '+o.fut.join(', '));if(o.depBad)a.push('🔴 곤지암 도착('+t5(o.arv)+')이 서브 출발('+t5(o.dprt||o.upE)+')보다 빨라요. 하차 기록이 있어 도착으로 봤어요 · 서브 출발 기록 확인');if(o.arvBad)a.push('🔴 곤지암 도착 '+t5(o.arvBad)+'이 서브 출발('+t5(o.dprt||o.upE)+')보다 빨라 도착으로 안 봤어요');return a.length?'<p class="inote r">'+a.join('<br>')+'</p>':''};
+const vNote=o=>{const a=[];if(o.fut&&o.fut.length)a.push('🔴 아직 오지 않은 시각이 찍혀 있어 계획값으로 보고 안 씀: '+o.fut.join(', '));if(o.depBad&&o.d==='out')a.push('🔴 곤지암 출발('+t5(o.dpBad)+')이 상차완료('+t5(o.upE)+')보다 빨라 출발로 안 봤어요 · 로이스 출발 기록 확인');else if(o.depBad)a.push('🔴 곤지암 도착('+t5(o.arv)+')이 서브 출발('+t5(o.dprt||o.upE)+')보다 빨라요. 하차 기록이 있어 도착으로 봤어요 · 서브 출발 기록 확인');if(o.arvBad)a.push('🔴 곤지암 도착 '+t5(o.arvBad)+'이 서브 출발('+t5(o.dprt||o.upE)+')보다 빨라 도착으로 안 봤어요');return a.length?'<p class="inote r">'+a.join('<br>')+'</p>':''};
 const li2=(a,b,c)=>'<div class="vi"><span>'+a+'</span><b'+(c?' class="'+c+'"':'')+'>'+b+'</b></div>';
 function lvCar(v){if(!v)return;cur=null;ICUR=null;hubOff();const same=LV[v.d].filter(x=>x.vh===v.vh);let h='';
   const ins=LV.in.filter(x=>x.vh===v.vh||(v.tr&&x.vh===v.tr)),outs=LV.out.filter(x=>x.vh===v.vh||(v.tr&&x.tr===v.tr&&x.tr)),hx=LV.hx.filter(x=>x.vh===v.vh);
@@ -1437,7 +1439,7 @@ function lvCar(v){if(!v)return;cur=null;ICUR=null;hubOff();const same=LV[v.d].fi
     outs.forEach(o=>{const p=stOf(o),e=o.dprt?expOut(o):null,eta=e&&tAbs(o.dprt)?tAbs(o.dprt)+e.min*60000:null;
       h+='<div class="vbox"><div class="vh2"><b>'+esc(p?p[0]+' '+p[1]+' '+fnm(p):o.nm)+'</b>'+vBadge(o)+'</div><div class="vgrid">'+
        li2('로이스 노선',esc(o.ln||'—'))+li2('차량입고(입문)',t5(o.vin)||'—')+li2('상차 시작',t5(o.upS)||'—')+li2('상차완료',t5(o.upE)||'—')+
-       li2('곤지암 출발',o.dprt?t5(o.dprt):'미출발',o.dprt?'':'r')+li2('도착예정',eta?tm(eta)+' <small>'+e.src+'</small>':'—')+li2('거리',p?(+p[12]).toFixed(1)+'km':'—')+(o.rat?li2('적재율',o.rat+'%'):'')+'</div>'+vNote(o)+'</div>'})}
+       li2('곤지암 출발',o.dprt?t5(o.dprt):'미출발',o.dprt?'':'r')+li2('도착예정',eta?tm(eta)+' <small>'+e.src+'</small>':'—')+li2('거리',p?(+p[12]).toFixed(1)+'km':'🔴 위치 없음',p?'':'r')+(o.rat?li2('적재율',o.rat+'%'):'')+'</div>'+vNote(o)+'</div>'})}
   if(ins.length){h+='<h3 class="h3i">🏁 오늘 곤지암 입고 '+ins.length+'건 <small>(어느 서브에서 왔는지)</small></h3>';
     ins.forEach(o=>{const e=o.dprt&&!o.arv?expIn(o.code,o.nm):null,eta=e&&tAbs(o.dprt)?tAbs(o.dprt)+e.min*60000:null,r=inOf(o);
       h+='<div class="vbox"><div class="vh2"><b>'+esc(o.nm)+' → 곤지암</b>'+vBadge(o)+'</div><div class="vgrid">'+
