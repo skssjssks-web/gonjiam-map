@@ -1306,7 +1306,7 @@ function rbShow(){if(!RB.to)return;cur=null;ICUR=null;hubOff();const R=RB.res,ba
 // ===== 실시간 차량(모니터링 연동) 2026-11-14 =====
 // 서버 rv_live_get(관리자만) = 실시간 모니터링 스크립트가 3분마다 보내는 로이스 입고·출고 차량별 목록 + 타허브 경유(hubx)
 let LV=null,LVT=0,LVBUSY=false,LVK=null;
-const OCAT={none:'미입문',vin:'차량입고',up:'상차중',upd:'상차완료',done:'출발'},ICAT={none:'서브 미출발',dep:'이동 중',arv:'곤지암 도착',dwn:'하차중',done:'하차완료'};
+const OCAT={none:'미입문',vin:'차량입고',up:'상차중',upd:'상차완료',done:'출발'},ICAT={none:'서브 미출발',dep:'이동 중',arv:'하차대기',dwn:'하차중',done:'하차완료'};
 const CLN={'2':'일반무분류','20':'콘솔무분류','21':'콘솔무분류(후미·환적)','23':'무분류','19':'환적PLT'};
 const EXH=['이천MP','안성MP','용인Hub','옥천Hub','군포Hub','군포BHub','대전Hub'];
 // 로이스 시각 = 「16일 21:05」(일+시:분). 예전 형식(YYYYMMDDHHMM·HH:MM)도 받음
@@ -1354,7 +1354,13 @@ function lvParse(j){const D=j.data||{},f=D.f||[],ix={};f.forEach((k,i)=>ix[k]=i)
   // 외부하차는 11톤만(마스터 지정 11/16): 헤드(98·99)·TR 차는 목록·숫자에서 뺌
   const hx=hx0.filter(h=>!isHd(h.vh,h.ton));
   const in0=(D.in||[]).map(a=>row(a,'in'));
-  LV={day:j.day,at:j.at?Date.parse(j.at):0,sat:D.at||0,out:(D.out||[]).map(a=>row(a,'out')),in:in0.filter(v=>!v.cz),cz:in0.filter(v=>v.cz).length,hx,hxHd:hx0.length-hx.length,learn:j.learn||{}};
+  // DMS 하차도크배정(스크립트 v8.0 dms, 관제앱 v653 기준): 키 차번@노선번호. none·move·near = 미도착(이동 중), wait·imm·dock = 하차대기, work = 하차중, done = 하차완료.
+  // DMS 상태 우선(로이스 하차완료 기록은 그대로), 10분 넘은 DMS 값은 안 씀. DMS 샤시는 로이스 샤시가 없을 때만.
+  const X=D.dms;let dmsAt=X&&+X.at||0;if(dmsAt&&dmsAt<1e12)dmsAt*=1000;const dmsOk=!!(X&&X.m&&dmsAt&&Date.now()-dmsAt<600000);
+  if(dmsOk)in0.forEach(v=>{const r=X.m[v.vh+'@'+v.ln];if(!r)return;const c=String(r[0]||''),st=String(r[1]||''),dk=String(r[2]||''),tr=pnum(r[3]),inT=String(r[4]||'');
+    v.dms={c,st,dk,inT};if(!vChOf(v)&&plOk(tr)&&tr!==v.vh)v.tr=tr;if(v.cat==='done')return;
+    const k=/^(none|move|near)$/.test(c)?(v.cat==='none'&&c==='none'?'none':'dep'):/^(wait|imm|dock)$/.test(c)?'arv':c==='work'?'dwn':c==='done'?'done':'';if(k)v.cat=k});
+  LV={dmsAt:dmsOk?dmsAt:0,dmsHas:!!(X&&X.m),day:j.day,at:j.at?Date.parse(j.at):0,sat:D.at||0,out:(D.out||[]).map(a=>row(a,'out')),in:in0.filter(v=>!v.cz),cz:in0.filter(v=>v.cz).length,hx,hxHd:hx0.length-hx.length,learn:j.learn||{}};
   // 같은 차의 다른 줄에 샤시·공유샤시구분이 있으면 채움(입고는 입고끼리, 출고는 출고끼리)
   ['in','out'].forEach(d=>{const M={};LV[d].forEach(v=>{if(!plOk(v.vh))return;const o=M[v.vh]||(M[v.vh]={tr:'',dv:''});if(!o.tr&&vChOf(v))o.tr=v.tr;if(!o.dv&&v.dv)o.dv=v.dv});LV[d].forEach(v=>{const o=M[v.vh];if(!o)return;if(!vChOf(v)&&o.tr)v.tr=o.tr;if(!v.dv&&o.dv)v.dv=o.dv})})}
 async function lvLoad(force){if(!ME||!ME.admin||LVBUSY)return;if(!force&&LV&&Date.now()-LVT<120000)return;LVBUSY=true;
@@ -1390,7 +1396,7 @@ const vFlag=v=>(v.fut&&v.fut.length?' <b class="r">🔴계획시각</b>':'')+(v.
 const vBadge=(v)=>{const L=v.d==='out'?OCAT:ICAT,c=v.d==='out'?(v.cat==='done'?'ok':v.cat==='none'?'no':'mid'):(v.cat==='done'?'ok':v.cat==='none'?'no':'mid');return '<span class="vb '+c+'">'+L[v.cat]+'</span>'};
 function vRowH(v,i){const p=v.d==='out'?stOf(v):null,nm=v.d==='out'?(p?fnm(p):v.nm):String(v.nm).replace(/Sub$/,'');
   const tt=v.d==='out'?(v.dprt?'출발 '+t5(v.dprt):v.upE?'상차완료 '+t5(v.upE):v.upS?'상차 '+t5(v.upS):v.vin?'입문 '+t5(v.vin):''):(v.dwnE?'하차완료 '+t5(v.dwnE):v.arv?'도착 '+t5(v.arv):v.dprt?'서브출발 '+t5(v.dprt):'');
-  return '<button type="button" class="vr" data-i="'+i+'"><b class="vn">'+vnH(v)+'</b><span class="vd">'+esc((p?p[0]+' '+p[1]+' ':'')+nm)+(CLN[v.cl]&&v.d==='in'?' · '+CLN[v.cl]:'')+'</span>'+vBadge(v)+'<span class="vt">'+vkTag(v)+' '+esc(tt)+vFlag(v)+'</span></button>'}
+  return '<button type="button" class="vr" data-i="'+i+'"><b class="vn">'+vnH(v)+'</b><span class="vd">'+esc((p?p[0]+' '+p[1]+' ':'')+nm)+(CLN[v.cl]&&v.d==='in'?' · '+CLN[v.cl]:'')+'</span>'+vBadge(v)+'<span class="vt">'+vkTag(v)+' '+esc(tt+(v.dms&&v.dms.st?' · DMS '+v.dms.st+(v.dms.dk&&v.dms.dk!=='0'?' '+v.dms.dk:''):''))+vFlag(v)+'</span></button>'}
 function hxRowH(h,i){const iv=lvInFor(h.vh,h.hub),dep=iv&&iv.dprt,e=expIn('',h.hub),eta=dep&&e?tAbs(iv.dprt)+e.min*60000:null;
   return '<button type="button" class="vr" data-h="'+i+'"><b class="vn">'+esc(h.vh)+'</b><span class="vd">'+esc(h.hub)+' '+h.rot+'회전 → 곤지암 → '+esc(String(h.to).replace(/Sub$/,''))+'</span><span class="vb '+(/완료|도착/.test(h.st)?'ok':/미출발|대기/.test(h.st)?'no':'mid')+'">'+esc(h.st||'—')+'</span><span class="vt">'+vkTag(iv||{vh:h.vh,ton:h.ton})+' '+(dep?'출발 '+t5(dep)+(eta?' · 도착예정 '+tm(eta):''):'곤지암 미출발')+(e?' · '+e.km.toFixed(0)+'km':'')+'</span></button>'}
 const lvInFor=(vh,hub)=>LV.in.find(v=>v.vh===vh&&(!hub||inByNm(hub)&&v.code===inByNm(hub)[0]))||null;
@@ -1417,7 +1423,7 @@ function lvList(k,a,keep){if(!LV){lvLoad(true);toast('실시간 차량 자료를
   sb.querySelectorAll('.lvf button').forEach(b=>b.addEventListener('click',()=>lvList(k,b.dataset.a)));
   sb.querySelectorAll('.vr[data-i]').forEach(b=>b.addEventListener('click',()=>lvCar(LVL[+b.dataset.i])));
   sb.querySelectorAll('.vr[data-h]').forEach(b=>b.addEventListener('click',()=>lvHx(LVL[+b.dataset.h])))}
-function lvStamp(){if(!LV)return '';const d=LV.day;return '중계일 '+d.substr(4,2)+'/'+d.substr(6,2)+' · 로이스 '+tm(LV.at)+' 받음'+(Date.now()-LV.at>15*60000?' · <b class="r">🔴 15분 넘게 새 자료 없음(모니터링 PC 확인)</b>':'')+' · 그날 모니터링된 차만, 다음 중계일 자료가 오면 초기화'}
+function lvStamp(){if(!LV)return '';const d=LV.day;return '중계일 '+d.substr(4,2)+'/'+d.substr(6,2)+' · 로이스 '+tm(LV.at)+' 받음'+(LV.dmsAt?' · DMS '+tm(LV.dmsAt):LV.dmsHas?' · <b class="r">🔴 DMS 10분 넘음(로이스만)</b>':'')+(Date.now()-LV.at>15*60000?' · <b class="r">🔴 15분 넘게 새 자료 없음(모니터링 PC 확인)</b>':'')+' · 그날 모니터링된 차만, 다음 중계일 자료가 오면 초기화'}
 // ---- 차량 상세 ----
 const vNote=o=>{const a=[];if(o.fut&&o.fut.length)a.push('🔴 아직 오지 않은 시각이 찍혀 있어 계획값으로 보고 안 씀: '+o.fut.join(', '));if(o.depBad)a.push('🔴 곤지암 도착('+t5(o.arv)+')이 서브 출발('+t5(o.dprt||o.upE)+')보다 빨라요. 하차 기록이 있어 도착으로 봤어요 · 서브 출발 기록 확인');if(o.arvBad)a.push('🔴 곤지암 도착 '+t5(o.arvBad)+'이 서브 출발('+t5(o.dprt||o.upE)+')보다 빨라 도착으로 안 봤어요');return a.length?'<p class="inote r">'+a.join('<br>')+'</p>':''};
 const li2=(a,b,c)=>'<div class="vi"><span>'+a+'</span><b'+(c?' class="'+c+'"':'')+'>'+b+'</b></div>';
@@ -1434,7 +1440,7 @@ function lvCar(v){if(!v)return;cur=null;ICUR=null;hubOff();const same=LV[v.d].fi
   if(ins.length){h+='<h3 class="h3i">🏁 오늘 곤지암 입고 '+ins.length+'건 <small>(어느 서브에서 왔는지)</small></h3>';
     ins.forEach(o=>{const e=o.dprt&&!o.arv?expIn(o.code,o.nm):null,eta=e&&tAbs(o.dprt)?tAbs(o.dprt)+e.min*60000:null,r=inOf(o);
       h+='<div class="vbox"><div class="vh2"><b>'+esc(o.nm)+' → 곤지암</b>'+vBadge(o)+'</div><div class="vgrid">'+
-       li2('서브 출발',o.dprt?t5(o.dprt):'미출발',o.dprt?'':'r')+li2(o.arv?'곤지암 도착(입문)':'도착예정',o.arv?t5(o.arv):eta?tm(eta)+' <small>'+e.src+'</small>':'—')+li2('하차 시작',t5(o.dwnS)||'—')+li2('하차완료',t5(o.dwnE)||'—')+
+       (o.dms?li2('DMS 상태',esc(o.dms.st||o.dms.c)+(o.dms.dk&&o.dms.dk!=='0'?' · 도크 '+esc(o.dms.dk):'')+(o.dms.inT?' · 입문 '+esc(o.dms.inT):'')):'')+li2('서브 출발',o.dprt?t5(o.dprt):'미출발',o.dprt?'':'r')+li2(o.arv?'곤지암 도착(입문)':'도착예정',o.arv?t5(o.arv):eta?tm(eta)+' <small>'+e.src+'</small>':'—')+li2('하차 시작',t5(o.dwnS)||'—')+li2('하차완료',t5(o.dwnE)||'—')+
        li2('거리',r&&r[8]>0?(+r[8]).toFixed(1)+'km':r?'곤지암 안':'🔴 위치 없음',r?'':'r')+(CLN[o.cl]?li2('분류',CLN[o.cl]):'')+'</div>'+vNote(o)+'</div>'})}
   if(hx.length){h+='<h3 class="h3i">🔁 외부하차(타허브 경유)</h3>'+hx.map(x=>{const iv=lvInFor(x.vh,x.hub),e=expIn('',x.hub),eta=iv&&iv.dprt&&e?tAbs(iv.dprt)+e.min*60000:null;
     return '<div class="vbox"><div class="vh2"><b>'+esc(x.from)+' → '+esc(x.hub)+' '+x.rot+'회전</b><span class="vb mid">'+esc(x.st||'—')+'</span></div><div class="vgrid">'+li2('타허브 → 곤지암 출발',iv&&iv.dprt?t5(iv.dprt):'미출발',iv&&iv.dprt?'':'r')+li2('곤지암 도착예정',eta?tm(eta):'—')+li2('거리',e?e.km.toFixed(1)+'km':'—')+li2('곤지암 출고 도착점소',esc(x.to||'—'))+'</div></div>'}).join('')}
