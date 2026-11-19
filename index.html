@@ -1311,9 +1311,9 @@ function rbShow(){if(!RB.to)return;cur=null;ICUR=null;hubOff();const R=RB.res,ba
 let LV=null,LVT=0,LVBUSY=false,LVK=null;
 // 상태 글자 = 통일 규칙 v2(/mnt/project-files/rules/vehicle-label-rules.md, 11/20): 입고 미입고·하차대기·하차중·하차완료 / 상차 DMS 글자 그대로(차량변경·하차완료 = 상차대기로 셈)
 const OCAT={none:'미입고',vin:'상차대기',up:'상차중',upd:'상차완료',done:'출발'},ICAT={none:'미입고',dep:'미입고',arv:'하차대기',dwn:'하차중',done:'하차완료'};
-// 간선/용차(로이스 차량구분 코드): 간 = 1 고정간선·6 고정간선 직발송·11 직영간선 / 용 = 4 터미널용차·3 직발송용차 / 5·7·13은 마스터 답 전까지 원문 글자
-const GNC={'1':'간','6':'간','11':'간','3':'용','4':'용','5':'공차운행','7':'집배점차량','13':'고정편도'};
-const gnOf=(c,t)=>{const x=GNC[String(c||'').trim()];if(x)return x;const s=String(t||'');return /간선/.test(s)?'간':/용차/.test(s)?'용':s?s:'?'};
+// 간선/용차(로이스 차량구분 코드): 간 = 1 고정간선·6 고정간선 직발송·11 직영간선·13 고정편도(마스터 11/20) / 용 = 4 터미널용차·3 직발송용차 / 5·7은 마스터 답 전까지 원문 글자
+const GNC={'1':'간','6':'간','11':'간','3':'용','4':'용','5':'공차운행','7':'집배점차량','13':'간'};
+const gnOf=(c,t)=>{const x=GNC[String(c||'').trim()];if(x)return x;const s=String(t||'');return /간선|고정편도/.test(s)?'간':/용차/.test(s)?'용':s?s:'?'};
 const gnH=g=>'<i class="gn '+(g==='간'?'g':g==='용'?'y':'o')+'">('+esc(g)+')</i>';
 const CLN={'2':'일반무분류','20':'콘솔무분류','21':'콘솔무분류(후미·환적)','23':'무분류','19':'환적PLT'};
 const EXH=['이천MP','안성MP','용인Hub','옥천Hub','군포Hub','군포BHub','대전Hub'];
