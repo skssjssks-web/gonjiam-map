@@ -179,6 +179,8 @@ body.sh .rtp{display:none}
 .hrt{align-items:center;gap:8px}
 .hrt .hbn,.hrt .hln,.hrt .hnm{font-size:19px;font-weight:900;line-height:1.25;letter-spacing:0;font-variant-numeric:tabular-nums}
 .hrt .hsx{font-size:13px}
+/* 노선 제목(마스터 11/20): 반-노선번호-노선명-코드 모두 같은 검은색·같은 크기, 공백 줄임 */
+.hrt.rln{gap:6px}.hrt.rln .hsx{display:none}.hrt.rln .hbn,.hrt.rln .hln,.hrt.rln .hnm,.hrt.rln .hcd,.hrt.rln .hsx{font-size:19px;font-weight:900;color:var(--ink)!important;background:none!important;padding:0;height:auto;border:0;font-family:inherit;letter-spacing:0;font-variant-numeric:tabular-nums;line-height:1.25}
 .rt td,.rt th{vertical-align:middle}
 .rt td{font-size:15px;font-weight:800;font-variant-numeric:tabular-nums}
 .rt td.l{width:1%;padding-right:14px}
@@ -705,8 +707,8 @@ function render(p){
   const col=liveOn?'<th>지금 교통</th>':'';
   const c=h=>liveOn?'<td class="lv">'+h+'</td>':'';
   $('sb').innerHTML=
-   '<h2 class="hrt"><span class="hbn">'+esc(p[0])+'</span>'+(p[1]?'<span class="hln">'+esc(p[1])+'</span>':'')+'<span class="hnm">'+esc(fnm(p))+(sfx(p)?'<span class="hsx">'+sfx(p)+'</span>':'')+'</span><span class="hcd">'+esc(p[5])+'</span></h2>'+
-   '<div class="tags"><span class="tag '+(p[6]?'ok':'no')+'">TR '+(p[6]?'가능':'불가')+'</span><span class="tag tw">'+esc(p[7])+'</span><span class="tag tw">'+esc(p[8])+'</span>'+(p[18]!=='정확'?'<span class="tag no">위치 대략</span>':'')+'</div>'+
+   '<h2 class="hrt rln"><span class="hbn">'+esc(p[0])+(p[3]==='상차 노선'&&/^\d/.test(p[0])?'반':'')+'</span>'+(p[1]?'<span class="hln">'+esc(p[1])+'</span>':'')+'<span class="hnm">'+esc(fnm(p))+(sfx(p)?'<span class="hsx">'+sfx(p)+'</span>':'')+'</span><span class="hcd">'+esc(p[5])+'</span></h2>'+
+   '<div class="tags"><span class="tag '+(p[6]?'ok':'no')+'">TR '+(p[6]?'가능':'불가')+'</span>'+(cpn(p[7])?'<span class="tag tw">'+esc(cpn(p[7]))+'</span>':'')+'<span class="tag tw">'+esc(p[8])+'</span>'+(p[18]!=='정확'?'<span class="tag no">위치 대략</span>':'')+'</div>'+
    '<p class="addr"><span>'+esc(p[9])+'</span><button type="button" class="cpi" id="cpa" aria-label="주소 복사" title="주소 복사">'+CPI+'</button></p>'+(RB.from||RB.via?rbHtml(ptOut(p)):'')+
    '<table class="rt"><tr><th></th><th colspan="2">기준 (60km/h)</th>'+col+'</tr>'+
    '<tr><td class="l">가는길</td><td class="t"><span class="v">'+hm(p[14])+'</span></td><td class="k">'+p[12].toFixed(1)+'km</td>'+c(lg)+'</tr>'+
@@ -756,7 +758,10 @@ function clearRoute(){RP=null;clearLines('hub');clearLines('me');fitKey='';$('rt
   sh.addEventListener('touchend',end);sh.addEventListener('touchcancel',end);
 })();
 // 메뉴: 반별 · 간선사 · 권역묶음
-const carOf=p=>String(p[7]||'').split('(')[0].replace(/·.*$/,'').trim()||'기타';
+// 간선사 표기(마스터 11/20): 회사 이름만. (주)·㈜·주식회사·괄호·숫자·물류/로지스 등 꼬리 지움, 대한통운·씨제이(사람 이름 포함)는 지움, 통합배차 더운반 → 더운반
+const cpn=x=>{let s=String(x||'').trim();if(!s)return '';if(/더운반/.test(s))return '더운반';if(/대한통운|씨제이|^CJ/i.test(s))return '';
+  s=s.replace(/\(주\)|㈜|주식회사|\([^)]*\)/g,'').replace(/[\d\s]+/g,'').replace(/_임시$/,'').replace(/(물류산업|물류|로지스틱스|로지스틱|로지스|로지텍|화물|운수|통운|엘지에스)$/,'');return s==='태영윈'?'태영원':s};
+const carOf=p=>cpn(String(p[7]||'').split('(')[0].replace(/·.*$/,'').trim())||'기타';
 const RG=[['서울','서울',/^서울/],['인천','인천',/^인천/],['경기북부','고양·파주·김포·양주·의정부·포천·남양주·구리·가평',/^경기 (고양|파주|김포|양주|의정부|포천|남양주|구리|가평|동두천|연천)/],
   ['경기동부','광주·하남·이천·여주·양평',/^경기 (광주|하남|이천|여주|양평)/],['경기남부','수원·용인·화성·평택·안성·시흥·부천·군포·의왕',/^경기 /],['강원','강원',/^강원/],['충북','청주·충주·제천·진천·음성·옥천 등',/^충북/],
   ['충남·세종','천안·아산·공주·계룡·세종',/^(충남|세종)/],['대전','대전',/^대전/],['영남 (직출고)','부산·대구·울산·경남·경북',/^(부산|대구|울산|경남|경북)/],['호남','전북·전남·광주광역',/^(전북|전남|광주 )/]];
@@ -1453,7 +1458,7 @@ function lvCar(v){if(!v)return;cur=null;ICUR=null;hubOff();const same=LV[v.d].fi
   const ins=LV.in.filter(x=>x.vh===v.vh||(v.tr&&x.vh===v.tr)),outs=LV.out.filter(x=>x.vh===v.vh||(v.tr&&x.tr===v.tr&&x.tr)),hx=LV.hx.filter(x=>x.vh===v.vh);
   h+='<h2 class="hrt"><span class="hbn">'+(v.d==='out'?'출고':'입고')+'</span><span class="hnm">'+vnH(v)+'</span></h2>';
   if(v.vhBad)h+='<p class="inote r">🔴 로이스 차량번호 칸이 「'+esc(v.vh)+'」이에요. 같은 번호 차와 묶지 않았어요.</p>';
-  h+='<div class="tags">'+vBadge(v)+'<span class="vkw">'+vkTag(v)+'</span>'+(v.ton&&isHd(v.vh,v.ton)?'<span class="tag tw">'+esc(v.ton)+'</span>':'')+(v.prtn?'<span class="tag tw">'+esc(v.prtn)+'</span>':'')+(CLN[v.cl]&&v.d==='in'?'<span class="tag in">'+CLN[v.cl]+'</span>':'')+'</div>';
+  h+='<div class="tags">'+vBadge(v)+'<span class="vkw">'+vkTag(v)+'</span>'+(v.ton&&isHd(v.vh,v.ton)?'<span class="tag tw">'+esc(v.ton)+'</span>':'')+(cpn(v.prtn)?'<span class="tag tw">'+esc(cpn(v.prtn))+'</span>':'')+(CLN[v.cl]&&v.d==='in'?'<span class="tag in">'+CLN[v.cl]+'</span>':'')+'</div>';
   if(outs.length){h+='<h3 class="h3i">🚚 오늘 곤지암 출고 '+outs.length+'건</h3>';
     outs.forEach(o=>{const p=stOf(o),e=o.dprt?expOut(o):null,eta=e&&tAbs(o.dprt)?tAbs(o.dprt)+e.min*60000:null;
       h+='<div class="vbox"><div class="vh2"><b>'+esc(p?p[0]+' '+p[1]+' '+fnm(p):o.nm)+'</b>'+vBadge(o)+'</div><div class="vgrid">'+
