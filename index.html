@@ -406,6 +406,14 @@ body.phin .vq{border-color:#ff6a00}
 .vbox{border:1.5px solid var(--line);border-radius:12px;padding:9px 11px;margin:6px 0 0}.vh2{display:flex;align-items:center;gap:8px;justify-content:space-between;margin:0 0 6px}.vh2 b{font-size:14px;font-weight:900;overflow-wrap:anywhere;min-width:0}
 .vgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px 10px}.vi{display:flex;flex-direction:column;min-width:0}.vi span{font-size:11.5px;font-weight:800;color:var(--ink)}.vi b{font-size:14.5px;font-weight:900;color:var(--ink);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}.vi b.r{color:#c41d1d}.vi small{font-size:11px;font-weight:800}
 @media (prefers-color-scheme:dark){.vi b.r,.vr .vt em,.lvs .r{color:#ff7676}}
+/* 차량 표기 v3(마스터 11/20 09:06): 간·용 = 색 칸(괄호 없음), 헤드·샤시·11톤·공용 = 칸 없이 글씨만, 샤시는 헤드 아래 줄 */
+.gn{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 5px;margin-right:6px;border-radius:5px;font-style:normal;font-size:12px;font-weight:800;line-height:1;letter-spacing:0;color:#fff!important;vertical-align:2px}
+.gn.g{background:#1B64DA}.gn.y{background:#E8590C}.gn.o{background:#6B7684}
+.vk,.vkw .vk{border:0!important;background:none!important;padding:0!important;margin:0 8px 0 0;border-radius:0;font-size:13px;line-height:18px;font-weight:600;color:var(--ink)!important;vertical-align:0}
+.vk.hd,.vk.t11{font-weight:800}.vk.pu,.vk.dj{font-weight:700;color:var(--ink2)!important}.vk.qq{color:#D9302C!important;font-weight:800}
+.vkl{display:block;flex-basis:100%;order:9;margin-top:2px}.vr .vt{padding-left:26px}
+.vr .vt,.vkw{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:0;row-gap:2px}
+@media (prefers-color-scheme:dark){.gn.g{background:#3182F6}.gn.y{background:#F76707}.vk.qq{color:#FF6B6B!important}}
 </style></head>
 <body>
 <div id="map"></div>
@@ -1322,7 +1330,7 @@ const OCAT={none:'미입고',vin:'상차대기',up:'상차중',upd:'상차완료
 // 간선/용차(로이스 차량구분 코드): 간 = 1 고정간선·6 고정간선 직발송·11 직영간선·13 고정편도(마스터 11/20) / 용 = 4 터미널용차·3 직발송용차 / 5·7은 마스터 답 전까지 원문 글자
 const GNC={'1':'간','6':'간','11':'간','3':'용','4':'용','5':'공차운행','7':'집배점차량','13':'간'};
 const gnOf=(c,t)=>{const x=GNC[String(c||'').trim()];if(x)return x;const s=String(t||'');return /간선|고정편도/.test(s)?'간':/용차/.test(s)?'용':s?s:'?'};
-const gnH=g=>'<i class="gn '+(g==='간'?'g':g==='용'?'y':'o')+'">('+esc(g)+')</i>';
+const gnH=g=>'<i class="gn '+(g==='간'?'g':g==='용'?'y':'o')+'">'+esc(g)+'</i>';
 const CLN={'2':'일반무분류','20':'콘솔무분류','21':'콘솔무분류(후미·환적)','23':'무분류','19':'환적PLT'};
 const EXH=['이천MP','안성MP','용인Hub','옥천Hub','군포Hub','군포BHub','대전Hub'];
 // 로이스 시각 = 「16일 21:05」(일+시:분). 예전 형식(YYYYMMDDHHMM·HH:MM)도 받음
@@ -1347,14 +1355,14 @@ const isHoReq=x=>{const t=String(x||'').trim();return /\d\s*호$/.test(t)&&!/^\d
 const isHd=(vh,ton)=>{const a=/(\d{2,3})[가-힣]\d{4}$/.exec(pnum(vh));return !!(a&&(a[1]==='98'||a[1]==='99'))||/^TR|트랙터|헤드/i.test(String(ton||''))};
 // 공용/지정(규칙 v2): 공유샤시구분 앞 지역 이름(곤지암_·이천MP_·안성MP_·대전_·옥천_·청원_ → ○○ 공용) → 칸이 비면 513대 목록 = 곤지암 공용 → 간선사 더운반 = 더운반 → 그 밖 = 지정. N호 = 곤지암 공용 N호
 function pubLab(ch,dv,pt){ch=String(ch||'').trim();if(!ch)return '?';const n=pnum(ch).toUpperCase(),bad=PUBS[n]&&PUBS[n].bad?'·고장':'';
-  if(isHoReq(ch)){const m=/(\d+)\s*호$/.exec(ch);return '곤지암 공용 '+(m?m[1]:'')+'호'}
-  const k=/^(곤지암|이천|안성|대전|옥천|청원)/.exec(String(dv||'').trim());if(k)return k[1]+' 공용'+bad;
-  if(PUBS[n])return '곤지암 공용'+bad;if(/더운반/.test(pt||''))return '더운반';return plOk(ch)?'지정':'?'}
+  if(isHoReq(ch)){const m=/(\d+)\s*호$/.exec(ch);return '공용 '+(m?m[1]:'')+'호'}
+  const k=/^(곤지암|이천|안성|대전|옥천|청원)/.exec(String(dv||'').trim());if(k)return (k[1]==='곤지암'?'':k[1]+' ')+'공용'+bad;
+  if(PUBS[n])return '공용'+bad;if(/더운반/.test(pt||''))return '더운반';return plOk(ch)?'지정':'?'}
 const vChOf=v=>{const t=String(v.tr||'').trim();return t&&pnum(t)!==pnum(v.vh)&&(plOk(t)||isHoReq(t))?t:''};
 function vkTag(v,sm){if(!v)return '';if(!isHd(v.vh,v.ton)){const tn=String(v.ton||'').trim();return '<i class="vk t11">'+esc(!tn||/^TR/i.test(tn)||/^(11|14|22)\s*톤/.test(tn)?'11톤':tn.replace(/\(.*\)/,''))+'</i>'}
   const ch=vChOf(v),p=ch?pubLab(ch,v.dv,v.prtn):'?',pc=/공용|더운반/.test(p)?'pu':p==='지정'?'dj':'qq';
   const t=ch?(sm?(isHoReq(ch)?ch.replace(/\s/g,'').replace(/^.*?(\d+호)$/,'$1'):pnum(ch).slice(-4)):ch):'?';
-  return '<i class="vk hd">헤드</i><i class="vk sh">샤시 '+esc(t)+'</i><i class="vk '+pc+'">'+esc(p)+'</i>'}
+  return '<i class="vk hd">헤드</i><span class="vkl"><i class="vk sh">샤시 '+esc(t)+'</i><i class="vk '+pc+'">'+esc(p)+'</i></span>'}
 function lvParse(j){const D=j.data||{},f=D.f||[],ix={};f.forEach((k,i)=>ix[k]=i);
   const row=(a,d)=>{const g=k=>ix[k]==null?'':(a[ix[k]]==null?'':String(a[ix[k]]));const o={d,ln:g('lnnum'),vh:pnum(g('vhcnum')),tr:pnum(g('trnum')),ton:g('tonnm'),prtn:g('prtnnm'),div:g('vhcdivcd'),cl:g('clsfyn'),rem:g('rem'),core:g('core'),qty:+g('qty')||0,rat:+g('rat')||0,
       vin:g('vhcin'),upS:g('upS'),upE:g('upE'),dprt:g('dprt'),arv:g('arv'),dwnS:g('dwnS'),dwnE:g('dwnE'),dv:g('trdivnm'),divnm:g('vhcdivnm'),code:d==='out'?g('fcngbrancd'):g('branCd'),nm:d==='out'?g('fcngbrannm'):g('branNm')};
