@@ -45,7 +45,7 @@ body.lblx .dot b{font-size:9.5px;font-weight:800}
 .nb{margin:12px 0 0}
 .nb h3{font-size:13px;margin:0 0 4px;color:var(--ink2)}
 .nb .r{display:flex;align-items:baseline;gap:5px;padding:8px 0;border-top:1px solid var(--line);cursor:pointer;white-space:nowrap;font-size:12.5px;font-weight:800;color:var(--ink);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
-.nb .n{font-weight:800;color:var(--ok);flex:0 1 auto;overflow:hidden;text-overflow:ellipsis}
+.nb .n{font-weight:800;color:var(--ink);flex:0 1 auto;overflow:hidden;text-overflow:ellipsis}
 .nb .m{flex:0 1 auto;overflow:hidden;text-overflow:ellipsis;min-width:0}
 .nb .k{margin-left:auto;flex:0 0 auto}
 @media (max-width:400px){.nb .r{font-size:11.5px;gap:4px}}
@@ -700,7 +700,7 @@ let BYN={};
 function nearHtml(p){
   const nb=(p[20]||[]).slice().sort((a,b)=>a[1]-b[1]);if(!nb.length)return '';
   return '<div class="nb"><h3>가까운 점소</h3>'+nb.map(([n,km,mn])=>{const q=BYN[n];if(!q)return '';
-    return '<div class="r" data-n="'+esc(n)+'"><span class="m">'+esc(q[0])+'·'+esc(q[1]||'-')+'</span><span class="n">'+esc(n.replace(/Sub$/,''))+'</span><span class="m">'+esc(q[7].split('(')[0].replace(/·.*$/,''))+'</span><span class="m" style="margin-left:5px;color:var(--'+(q[6]?'ok':'no')+')">TR'+(q[6]?'가능':'불가')+'</span><span class="k">'+(km===0?'같은 건물':hm(mn)+'<span style="display:inline-block;width:12px"></span>'+km.toFixed(1)+'km')+'</span></div>'}).join('')+
+    return '<div class="r" data-n="'+esc(n)+'"><span class="m">'+esc(q[0])+'</span><span class="m">'+esc(q[1]||'-')+'</span><span class="n">'+esc(n.replace(/Sub$/,''))+'</span><span class="m">'+esc(q[7].split('(')[0].replace(/·.*$/,''))+'</span><span class="m" style="margin-left:5px;color:var(--'+(q[6]?'ok':'no')+')">TR'+(q[6]?'가능':'불가')+'</span><span class="k">'+(km===0?'같은 건물':hm(mn)+'<span style="display:inline-block;width:12px"></span>'+km.toFixed(1)+'km')+'</span></div>'}).join('')+
    '<p class="note" style="margin-top:4px">점소끼리 = 카카오내비 도로거리 · 시간은 60km/h 주행만(휴식 없음)</p></div>';
 }
 const CPI='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1"/></svg>',CPOK='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
@@ -708,7 +708,7 @@ function copyTxt(t,b){const ok=()=>{b.innerHTML=CPOK;b.classList.add('ok');setTi
 function closeSheet(){hubOff();inClose();const sh=$('sheet');sh.classList.remove('drag');sh.style.transform='';sh.classList.remove('open');document.body.classList.remove('sh');nearOpen=false;rtpSync();const old=cur;cur=null;if(old)items.forEach(g=>{if(g.ps.includes(old))paint(g)});if(liveOn)$('hint').hidden=false}
 function pickGroup(g){
   $('hint').hidden=true;hubOff();
-  $('sb').innerHTML='<h2>같은 건물 '+g.vis.length+'곳</h2><p class="sub">'+esc(g.vis[0][9])+'</p><div class="pk">'+g.vis.map((p,i)=>'<button type="button" data-i="'+i+'">'+esc(p[4])+'<span>'+esc(p[0])+(p[3]==='상차 노선'?'반':'')+' · '+esc(p[1]||'')+' · TR '+(p[6]?'가능':'불가')+'</span></button>').join('')+'</div>';
+  $('sb').innerHTML='<h2>같은 건물 '+g.vis.length+'곳</h2><p class="sub">'+esc(g.vis[0][9])+'</p><div class="pk">'+g.vis.map((p,i)=>'<button type="button" data-i="'+i+'">'+esc(p[4])+'<span>'+esc(p[0])+(p[3]==='상차 노선'?'반':'')+' '+esc(p[1]||'')+' · TR '+(p[6]?'가능':'불가')+'</span></button>').join('')+'</div>';
   $('sb').querySelectorAll('.pk button').forEach(b=>b.addEventListener('click',()=>pick(g.vis[+b.dataset.i])));
   nearOpen=false;openSheet();
 }
