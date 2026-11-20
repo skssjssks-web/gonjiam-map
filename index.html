@@ -416,6 +416,14 @@ body.phin .vq{border-color:#ff6a00}
 .vkl{display:block;flex-basis:100%;order:-1;margin:0 0 2px}.vn .vk{margin:0 0 0 2px;font-size:13px}.vr .vt{padding-left:26px}
 .vr .vt,.vkw{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:0;row-gap:2px}
 @media (prefers-color-scheme:dark){.gn.g{background:#3182F6}.gn.y{background:#F76707}.vk.qq{color:#FF6B6B!important}}
+/* PC(넓은 화면, 마스터 11/20): 아래 시트 대신 왼쪽 패널, 지도는 오른쪽에 보이게, 글씨 한 단계 크게 */
+@media (min-width:900px) and (hover:hover){
+ .sheet{left:12px;right:auto;top:132px;bottom:12px;width:min(520px,40vw);max-height:none;border-radius:16px;padding:14px 20px 20px;box-shadow:0 8px 32px rgba(10,20,30,.22);transform:translateX(-110%)}
+ .sheet.open{transform:none!important}.sheet .gh .grab{display:none}.sheet .gh{cursor:default;padding:4px 0}
+ .sheet{font-size:15px}.sheet h2,.hrt.rln .hbn,.hrt.rln .hln,.hrt.rln .hnm{font-size:22px!important}.hrt.rln .hcd.rc{font-size:17px!important}
+ .sheet .sub,.lvs{font-size:14px}.vr{padding:11px 2px}.vr .vn{font-size:17px}.vr .vd{font-size:14.5px}.vr .vt,.vk,.vkw .vk{font-size:14.5px}.vb{font-size:13px}
+ .sheet .tag{font-size:13.5px}.rt td,.rt th{font-size:15px}
+}
 </style></head>
 <body>
 <div id="map"></div>
@@ -762,7 +770,7 @@ function clearRoute(){RP=null;clearLines('hub');clearLines('me');fitKey='';$('rt
     cand=(y0-top<64)||sh.scrollTop<=0},{passive:true});
   sh.addEventListener('touchmove',e=>{if(!cand)return;dy=e.touches[0].clientY-y0;
     if(!on){if(dy>8&&(sh.scrollTop<=0||e.target.closest('#gh'))){on=true;sh.classList.add('drag')}else if(dy<-4){cand=false;return}else return}
-    e.preventDefault();sh.style.transform='translateY('+Math.max(0,dy)+'px)'},{passive:false});
+    if(matchMedia('(min-width:900px) and (hover:hover)').matches)return;e.preventDefault();sh.style.transform='translateY('+Math.max(0,dy)+'px)'},{passive:false});
   const end=()=>{if(!on){cand=false;return}on=false;cand=false;const v=dy/Math.max(1,Date.now()-t0);sh.classList.remove('drag');
     if(dy>90||(dy>30&&v>.45))closeSheet();else{sh.style.transform=''}setTimeout(()=>{dy=0},50)};
   sh.addEventListener('touchend',end);sh.addEventListener('touchcancel',end);
