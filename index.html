@@ -1374,7 +1374,8 @@ function kndH(v){if(!v)return '';if(isHd(v.vh,v.ton))return ' <i class="vk hd">�
 function vkTag(v,sm){if(!v||!isHd(v.vh,v.ton))return '';
   const ch=vChOf(v),p=ch?pubLab(ch,v.dv,v.prtn):'?',pc=/공용|더운반/.test(p)?'pu':p==='지정'?'dj':'qq';
   const t=ch?(sm?(isHoReq(ch)?ch.replace(/\s/g,'').replace(/^.*?(\d+호)$/,'$1'):pnum(ch).slice(-4)):ch):'?';
-  return '<span class="vkl"><i class="vk sh">샤시 '+esc(t)+'</i><i class="vk '+pc+'">'+esc(p)+'</i></span>'}
+  const ft=(/(\d{2})\s*F/i.exec(String(v.ton||''))||[])[1];
+  return '<span class="vkl"><i class="vk sh">샤시 '+(ch?esc(t):'<b class="vk qq">?</b>')+'</i>'+(ch?'<i class="vk '+pc+'">'+esc(p)+'</i>':'')+(ft?'<i class="vk">'+ft+'피트</i>':'')+'</span>'}
 function lvParse(j){const D=j.data||{},f=D.f||[],ix={};f.forEach((k,i)=>ix[k]=i);
   const row=(a,d)=>{const g=k=>ix[k]==null?'':(a[ix[k]]==null?'':String(a[ix[k]]));const o={d,ln:g('lnnum'),vh:pnum(g('vhcnum')),tr:pnum(g('trnum')),ton:g('tonnm'),prtn:g('prtnnm'),div:g('vhcdivcd'),cl:g('clsfyn'),rem:g('rem'),core:g('core'),qty:+g('qty')||0,rat:+g('rat')||0,
       vin:g('vhcin'),upS:g('upS'),upE:g('upE'),dprt:g('dprt'),arv:g('arv'),dwnS:g('dwnS'),dwnE:g('dwnE'),dv:g('trdivnm'),divnm:g('vhcdivnm'),code:d==='out'?g('fcngbrancd'):g('branCd'),nm:d==='out'?g('fcngbrannm'):g('branNm')};
@@ -1481,7 +1482,7 @@ function lvCar(v){if(!v)return;cur=null;ICUR=null;hubOff();const same=LV[v.d].fi
   const ins=LV.in.filter(x=>x.vh===v.vh||(v.tr&&x.vh===v.tr)),outs=LV.out.filter(x=>x.vh===v.vh||(v.tr&&x.tr===v.tr&&x.tr)),hx=LV.hx.filter(x=>x.vh===v.vh);
   h+='<h2 class="hrt"><span class="hbn">'+(v.d==='out'?'출고':'입고')+'</span><span class="hnm">'+vnH(v)+'</span></h2>';
   if(v.vhBad)h+='<p class="inote r">🔴 로이스 차량번호 칸이 「'+esc(v.vh)+'」이에요. 같은 번호 차와 묶지 않았어요.</p>';
-  h+='<div class="tags">'+vBadge(v)+'<span class="vkw">'+vkTag(v)+'</span>'+(v.ton&&isHd(v.vh,v.ton)?'<span class="tag tw">'+esc(v.ton)+'</span>':'')+(cpn(v.prtn)?'<span class="tag tw">'+esc(cpn(v.prtn))+'</span>':'')+(CLN[v.cl]&&v.d==='in'?'<span class="tag in">'+CLN[v.cl]+'</span>':'')+'</div>';
+  h+='<div class="tags">'+vBadge(v)+'<span class="vkw">'+vkTag(v)+'</span>'+(cpn(v.prtn)?'<span class="tag tw">'+esc(cpn(v.prtn))+'</span>':'')+(CLN[v.cl]&&v.d==='in'?'<span class="tag in">'+CLN[v.cl]+'</span>':'')+'</div>';
   if(outs.length){h+='<h3 class="h3i">🚚 오늘 곤지암 출고 '+outs.length+'건</h3>';
     outs.forEach(o=>{const p=stOf(o),e=o.dprt?expOut(o):null,eta=e&&tAbs(o.dprt)?tAbs(o.dprt)+e.min*60000:null;
       h+='<div class="vbox"><div class="vh2"><b>'+esc(p?p[0]+' '+p[1]+' '+fnm(p):o.nm)+'</b>'+vBadge(o)+'</div><div class="vgrid">'+
