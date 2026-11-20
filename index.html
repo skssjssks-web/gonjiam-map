@@ -430,6 +430,7 @@ body.phin .vq{border-color:#C2620A}
 @media (min-width:900px) and (hover:hover){.sheet{border-radius:14px}}
 .vb{border:0!important;border-radius:8px;padding:3px 9px}.vb.ok{background:#E9F7F1;color:#0B4F38}.vb.mid{background:#E8F3FF;color:#1B64DA}.vb.no{background:#FFEEF0;color:#D22030}
 @media (prefers-color-scheme:dark){.vb.ok{background:rgba(61,213,152,.16);color:#3DD598}.vb.mid{background:rgba(76,154,255,.16);color:#7CB4FF}.vb.no{background:rgba(255,107,122,.16);color:#FF8A96}}
+.vr .vn{white-space:nowrap}.vr .vd{word-break:keep-all;overflow-wrap:normal}.vr.hx{grid-template-columns:1fr auto;grid-template-areas:"n b" "d d" "t t"}.vr.hx .vd{padding-left:26px;font-weight:600;color:var(--ink2)}.vr.hx .vb{white-space:normal;text-align:center;max-width:52vw}
 </style></head>
 <body>
 <div id="map"></div>
@@ -1455,7 +1456,7 @@ function hxLine(h){const iv=lvInFor(h.vh,h.hub),e=expIn('',h.hub),nm=hubNm(h.hub
   const dMs=iv&&iv.dprt?tAbs(iv.dprt):x?+x[0]:null,est=!(iv&&iv.dprt)&&!!(x&&x[1]),dep=dMs!=null?(iv&&iv.dprt?t5(iv.dprt):hhmm(dMs))+(est?'(추정)':''):'',eta=dMs!=null&&e?dMs+e.min*60000:null;
   return {iv,dep,e,eta,st:dep?nm+' 출발 '+dep:nm+' '+hxSt(h.st),nx:dep?(eta?'곤지암 도착 예정 '+hhmm(eta)+(est?'(추정)':''):'곤지암 도착 예정 ?'):''}}
 function hxRowH(h,i){const x=hxLine(h),s=x.st;
-  return '<button type="button" class="vr" data-h="'+i+'"><b class="vn">'+gnH(gnOf((x.iv||{}).div,h.divnm))+esc(h.vh)+kndH(x.iv||{vh:h.vh,ton:h.ton})+'</b><span class="vd">'+esc(h.from)+' → '+esc(h.hub)+' '+h.rot+'회전 → 곤지암 → '+esc(String(h.to).replace(/Sub$/,''))+'</span><span class="vb '+(x.dep||/하차완료/.test(s)?'ok':/미도착/.test(s)?'no':'mid')+'">'+esc(s)+'</span><span class="vt">'+vkTag(x.iv||{vh:h.vh,ton:h.ton})+' '+esc(x.nx||'곤지암 도착 예정 = 하차지 출발 뒤')+(x.e?' · '+x.e.km.toFixed(0)+'km':'')+'</span></button>'}
+  return '<button type="button" class="vr hx" data-h="'+i+'"><b class="vn">'+gnH(gnOf((x.iv||{}).div,h.divnm))+esc(h.vh)+kndH(x.iv||{vh:h.vh,ton:h.ton})+'</b><span class="vd">'+esc(h.from)+' → '+esc(h.hub)+' '+h.rot+'회전 → 곤지암 → '+esc(String(h.to).replace(/Sub$/,''))+'</span><span class="vb '+(x.dep||/하차완료/.test(s)?'ok':/미도착/.test(s)?'no':'mid')+'">'+esc(s)+'</span><span class="vt">'+vkTag(x.iv||{vh:h.vh,ton:h.ton})+' '+esc(x.nx||'곤지암 도착 예정 = 하차지 출발 뒤')+(x.e?' · '+x.e.km.toFixed(0)+'km':'')+'</span></button>'}
 const lvInFor=(vh,hub)=>LV.in.find(v=>v.vh===vh&&(!hub||inByNm(hub)&&v.code===inByNm(hub)[0]))||null;
 let LVL=[];
 function lvList(k,a,keep){if(!LV){lvLoad(true);toast('실시간 차량 자료를 받는 중이에요',1500);return}
@@ -1555,7 +1556,7 @@ function lvStoreHtml(d,x){if(!LV||!ME)return '';let L,hx=[];
   const cnt={};L.forEach(v=>cnt[v.cat]=(cnt[v.cat]||0)+1);const CN=d==='out'?OCAT:ICAT;
   return '<div class="lvst"><h3 class="h3i">📡 오늘 '+(d==='out'?'곤지암 → 이 점소 출고':'이 점소 → 곤지암 입고')+' 차량 <b>'+L.length+'대</b> <small>'+ord.filter(k=>cnt[k]).map(k=>CN[k]+' '+cnt[k]).join(' · ')+'</small></h3>'+
    L.map((v,i)=>{const r=vRowH(v,i);return r.replace('class="vr"','class="vr" data-s="'+i+'"').replace(' data-i="'+i+'"','')}).join('')+
-   (hx.length?'<h3 class="h3i">🔁 이 허브에서 하차하고 곤지암으로 올 차 <b>'+hx.length+'대</b></h3>'+hx.map(h=>{const L=hxLine(h);return '<div class="vr"><b class="vn">'+gnH(gnOf((L.iv||{}).div,h.divnm))+esc(h.vh)+kndH(L.iv||{vh:h.vh,ton:h.ton})+'</b><span class="vd">'+esc(h.from)+' → '+h.rot+'회전 → 곤지암 → '+esc(h.to)+'</span><span class="vb mid">'+esc(L.st)+'</span><span class="vt">'+vkTag(L.iv||{vh:h.vh,ton:h.ton})+' '+esc(L.nx)+'</span></div>'}).join(''):'')+'</div>'}
+   (hx.length?'<h3 class="h3i">🔁 이 허브에서 하차하고 곤지암으로 올 차 <b>'+hx.length+'대</b></h3>'+hx.map(h=>{const L=hxLine(h);return '<div class="vr hx"><b class="vn">'+gnH(gnOf((L.iv||{}).div,h.divnm))+esc(h.vh)+kndH(L.iv||{vh:h.vh,ton:h.ton})+'</b><span class="vd">'+esc(h.from)+' → '+h.rot+'회전 → 곤지암 → '+esc(h.to)+'</span><span class="vb mid">'+esc(L.st)+'</span><span class="vt">'+vkTag(L.iv||{vh:h.vh,ton:h.ton})+' '+esc(L.nx)+'</span></div>'}).join(''):'')+'</div>'}
 function lvStoreBind(){$('sb').querySelectorAll('.vr[data-s]').forEach(b=>b.addEventListener('click',()=>lvCar(LVS[+b.dataset.s])))}
 </script>
 </body></html>
