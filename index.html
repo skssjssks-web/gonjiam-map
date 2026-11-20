@@ -1393,7 +1393,7 @@ function lvParse(j){const D=j.data||{},f=D.f||[],ix={};f.forEach((k,i)=>ix[k]=i)
       const ref=o.dprt||o.upE,ra=ref?tAbs(ref,j.day):null,aa=o.arv?tAbs(o.arv,j.day):null;
       if(ra!=null&&aa!=null&&aa<ra){if(o.dwnS||o.dwnE){o.depBad=true}else{o.arvBad=o.arv;o.arv=''}}
       o.cz=/층간/.test(o.rem)||/^층간/.test(o.tr)}
-    else{o.cp=/쿠팡/.test(o.rem)||/쿠팡/.test(o.tr);o.plt=/PLT|무분류/i.test(o.rem);
+    else{o.cp=/덕양B/.test(o.nm)&&/반석/.test(o.prtn);/* 덕양쿠팡 = 덕양BSub로 들어온 간선사 반석 차(마스터 규칙, 비고 아님) */o.plt=/PLT|무분류/i.test(o.rem);
       // 출고: 곤지암 출발이 상차완료보다 빠르면 출발 기록 이상 → 출발로 안 봄(상차완료 기준)
       const ue=o.upE?tAbs(o.upE,j.day):null,dp=o.dprt?tAbs(o.dprt,j.day):null;if(ue!=null&&dp!=null&&dp<ue-600000){o.depBad=true;o.dpBad=o.dprt;o.dprt=''}}
     o.cat=d==='out'?(o.dprt?'done':o.upE?'upd':o.upS?'up':o.vin?'vin':'none'):(o.dwnE?'done':o.dwnS?'dwn':o.arv?'arv':o.dprt?'dep':'none');return o};
