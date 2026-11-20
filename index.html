@@ -176,11 +176,13 @@ body.sh .fab{display:none}
 .rtp #rtpO{flex:1;min-width:0;padding-left:14px;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:left}
 .rtp #rtpX{flex:0 0 auto;font-size:15px;color:var(--mute);border-left:1px solid var(--line);padding:0 13px}
 body.sh .rtp{display:none}
-.hrt{align-items:center;gap:8px}
+.hrt{align-items:center;gap:5px}
 .hrt .hbn,.hrt .hln,.hrt .hnm{font-size:19px;font-weight:900;line-height:1.25;letter-spacing:0;font-variant-numeric:tabular-nums}
 .hrt .hsx{font-size:13px}
 /* 노선 제목(마스터 11/20): 반-노선번호-노선명-코드 모두 같은 검은색·같은 크기, 공백 줄임 */
-.hrt.rln{gap:6px}.hrt.rln .hcd.rc{color:#fff!important;padding:2px 7px;border-radius:6px;font-size:17px}.hrt.rln .rc.g12{background:#C0265A!important}.hrt.rln .rc.g34{background:#5B3CB0!important}.hrt.rln .rc.g56{background:#A84808!important}.hrt.rln .rc.gg{background:#17794A!important}.hrt.rln .hsx{display:none}.hrt.rln .hbn,.hrt.rln .hln,.hrt.rln .hnm,.hrt.rln .hcd,.hrt.rln .hsx{font-size:19px;font-weight:900;color:var(--ink)!important;background:none!important;padding:0;height:auto;border:0;font-family:inherit;letter-spacing:0;font-variant-numeric:tabular-nums;line-height:1.25}
+.hrt.rln{gap:0 5px}.hrt.rln .hcd.rc{font-size:15px;font-weight:800;margin-left:-1px;background:none!important;padding:0}
+.hrt.rln .rc.g12{color:#C0265A!important}.hrt.rln .rc.g34{color:#5B3CB0!important}.hrt.rln .rc.g56{color:#A84808!important}.hrt.rln .rc.gg{color:#17794A!important}
+@media (prefers-color-scheme:dark){.hrt.rln .rc.g12{color:#FF7AA8!important}.hrt.rln .rc.g34{color:#B9A2FF!important}.hrt.rln .rc.g56{color:#FFA25C!important}.hrt.rln .rc.gg{color:#5FD69A!important}}.hrt.rln .hsx{display:none}.hrt.rln .hbn,.hrt.rln .hln,.hrt.rln .hnm,.hrt.rln .hcd,.hrt.rln .hsx{font-size:19px;font-weight:900;color:var(--ink)!important;background:none!important;padding:0;height:auto;border:0;font-family:inherit;letter-spacing:0;font-variant-numeric:tabular-nums;line-height:1.25}
 .rt td,.rt th{vertical-align:middle}
 .rt td{font-size:15px;font-weight:800;font-variant-numeric:tabular-nums}
 .rt td.l{width:1%;padding-right:14px}
