@@ -268,6 +268,14 @@ body.live .rt td{font-size:13.5px}body.live .rt td.lv{white-space:normal;width:a
 .mm form button{flex:0 0 auto;height:42px;border-radius:10px;border:0;background:var(--rvb);color:#fff;font:inherit;font-size:14px;font-weight:800;padding:0 14px;cursor:pointer}
 .mm form button:disabled{opacity:.55}
 .mm .note{margin-top:6px}
+.mm .mmh{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;min-height:40px;padding:0;margin:0;border:0;background:none;color:var(--ink);font:inherit;cursor:pointer;text-align:left;-webkit-tap-highlight-color:transparent}
+.mm .mmt{font-size:14.5px;font-weight:800;display:flex;align-items:center;gap:6px;min-width:0}
+.mm .mmc{font-size:12px;font-weight:800;color:#fff;background:var(--rvb);border-radius:9px;padding:1px 7px;line-height:1.5}.mm .mmc:empty{display:none}
+.mm .mmf{flex:0 0 auto;font-size:13px;font-weight:800;color:var(--rvb);border:1.5px solid var(--rvb);border-radius:16px;padding:4px 12px;display:inline-flex;align-items:center;gap:4px}
+.mm .mmf::after{content:'';width:7px;height:7px;border:solid currentColor;border-width:0 2px 2px 0;transform:rotate(45deg);margin:-3px 0 0 2px}
+.mm.op .mmf::after{transform:rotate(-135deg);margin:3px 0 0 2px}
+.mm.fd:not(.op) .mmb{display:none}
+.mm .mmb{margin-top:6px}
 .bdg{display:inline-block;min-width:18px;height:18px;border-radius:9px;background:var(--no);color:#fff;font-size:11px;font-weight:800;line-height:18px;text-align:center;padding:0 5px;margin-left:4px;vertical-align:1px}
 .atb{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;position:sticky;top:calc(-12px - env(safe-area-inset-top));z-index:3;background:var(--bg);padding:6px 0}
 .atb button{height:40px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink2);font:inherit;font-size:13.5px;font-weight:800;cursor:pointer;padding:0 4px;white-space:nowrap}
@@ -984,9 +992,12 @@ const dshort=t=>t?new Date(t).toLocaleDateString('ko-KR',{timeZone:'Asia/Seoul',
 function memoInner(code){const ok=MEMO.list.filter(m=>m.code===code),mine=MEMO.mine.filter(m=>m.code===code);
   return ok.map(m=>'<div class="mi"><span class="mt">현장 메모</span>'+esc(m.body)+'<small>'+dshort(m.at)+' 승인</small></div>').join('')+
    mine.map(m=>'<div class="mi '+(m.status==='no'?'n':'w')+'"><span class="mt '+(m.status==='no'?'n':'w')+'">'+(m.status==='no'?'거절됨':'승인 대기')+'</span>'+esc(m.body)+'<small>'+dshort(m.at)+' · 내가 쓴 메모 · '+(m.status==='no'?'다른 사람에게 안 보여요':'승인 전이라 나만 보여요')+'</small></div>').join('')+
-   (!ok.length&&!mine.length?'<p class="note" style="margin:0 0 4px">아직 메모가 없어요. 진입로·셔터 시간 같은 현장 팁을 남겨 주세요.</p>':'')}
-function memoHtml(code){return '<div class="mm" id="mm"><h3>📝 현장 메모</h3><div id="mmL">'+memoInner(code)+'</div><form id="mmF"><input id="mmI" maxlength="60" placeholder="한 줄 메모 (최대 60자)" autocomplete="off" enterkeyhint="send"><button type="submit" id="mmB">보내기</button></form><p class="note">'+(ME&&ME.admin?'관리자 메모는 바로 모두에게 보여요.':'마스터가 승인하면 모두에게 보여요. 승인 전에는 나만 보여요.')+'</p></div>'}
-function memoRefresh(code){const L=$('mmL');if(L)L.innerHTML=memoInner(code)}
+   (!ok.length&&!mine.length?'<p class="note" style="margin:0 0 4px">아직 메모가 없어요.</p>':'')}
+const foldH=(ic,t,cid,n)=>'<button type="button" class="mmh" aria-expanded="false"><span class="mmt">'+ic+' '+t+'<b class="mmc" id="'+cid+'">'+(n?n:'')+'</b></span><span class="mmf">펴기</span></button>';
+const memoN=code=>MEMO.list.filter(m=>m.code===code).length+MEMO.mine.filter(m=>m.code===code).length;
+function memoHtml(code){return '<div class="mm fd" id="mm">'+foldH('📝','현장 메모','mmC',memoN(code))+'<div class="mmb"><div id="mmL">'+memoInner(code)+'</div><form id="mmF"><input id="mmI" maxlength="60" placeholder="한 줄 메모 (최대 60자)" autocomplete="off" enterkeyhint="send"><button type="submit" id="mmB">보내기</button></form></div></div>'}
+document.addEventListener('click',e=>{const h=e.target.closest('.mm.fd>.mmh');if(!h)return;const m=h.parentNode,o=m.classList.toggle('op');h.setAttribute('aria-expanded',o?'true':'false');h.querySelector('.mmf').textContent=o?'접기':'펴기'});
+function memoRefresh(code){const L=$('mmL');if(L)L.innerHTML=memoInner(code);const c=$('mmC');if(c){const n=memoN(code);c.textContent=n?n:''}}
 const MERR={short:'2자 이상 적어 주세요',long:'60자까지만 쓸 수 있어요',day:'메모는 하루 5개까지 쓸 수 있어요',wait:'이 점소에 승인 대기 메모가 이미 2개 있어요',code:'점소를 못 찾았어요'};
 function memoBind(code){if(Date.now()-MEMO.t>300000)memoLoad();
   const f=$('mmF');if(!f)return;f.addEventListener('submit',async e=>{e.preventDefault();const v=$('mmI').value.trim();if(v.length<2){toast(MERR.short,1800);return}
@@ -1012,16 +1023,16 @@ function rvOpen(lat,lon,nm){let x=$('rvx');if(!x){x=document.createElement('div'
   tryR(0)}
 // --- 특이사항 사진 ---
 const PHC={},PERR={long:'설명은 60자까지만 쓸 수 있어요',img:'사진 파일만 올릴 수 있어요',big:'사진이 너무 커요',code:'점소를 못 찾았어요',day:'사진은 하루 3장까지 올릴 수 있어요',full:'이 점소 사진이 12장 꽉 찼어요',admin:'관리자만 할 수 있어요',none:'사진을 못 찾았어요'};
-function phHtml(code){return '<div class="mm pho" id="pho" data-c="'+esc(code)+'"><h3>📷 특이사항 사진</h3><div class="phl" id="phL">'+phInner(code)+'</div>'+
+function phHtml(code){return '<div class="mm pho fd" id="pho" data-c="'+esc(code)+'">'+foldH('📷','특이사항 사진','phC',(PHC[code]||[]).length)+'<div class="mmb"><div class="phl" id="phL">'+phInner(code)+'</div>'+
   '<form id="phF" class="phf"><input id="phN" maxlength="60" placeholder="설명 먼저 (예: 고가 밑으로 진입)" autocomplete="off"><label class="pbtn phb" id="phB">📷 사진 올리기<input type="file" id="phI" accept="image/*" hidden></label></form>'+
-  '<p class="note">진입로·고가 밑·좁은 골목처럼 처음 가면 헷갈리는 곳을 찍어 주세요. '+(ME&&ME.admin?'관리자 사진은 바로 모두에게 보여요.':'마스터가 승인하면 모두에게 보여요. 승인 전에는 나만 보여요.')+'</p></div>'}
+  '</div></div>'}
 function phInner(code){const L=PHC[code];if(!L)return '<p class="note" style="margin:0">불러오는 중…</p>';
   if(!L.length)return '<p class="note" style="margin:0 0 4px">아직 사진이 없어요.</p>';
   return '<div class="phg">'+L.map(x=>'<figure class="phi'+(x.status==='wait'?' w':'')+'" data-id="'+x.id+'"><button type="button" class="pht" aria-label="사진 크게 보기"><img src="'+esc(x.thumb)+'" alt="" loading="lazy"></button>'+
     '<figcaption>'+(x.status==='wait'?'<span class="mt w">승인 대기</span>':'')+esc(x.note||'')+'<small>'+dshort(x.at)+(x.name?' · '+esc(x.name):'')+'</small></figcaption>'+
     ((ME&&ME.admin)||(x.mine&&x.status==='wait')?'<div class="pha">'+(ME&&ME.admin&&x.status==='wait'?'<button type="button" class="pbtn grn" data-a="ok">승인</button>':'')+'<button type="button" class="pbtn red" data-a="del" data-k="한 번 더 누르면 삭제">삭제</button></div>':'')+'</figure>').join('')+'</div>'}
 async function phLoad(code){let j=null;try{j=await rpc('rv_photo_get',{p_token:TOK,p_code:code})}catch(e){}
-  PHC[code]=j&&j.ok?j.list||[]:(PHC[code]||[]);const P=$('pho');if(P&&P.dataset.c===code)$('phL').innerHTML=phInner(code)}
+  PHC[code]=j&&j.ok?j.list||[]:(PHC[code]||[]);const P=$('pho');if(P&&P.dataset.c===code){$('phL').innerHTML=phInner(code);const c=$('phC');if(c){const n=PHC[code].length;c.textContent=n?n:''}}}
 function phShrink(file,max,q){return new Promise((ok,no)=>{const u=URL.createObjectURL(file),im=new Image();im.onload=()=>{const k=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);
   c.getContext('2d').drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);ok(c.toDataURL('image/jpeg',q))};im.onerror=()=>{URL.revokeObjectURL(u);no()};im.src=u})}
 function phBox(src,cap){let b=$('phx');if(!b){b=document.createElement('div');b.id='phx';b.className='phx';b.addEventListener('click',()=>b.classList.remove('open'));document.body.appendChild(b)}
@@ -1221,7 +1232,7 @@ function inRender(r){const et=isEt(),hq=r[8]<0,self=r[8]===0||hq,c=ICACHE[r[0]],
    '<div class="btns g"><button class="btn nav" id="nvK" type="button">🚘 점소로 (카카오)</button><button class="btn nav" id="nvT" type="button">🚘 점소로 (T맵)</button></div>'+
    '<div class="btns g" style="margin-top:6px"><button class="btn nav" id="nvH" type="button">🏁 곤지암으로 (카카오)</button><button class="btn nav" id="nvHT" type="button">🏁 곤지암으로 (T맵)</button></div>'+rvHtml()+
    (cuP?'<p class="inote">경유 = 로이스 입고의 경유 주소예요. 서브 차가 이 고객사·집화점·대리점에 들러 짐을 싣고 곤지암에 와요. 1차 「선」 = 서브 → 곤지암 직행(파랑), 2차 「선」 = 서브 → 경유(보라) → 곤지암(초록). 주소를 누르면 지도에 📍로 찍혀요. 이름은 고객사명·비고에서 따왔어요.</p>':'')+
-   (et?'<p class="inote">그외 = 전체 점소 536곳 중 곤지암 출고·입고에 안 걸리는 272곳이에요. 위치 「근사」 = 엑셀 번지가 가려져 카카오에서 「CJ대한통운 ○○ SUB터미널」로 찾은 자리, 「대략」 = 동네 중심이에요. 「실시간」을 켜면 지금 교통으로 곤지암까지 시간과 도로 선이 나와요.</p>':'<p class="inote">입고 = 이 점소에서 출발해 곤지암에 하차하러 오는 차예요. 「실시간」을 켜면 지금 교통으로 곤지암까지 시간과 도로 선이 나와요.</p>');
+   (et?'':'<p class="inote">입고 = 이 점소에서 출발해 곤지암에 하차하러 오는 차예요. 「실시간」을 켜면 지금 교통으로 곤지암까지 시간과 도로 선이 나와요.</p>');
   $('nvK').addEventListener('click',()=>{use('nav',r[0]);openNav('kakaomap://route?ep='+r[6]+','+r[7]+'&by=CAR','https://map.kakao.com/link/to/'+encodeURIComponent(r[1])+','+r[6]+','+r[7],'카카오맵')});
   $('nvT').addEventListener('click',()=>{use('nav',r[0]);openNav('tmap://route?goalname='+encodeURIComponent(r[1])+'&goalx='+r[7]+'&goaly='+r[6],'','T맵')});
   $('nvH').addEventListener('click',()=>{use('nav','HUB');openNav('kakaomap://route?sp='+r[6]+','+r[7]+'&ep='+HUB.lat+','+HUB.lon+'&by=CAR','https://map.kakao.com/link/from/'+encodeURIComponent(r[1])+','+r[6]+','+r[7]+'/to/'+encodeURIComponent('곤지암Hub')+','+HUB.lat+','+HUB.lon,'카카오맵')});
