@@ -1232,7 +1232,7 @@ function inRender(r){const et=isEt(),hq=r[8]<0,self=r[8]===0||hq,c=ICACHE[r[0]],
    '<div class="btns g"><button class="btn nav" id="nvK" type="button">🚘 점소로 (카카오)</button><button class="btn nav" id="nvT" type="button">🚘 점소로 (T맵)</button></div>'+
    '<div class="btns g" style="margin-top:6px"><button class="btn nav" id="nvH" type="button">🏁 곤지암으로 (카카오)</button><button class="btn nav" id="nvHT" type="button">🏁 곤지암으로 (T맵)</button></div>'+rvHtml()+
    (cuP?'<p class="inote">경유 = 로이스 입고의 경유 주소예요. 서브 차가 이 고객사·집화점·대리점에 들러 짐을 싣고 곤지암에 와요. 1차 「선」 = 서브 → 곤지암 직행(파랑), 2차 「선」 = 서브 → 경유(보라) → 곤지암(초록). 주소를 누르면 지도에 📍로 찍혀요. 이름은 고객사명·비고에서 따왔어요.</p>':'')+
-   (et?'':'<p class="inote">입고 = 이 점소에서 출발해 곤지암에 하차하러 오는 차예요. 「실시간」을 켜면 지금 교통으로 곤지암까지 시간과 도로 선이 나와요.</p>');
+   '';
   $('nvK').addEventListener('click',()=>{use('nav',r[0]);openNav('kakaomap://route?ep='+r[6]+','+r[7]+'&by=CAR','https://map.kakao.com/link/to/'+encodeURIComponent(r[1])+','+r[6]+','+r[7],'카카오맵')});
   $('nvT').addEventListener('click',()=>{use('nav',r[0]);openNav('tmap://route?goalname='+encodeURIComponent(r[1])+'&goalx='+r[7]+'&goaly='+r[6],'','T맵')});
   $('nvH').addEventListener('click',()=>{use('nav','HUB');openNav('kakaomap://route?sp='+r[6]+','+r[7]+'&ep='+HUB.lat+','+HUB.lon+'&by=CAR','https://map.kakao.com/link/from/'+encodeURIComponent(r[1])+','+r[6]+','+r[7]+'/to/'+encodeURIComponent('곤지암Hub')+','+HUB.lat+','+HUB.lon,'카카오맵')});
