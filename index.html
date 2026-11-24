@@ -425,6 +425,12 @@ body.phin .vq{border-color:#C2620A}
 .vkl{display:block;flex-basis:100%;order:-1;margin:0 0 2px}.vn .vk{margin:0 0 0 2px;font-size:13px}.vr .vt{padding-left:26px}
 .vr .vt,.vkw{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:0;row-gap:2px}
 @media (prefers-color-scheme:dark){.gn.g{background:#3182F6}.gn.y{background:#F76707}.vk.qq{color:#FF6B6B!important}}
+/* 헤드·샤시 번호 같은 크기(마스터 11/24): 샤시 번호 .chn = 헤드 번호 글씨 그대로, 빈 간·용 칸(.gsp)으로 열 맞춤 */
+.gn.gsp{visibility:hidden}
+.chn{font:inherit;font-weight:800;font-variant-numeric:tabular-nums;margin-right:6px;color:var(--ink)}.chn.qq{color:#D9302C}
+.vr .vt .vkl{margin-left:-26px}.vr .vt .chn{font-size:15px}
+.hrt .hnm{flex-wrap:wrap}.hnm .vkl .gsp{margin-right:8px}.hnm .vkl,.vq button>b>.vkl{order:9;margin:2px 0 0}
+.hnm>.vk,.vq button>b>.vk{margin-left:6px!important}.vq button>b{display:flex;flex-wrap:wrap;align-items:baseline}.vq button>b>.vkl{flex:0 0 100%;font-size:15.5px}
 /* PC(넓은 화면, 마스터 11/20): 아래 시트 대신 왼쪽 패널, 지도는 오른쪽에 보이게, 글씨 한 단계 크게 */
 @media (min-width:900px) and (hover:hover){
  .sheet{left:12px;right:auto;top:132px;bottom:12px;width:min(520px,40vw);max-height:none;border-radius:16px;padding:14px 20px 20px;box-shadow:0 8px 32px rgba(10,20,30,.22);transform:translateX(-110%)}
@@ -1391,9 +1397,10 @@ const vChOf=v=>{const t=String(v.tr||'').trim();return t&&pnum(t)!==pnum(v.vh)&&
 function kndH(v){if(!v)return '';if(isHd(v.vh,v.ton))return ' <i class="vk hd">헤드</i>';const tn=String(v.ton||'').trim();return ' <i class="vk t11">'+esc(!tn||/^TR/i.test(tn)||/^(11|14|22)\s*톤/.test(tn)?'11톤':tn.replace(/\(.*\)/,''))+'</i>'}
 function vkTag(v,sm){if(!v||!isHd(v.vh,v.ton))return '';
   const ch=vChOf(v),p=ch?pubLab(ch,v.dv,v.prtn):'?',pc=/공용|더운반/.test(p)?'pu':p==='지정'?'dj':'qq';
-  const t=ch?(sm?(isHoReq(ch)?ch.replace(/\s/g,'').replace(/^.*?(\d+호)$/,'$1'):pnum(ch).slice(-4)):ch):'?';
+  const t=ch||'?';
   const ft=(/(\d{2})\s*F/i.exec(String(v.ton||''))||[])[1];
-  return '<span class="vkl"><i class="vk sh">샤시 '+(ch?esc(t):'<b class="vk qq">?</b>')+'</i>'+(ch?'<i class="vk '+pc+'">'+esc(p)+'</i>':'')+(ft?'<i class="vk">'+ft+'피트</i>':'')+'</span>'}
+  // 샤시 줄(마스터 11/24): 헤드 줄 아래, 같은 크기·굵기 번호를 헤드 번호와 같은 칸에서 시작(간·용 칸 자리만큼 비움) → 「샤시 공용」 글은 번호 뒤
+  return '<span class="vkl">'+gnH(gnOf(v.div,v.divnm)).replace('class="gn','aria-hidden="true" class="gn gsp')+(ch?'<b class="chn">'+esc(t)+'</b>':'<b class="chn qq">?</b>')+' <i class="vk sh">샤시</i>'+(ch?'<i class="vk '+pc+'">'+esc(p)+'</i>':'')+(ft?'<i class="vk">'+ft+'피트</i>':'')+'</span>'}
 function lvParse(j){const D=j.data||{},f=D.f||[],ix={};f.forEach((k,i)=>ix[k]=i);
   const row=(a,d)=>{const g=k=>ix[k]==null?'':(a[ix[k]]==null?'':String(a[ix[k]]));const o={d,ln:g('lnnum'),vh:pnum(g('vhcnum')),tr:pnum(g('trnum')),ton:g('tonnm'),prtn:g('prtnnm'),div:g('vhcdivcd'),cl:g('clsfyn'),rem:g('rem'),core:g('core'),qty:+g('qty')||0,rat:+g('rat')||0,
       vin:g('vhcin'),upS:g('upS'),upE:g('upE'),dprt:g('dprt'),arv:g('arv'),dwnS:g('dwnS'),dwnE:g('dwnE'),dv:g('trdivnm'),divnm:g('vhcdivnm'),code:d==='out'?g('fcngbrancd'):g('branCd'),nm:d==='out'?g('fcngbrannm'):g('branNm')};
@@ -1498,9 +1505,9 @@ const vNote=o=>{const a=[];if(o.fut&&o.fut.length)a.push('🔴 아직 오지 않
 const li2=(a,b,c)=>'<div class="vi"><span>'+a+'</span><b'+(c?' class="'+c+'"':'')+'>'+b+'</b></div>';
 function lvCar(v){if(!v)return;cur=null;ICUR=null;hubOff();const same=LV[v.d].filter(x=>x.vh===v.vh);let h='';
   const ins=LV.in.filter(x=>x.vh===v.vh||(v.tr&&x.vh===v.tr)),outs=LV.out.filter(x=>x.vh===v.vh||(v.tr&&x.tr===v.tr&&x.tr)),hx=LV.hx.filter(x=>x.vh===v.vh);
-  h+='<h2 class="hrt"><span class="hbn">'+(v.d==='out'?'출고':'입고')+'</span><span class="hnm">'+vnH(v)+'</span></h2>';
+  h+='<h2 class="hrt"><span class="hbn">'+(v.d==='out'?'출고':'입고')+'</span><span class="hnm">'+vnH(v)+vkTag(v)+'</span></h2>';
   if(v.vhBad)h+='<p class="inote r">🔴 로이스 차량번호 칸이 「'+esc(v.vh)+'」이에요. 같은 번호 차와 묶지 않았어요.</p>';
-  h+='<div class="tags">'+vBadge(v)+'<span class="vkw">'+vkTag(v)+'</span>'+(cpn(v.prtn)?'<span class="tag tw">'+esc(cpn(v.prtn))+'</span>':'')+(CLN[v.cl]&&v.d==='in'?'<span class="tag in">'+CLN[v.cl]+'</span>':'')+'</div>';
+  h+='<div class="tags">'+vBadge(v)+(cpn(v.prtn)?'<span class="tag tw">'+esc(cpn(v.prtn))+'</span>':'')+(CLN[v.cl]&&v.d==='in'?'<span class="tag in">'+CLN[v.cl]+'</span>':'')+'</div>';
   if(outs.length){h+='<h3 class="h3i">🚚 오늘 곤지암 출고 '+outs.length+'건</h3>';
     outs.forEach(o=>{const p=stOf(o),e=o.dprt?expOut(o):null,eta=e&&tAbs(o.dprt)?tAbs(o.dprt)+e.min*60000:null;
       h+='<div class="vbox"><div class="vh2"><b>'+esc(p?p[0]+' '+p[1]+' '+fnm(p):o.nm)+'</b>'+vBadge(o)+'</div><div class="vgrid">'+
@@ -1555,7 +1562,7 @@ function vqDraw(){let x=$('vq');if(!x){x=document.createElement('div');x.id='vq'
   const q=$('q').value.trim();if(!ME||PH==='etc'||!q){x.hidden=true;VQ=[];return}
   if(!LV){x.hidden=true;return}VQ=vqFind(q);if(!VQ.length){x.hidden=true;return}
   x.innerHTML=VQ.map((it,i)=>{if(it.t==='k')return '<button type="button" data-i="'+i+'" class="k">🔎 '+esc(it.k[1])+'</button>';const v=it.v,p=v.d==='out'?stOf(v):null;
-    return '<button type="button" data-i="'+i+'"><b>'+vnH(v)+'</b><span>'+(it.o?'<em>'+(v.d==='out'?'출고':'입고')+'</em> ':'')+esc(v.d==='out'?(p?p[0]+' '+p[1]+' '+fnm(p):v.nm):String(v.nm).replace(/Sub$/,''))+' '+vkTag(v,1)+'</span>'+vBadge(v)+'</button>'}).join('')+'<p>번호를 눌러 차량을 고르세요 · '+esc(lvStamp().split(' · ')[1]||'')+'</p>';x.hidden=false}
+    return '<button type="button" data-i="'+i+'"><b>'+vnH(v)+vkTag(v)+'</b><span>'+(it.o?'<em>'+(v.d==='out'?'출고':'입고')+'</em> ':'')+esc(v.d==='out'?(p?p[0]+' '+p[1]+' '+fnm(p):v.nm):String(v.nm).replace(/Sub$/,''))+'</span>'+vBadge(v)+'</button>'}).join('')+'<p>번호를 눌러 차량을 고르세요 · '+esc(lvStamp().split(' · ')[1]||'')+'</p>';x.hidden=false}
 const vqHas=()=>!!VQ.length;
 
 // 점소 상세: 오늘 그 점소 곤지암 차량만 상태
