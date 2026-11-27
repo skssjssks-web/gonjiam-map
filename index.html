@@ -454,6 +454,8 @@ body.phin .vq{border-color:#C2620A}
 .vkl .gnw{position:relative;display:inline-block}.vkl .gnw .vk.pj{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;margin:0!important;min-width:0}
 /* 11/27 23:20 마스터: 간/용 = 칸 색 없이 글자색만, 공/지와 같은 크기 (관제앱 v842와 같음) */
 .gn{background:none!important;padding:0!important;min-width:1.1em!important;height:auto!important;border-radius:0!important;display:inline-block!important;text-align:center;font-size:11.5px!important;font-weight:900!important;line-height:inherit!important;vertical-align:baseline!important;margin-right:6px}.gn.g{color:#1B64DA!important}.gn.y{color:#E8590C!important}.gn.o{color:#4E5968!important}.vkl .gnw .vk.pj{font-size:11.5px!important;inset:0 6px 0 0!important}
+/* 11/28 00:10 마스터 시안 A·「피트→FT」: 번호 칸 너비 고정 → 위아래 차끼리 번호·FT 같은 세로줄 (관제앱 v846과 같음) */
+.vkl .chn{display:inline-block;min-width:6.9em}.vk.hd,.vk.t11,.vk.sh{min-width:2.3em}
 @media (prefers-color-scheme:dark){.gn.g{color:#7FB5FF!important}.gn.y{color:#FFA35C!important}.gn.o{color:#C8D2DC!important}}
 @media (prefers-color-scheme:dark){.vk.pu,.vkw .vk.pu{color:#6EA8FF!important}.vk.dj,.vkw .vk.dj{color:#C9A3FF!important}}
 </style></head>
@@ -1412,7 +1414,7 @@ function vkTag(v,sm){if(!v||!isHd(v.vh,v.ton))return '';
   const ft=(/(\d{2})\s*F/i.exec(String(v.ton||''))||[])[1];
   // 샤시 줄(마스터 11/24): 헤드 줄 아래, 같은 크기·굵기 번호를 헤드 번호와 같은 칸에서 시작(간·용 칸 자리만큼 비움) → 「샤시 공용」 글은 번호 뒤
   // 11/27 23:08 마스터: 공용/지정 = 한 글자 공/지, 간/용 칸 바로 아래 자리 · 40피트는 샤시번호 바로 뒤 (관제앱 v841과 같음)
-  return '<span class="vkl"><span class="gnw">'+gnH(gnOf(v.div,v.divnm)).replace('class="gn','aria-hidden="true" class="gn gsp')+(ch&&pc!=='qq'?'<i class="vk pj '+pc+'" title="'+esc(p)+'">'+(pc==='pu'?'공':'지')+'</i>':'')+'</span><i class="vk sh">샤시</i>'+(ch?'<b class="chn">'+esc(t)+'</b>':'<b class="chn qq">?</b>')+(ft?'<i class="vk">'+ft+'피트</i>':'')+(/고장/.test(p)?'<i class="vk" style="color:#D22030">고장</i>':'')+'</span>'}
+  return '<span class="vkl"><span class="gnw">'+gnH(gnOf(v.div,v.divnm)).replace('class="gn','aria-hidden="true" class="gn gsp')+(ch&&pc!=='qq'?'<i class="vk pj '+pc+'" title="'+esc(p)+'">'+(pc==='pu'?'공':'지')+'</i>':'')+'</span><i class="vk sh">샤시</i>'+(ch?'<b class="chn">'+esc(t)+'</b>':'<b class="chn qq">?</b>')+(ft?'<i class="vk ftk">'+ft+'FT</i>':'')+(/고장/.test(p)?'<i class="vk" style="color:#D22030">고장</i>':'')+'</span>'}
 function lvParse(j){const D=j.data||{},f=D.f||[],ix={};f.forEach((k,i)=>ix[k]=i);
   const row=(a,d)=>{const g=k=>ix[k]==null?'':(a[ix[k]]==null?'':String(a[ix[k]]));const o={d,ln:g('lnnum'),vh:pnum(g('vhcnum')),tr:pnum(g('trnum')),ton:g('tonnm'),prtn:g('prtnnm'),div:g('vhcdivcd'),cl:g('clsfyn'),rem:g('rem'),core:g('core'),qty:+g('qty')||0,rat:+g('rat')||0,
       vin:g('vhcin'),upS:g('upS'),upE:g('upE'),dprt:g('dprt'),arv:g('arv'),dwnS:g('dwnS'),dwnE:g('dwnE'),dv:g('trdivnm'),divnm:g('vhcdivnm'),code:d==='out'?g('fcngbrancd'):g('branCd'),nm:d==='out'?g('fcngbrannm'):g('branNm')};
