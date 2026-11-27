@@ -1488,7 +1488,7 @@ function hxLine(h){const iv=lvInFor(h.vh,h.hub),e=expIn('',h.hub),nm=hubNm(h.hub
   const dMs=iv&&iv.dprt?tAbs(iv.dprt):x?+x[0]:null,est=!(iv&&iv.dprt)&&!!(x&&x[1]),dep=dMs!=null?(iv&&iv.dprt?t5(iv.dprt):hhmm(dMs))+(est?'(추정)':''):'',eta=dMs!=null&&e?dMs+e.min*60000:null;
   return {iv,dep,e,eta,st:dep?nm+' 출발 '+dep:nm+' '+hxSt(h.st),nx:dep?(eta?'곤지암 도착 예정 '+hhmm(eta)+(est?'(추정)':''):'곤지암 도착 예정 ?'):''}}
 function hxRowH(h,i){const x=hxLine(h),s=x.st;
-  return '<button type="button" class="vr hx" data-h="'+i+'"><b class="vn">'+gnH(gnOf((x.iv||{}).div,h.divnm))+esc(h.vh)+kndH(x.iv||{vh:h.vh,ton:h.ton})+'</b><span class="vd">'+esc(h.from)+' → '+esc(h.hub)+' '+h.rot+'회전 → 곤지암 → '+esc(String(h.to).replace(/Sub$/,''))+'</span><span class="vb '+(x.dep||/하차완료/.test(s)?'ok':/미도착/.test(s)?'no':'mid')+'">'+esc(s)+'</span><span class="vt">'+vkTag(x.iv||{vh:h.vh,ton:h.ton})+' '+esc(x.nx||'곤지암 도착 예정 = 하차지 출발 뒤')+(x.e?' · '+x.e.km.toFixed(0)+'km':'')+'</span></button>'}
+  return '<button type="button" class="vr hx" data-h="'+i+'"><b class="vn">'+gnH(gnOf((x.iv||{}).div,h.divnm))+kndH(x.iv||{vh:h.vh,ton:h.ton}).trim()+esc(h.vh)+'</b><span class="vd">'+esc(h.from)+' → '+esc(h.hub)+' '+h.rot+'회전 → 곤지암 → '+esc(String(h.to).replace(/Sub$/,''))+'</span><span class="vb '+(x.dep||/하차완료/.test(s)?'ok':/미도착/.test(s)?'no':'mid')+'">'+esc(s)+'</span><span class="vt">'+vkTag(x.iv||{vh:h.vh,ton:h.ton})+' '+esc(x.nx||'곤지암 도착 예정 = 하차지 출발 뒤')+(x.e?' · '+x.e.km.toFixed(0)+'km':'')+'</span></button>'}
 const lvInFor=(vh,hub)=>LV.in.find(v=>v.vh===vh&&(!hub||inByNm(hub)&&v.code===inByNm(hub)[0]))||null;
 let LVL=[];
 function lvList(k,a,keep){if(!LV){lvLoad(true);toast('실시간 차량 자료를 받는 중이에요',1500);return}
